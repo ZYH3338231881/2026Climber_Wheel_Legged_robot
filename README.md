@@ -5,7 +5,6 @@
 
 ## 整体照片
 
-<div align="center">
-  <img src="./图片/整体照片1.png" width="45%" style="display: inline-block; margin-right: 10px;">
-  <img src="./图片/整体照片2.png" width="45%" style="display: inline-block;">
-</div>
+<img src="./图片/整体照片1.png" width="80%">
+
+<img src="./图片/整体照片2.png" width="80%">
