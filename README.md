@@ -5,6 +5,7 @@
 
 ## 整体照片
 
-![整体照片1](./图片/整体照片1.jpg)
-
-![整体照片2](./图片/整体照片2.png)
+<div align="center">
+  <img src="./图片/整体照片1.png" width="45%" style="display: inline-block; margin-right: 10px;">
+  <img src="./图片/整体照片2.png" width="45%" style="display: inline-block;">
+</div>
