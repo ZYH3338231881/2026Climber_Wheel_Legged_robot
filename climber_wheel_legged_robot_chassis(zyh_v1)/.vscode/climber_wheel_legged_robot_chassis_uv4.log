@@ -1,0 +1,41 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'climber_wheel_legged_robot_chassis'
+Note: source file '..\BSP\bsp_can.c' - object file renamed from 'climber_wheel_legged_robot_chassis\bsp_can.o' to 'climber_wheel_legged_robot_chassis\bsp_can_1.o'.Note: source file '..\BSP\bsp_can.c' - object file renamed from 'climber_wheel_legged_robot_chassis\bsp_can.o' to 'climber_wheel_legged_robot_chassis\bsp_can_1.o'.compiling bsp_can.c...
+../Chassis/struct_typedef.h(35): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\BSP\bsp_can.c(116): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint8_t len;
+..\BSP\bsp_can.c(156): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint8_t len;
+..\BSP\bsp_can.c: 3 warnings, 0 errors
+compiling chassis_task.c...
+..\Chassis\struct_typedef.h(35): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Controller/attribute_typedef.h(63): warning:  #1-D: last line of file ends without a newline
+  /*------------------------------ End of File ------------------------------*/
+../Controller/user_lib.h(74): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\chassis_task.c(441): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	CHASSIS.fdb.leg[0].joint.Phi1=theta_transform(CHASSIS.joint_motor[0].fdb.pos,J0_ANGLE_OFFSET,J0_DIRECTION,1);
+..\Chassis\chassis_task.c(733): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  				         length=length-rc_length*RC_TO_ONE*0.001;
+..\Chassis\chassis_task.c(652): warning:  #177-D: variable "rc_angle"  was declared but never referenced
+      int16_t rc_length = 0, rc_angle = 0;
+..\Chassis\chassis_task.c(758): warning:  #177-D: variable "Leg_Controller_LeftLegDeltaL0"  was declared but never referenced
+  		float Leg_Controller_LeftLegDeltaL0=0,Leg_Controller_RightLegDeltaL0=0;
+..\Chassis\chassis_task.c(758): warning:  #177-D: variable "Leg_Controller_RightLegDeltaL0"  was declared but never referenced
+  		float Leg_Controller_LeftLegDeltaL0=0,Leg_Controller_RightLegDeltaL0=0;
+..\Chassis\chassis_task.c(759): warning:  #177-D: variable "Leg_Controller_LeftLegDeltaF1"  was declared but never referenced
+  	  float Leg_Controller_LeftLegDeltaF1=0,Leg_Controller_RightLegDeltaF1=0;
+..\Chassis\chassis_task.c(759): warning:  #177-D: variable "Leg_Controller_RightLegDeltaF1"  was declared but never referenced
+  	  float Leg_Controller_LeftLegDeltaF1=0,Leg_Controller_RightLegDeltaF1=0;
+..\Chassis\chassis_task.c(785): warning:  #177-D: function "ConsoleStandUp"  was declared but never referenced
+  static void ConsoleStandUp(void);//ÆðÁ¢¿ØÖÆ
+..\Chassis\chassis_task.c: 11 warnings, 0 errors
+linking...
+climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf: Warning: L6304W: Duplicate input file climber_wheel_legged_robot_chassis\bsp_can_1.o ignored.
+Program Size: Code=65580 RO-data=4168 RW-data=2848 ZI-data=22344  
+Finished: 0 information, 1 warning and 0 error messages.
+FromELF: creating hex file...
+"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 15 Warning(s).
+Build Time Elapsed:  00:00:04

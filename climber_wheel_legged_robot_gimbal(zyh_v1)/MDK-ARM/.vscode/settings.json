@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "macro_typedef.h": "c",
+        "bsp_buzzer.h": "c"
+    }
+}

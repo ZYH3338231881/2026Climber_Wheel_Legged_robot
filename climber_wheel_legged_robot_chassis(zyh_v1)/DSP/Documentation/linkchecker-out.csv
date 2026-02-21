@@ -1,0 +1,8 @@
+# created by LinkChecker at 2023-08-21 12:06:31+000
+# Read the documentation at https://linkchecker.github.io/linkchecker/
+# Write comments and bugs to https://github.com/linkchecker/linkchecker/issues
+urlname;parentname;base;result;warningstring;infostring;valid;url;line;column;name;dltime;size;checktime;cached;level;modified
+$extra_stylesheet;file:///home/runner/work/CMSIS-DSP/CMSIS-DSP/Documentation/html/index.html;;URLError: <urlopen error [Errno 2] No such file or directory: '/home/runner/work/CMSIS-DSP/CMSIS-DSP/Documentation/html/$extra_stylesheet'>;;;False;file:///home/runner/work/CMSIS-DSP/CMSIS-DSP/Documentation/html/%24extra_stylesheet;32;1;;-1;-1;0.00014495849609375;0;1;
+LICENSE.txt;file:///home/runner/work/CMSIS-DSP/CMSIS-DSP/Documentation/html/index.html;;URLError: <urlopen error [Errno 2] No such file or directory: '/home/runner/work/CMSIS-DSP/CMSIS-DSP/Documentation/html/LICENSE.txt'>;;;False;file:///home/runner/work/CMSIS-DSP/CMSIS-DSP/Documentation/html/LICENSE.txt;265;56;Apache 2.0 License;-1;-1;0.00013184547424316406;0;1;
+https://github.com/ARM-software/CMSIS-DSP/blob/main/ComputeGraph/README.md;file:///home/runner/work/CMSIS-DSP/CMSIS-DSP/Documentation/html/index.html;;404 Not Found;;;False;https://github.com/ARM-software/CMSIS-DSP/blob/main/ComputeGraph/README.md;149;140;CMSIS-DSP github repository.;-1;-1;1.7993099689483643;0;1;
+# Stopped checking at 2023-08-21 12:06:50+000 (19 seconds)
