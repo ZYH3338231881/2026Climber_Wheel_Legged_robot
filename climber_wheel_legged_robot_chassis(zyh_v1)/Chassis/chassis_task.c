@@ -82,7 +82,6 @@ void chassis_task(void const * pvParamewwters)
         // 发送控制量
       ChassisSendCmd();
 			  MToC_sendControl(3,0x555,JudgementData.power_heat_data_t.shooter_17_heat1,JudgementData.shoot_data_t.initial_speed);
-        // 系统延时
 //       vTaskDelay(CHASSIS_CONTROL_TIME_MS);
     }
 }
