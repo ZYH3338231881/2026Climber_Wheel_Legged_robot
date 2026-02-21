@@ -1,0 +1,38 @@
+clear;clc;close all;
+%定义相关符号
+syms theta1 theta2 l1 l2 l3 real
+Dx=l1*cos(theta1)+l3/2;
+Dy=l1*sin(theta1);
+
+Ex=l1*cos(theta2)-l3/2;
+Ey=l1*sin(theta2);
+
+syms Cx Cy real
+eq1=(Cx- ...
+    Dx)^2+(Cy-Dy)^2==l2^2;
+eq2=(Cx-Ex)^2+(Cy-Ey)^2==l2^2;
+sol=solve([eq1,eq2],[Cx,Cy]);
+
+x_sol=real(sol.Cx);
+y_sol=real(sol.Cy);
+
+J=[diff(x_sol,theta1),diff(x_sol,theta2);
+   diff(y_sol,theta1),diff(y_sol,theta2)];
+
+m=15;%机器人质量（kg）
+g=9.81;%重力加速度
+%连杆长度
+l1_val=0.145;% m
+l2_val=0.27;% m
+l3_val=0.1;% m
+
+%关节角度
+a_ang=0;
+b_ang=50;
+theta1_val=deg2rad(180-a_ange);
+theta2_val=deg2rad(b_ange);
+
+%验算C点的坐标
+cy_num_1=subs()
+
+
