@@ -38,6 +38,17 @@
 - 高精度云台控制系统
 - 自适应地形能力
 
+## 视频展示
+
+<div align="center">
+  <video width="80%" controls>
+    <source src="./测试视频/串联腿跳跃200mm台阶.mp4" type="video/mp4">
+    您的浏览器不支持视频播放。
+  </video>
+</div>
+
 ## 使用说明
 
-详细的操作流程和注意事项将在后续更新中完善。
+### 系统建模
+<img src="./图片/系统模型图.png" width="60%">
+
