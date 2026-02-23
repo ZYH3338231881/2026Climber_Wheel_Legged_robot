@@ -52,3 +52,12 @@
 ### 系统建模
 <img src="./图片/系统模型图.png" width="60%">
 
+### 调试配置
+增加了FreeMaster调试配置：
+参考网站 https://sourcelizi.github.io/202011/using-freemaster/
+
+## 项目结构
+- `climber_wheel_legged_robot_chassis`: 底盘控制相关代码
+- `climber_wheel_legged_robot_gimbal`: 云台控制相关代码
+- `图片`: 存放项目相关图片
+- `测试视频`: 存放机器人功能演示视频

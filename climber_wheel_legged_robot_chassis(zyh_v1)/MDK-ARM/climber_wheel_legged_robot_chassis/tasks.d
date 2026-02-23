@@ -1,0 +1,16 @@
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c
+climber_wheel_legged_robot_chassis\tasks.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+climber_wheel_legged_robot_chassis\tasks.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+climber_wheel_legged_robot_chassis\tasks.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+climber_wheel_legged_robot_chassis\tasks.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Core/Inc/FreeRTOSConfig.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
+climber_wheel_legged_robot_chassis\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/stack_macros.h
