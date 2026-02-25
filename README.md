@@ -52,10 +52,11 @@
 ### 系统建模
 <img src="./图片/系统模型图.png" width="60%">
 
-### 调试配置
-增加了FreeMaster调试配置：
-参考网站 https://sourcelizi.github.io/202011/using-freemaster/
-
+### 日志
+? 1/21：增加气弹簧采用虚功原理分解到竖直方向。
+? 2/21：增加了FreeMaster调试配置：
+  参考网站 https://sourcelizi.github.io/202011/using-freemaster/
+? 2/25：增加了底盘跟随云台限幅问题，由于底盘与云台误差过大超调问题解决。
 ## 项目结构
 - `climber_wheel_legged_robot_chassis`: 底盘控制相关代码
 - `climber_wheel_legged_robot_gimbal`: 云台控制相关代码

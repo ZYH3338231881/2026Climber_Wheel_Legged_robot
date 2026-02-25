@@ -3,7 +3,7 @@
 <title>Static Call Graph - [climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Mon Feb 23 19:38:43 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Feb 25 16:20:58 2026
 <BR><P>
 <H3>Maximum Stack Usage =        352 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -956,8 +956,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[e6]"></a>ChassisInit</STRONG> (Thumb, 824 bytes, Stack size 240 bytes, chassis_task.o(i.ChassisInit))
-<BR><BR>[Stack]<UL><LI>Max Depth = 344<LI>Call Chain = ChassisInit &rArr; Kalman_Filter_Init &rArr; user_malloc &rArr; pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[e6]"></a>ChassisInit</STRONG> (Thumb, 856 bytes, Stack size 248 bytes, chassis_task.o(i.ChassisInit))
+<BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = ChassisInit &rArr; Kalman_Filter_Init &rArr; user_malloc &rArr; pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_init
@@ -986,12 +986,12 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[f4]"></a>ChassisReference</STRONG> (Thumb, 568 bytes, Stack size 56 bytes, chassis_task.o(i.ChassisReference))
+<P><STRONG><a name="[f4]"></a>ChassisReference</STRONG> (Thumb, 580 bytes, Stack size 56 bytes, chassis_task.o(i.ChassisReference))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = ChassisReference
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
+<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_difference
-<LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
+<LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LowPassFilterCalc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
@@ -1217,7 +1217,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetMotorMeasure
 </UL>
 
-<P><STRONG><a name="[1b2]"></a>GetK</STRONG> (Thumb, 950 bytes, Stack size 0 bytes, chassis_balance_extra.o(i.GetK))
+<P><STRONG><a name="[1b2]"></a>GetK</STRONG> (Thumb, 498 bytes, Stack size 0 bytes, chassis_balance_extra.o(i.GetK))
 <BR><BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LocomotionController
 </UL>
 
@@ -2107,7 +2107,7 @@ Global Symbols
 <P><STRONG><a name="[19c]"></a>IMU_Temperature_Ctrl</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, imu_task.o(i.IMU_Temperature_Ctrl))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = IMU_Temperature_Ctrl
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
+<BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INS_Task
 </UL>
@@ -2440,7 +2440,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32h723xx.o(RESET)
 </UL>
-<P><STRONG><a name="[f7]"></a>PID_calc</STRONG> (Thumb, 366 bytes, Stack size 0 bytes, pid.o(i.PID_calc))
+<P><STRONG><a name="[f8]"></a>PID_calc</STRONG> (Thumb, 366 bytes, Stack size 0 bytes, pid.o(i.PID_calc))
 <BR><BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ChassisReference
 <LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LocomotionController
 <LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LegTorqueController
@@ -3263,7 +3263,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MitCtrl
 </UL>
 
-<P><STRONG><a name="[f8]"></a>fp32_constrain</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, user_lib.o(i.fp32_constrain))
+<P><STRONG><a name="[f7]"></a>fp32_constrain</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, user_lib.o(i.fp32_constrain))
 <BR><BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ChassisReference
 <LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ConsoleNormal
 </UL>
@@ -3961,8 +3961,8 @@ Local Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ChassisConsole
 </UL>
 
-<P><STRONG><a name="[d4]"></a>BodyMotionObserve</STRONG> (Thumb, 280 bytes, Stack size 24 bytes, chassis_task.o(i.BodyMotionObserve))
-<BR><BR>[Stack]<UL><LI>Max Depth = 108<LI>Call Chain = BodyMotionObserve &rArr; Kalman_Filter_Update &rArr; Kalman_Filter_SetK &rArr; arm_mat_mult_f32
+<P><STRONG><a name="[d4]"></a>BodyMotionObserve</STRONG> (Thumb, 258 bytes, Stack size 16 bytes, chassis_task.o(i.BodyMotionObserve))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = BodyMotionObserve &rArr; Kalman_Filter_Update &rArr; Kalman_Filter_SetK &rArr; arm_mat_mult_f32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Kalman_Filter_Update
 </UL>
@@ -3980,7 +3980,7 @@ Local Symbols
 <P><STRONG><a name="[de]"></a>ConsoleNormal</STRONG> (Thumb, 156 bytes, Stack size 24 bytes, chassis_task.o(i.ConsoleNormal))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = ConsoleNormal &rArr; LocomotionController
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
+<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
 <LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LocomotionController
 <LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LegTorqueController
 </UL>
@@ -3990,7 +3990,7 @@ Local Symbols
 <P><STRONG><a name="[e1]"></a>ConsoleZeroForce</STRONG> (Thumb, 98 bytes, Stack size 16 bytes, chassis_task.o(i.ConsoleZeroForce))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = ConsoleZeroForce
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
+<BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ChassisConsole
 </UL>
@@ -3998,16 +3998,16 @@ Local Symbols
 <P><STRONG><a name="[ff]"></a>LegTorqueController</STRONG> (Thumb, 488 bytes, Stack size 32 bytes, chassis_task.o(i.LegTorqueController))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = LegTorqueController
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
+<BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 <LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcVmc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ConsoleNormal
 </UL>
 
-<P><STRONG><a name="[fe]"></a>LocomotionController</STRONG> (Thumb, 318 bytes, Stack size 96 bytes, chassis_task.o(i.LocomotionController))
+<P><STRONG><a name="[fe]"></a>LocomotionController</STRONG> (Thumb, 326 bytes, Stack size 96 bytes, chassis_task.o(i.LocomotionController))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = LocomotionController
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
+<BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
 <LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetK
 <LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CalcLQR
 </UL>

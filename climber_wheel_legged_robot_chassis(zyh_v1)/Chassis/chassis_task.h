@@ -123,7 +123,7 @@
 #define KI_CHASSIS_FOLLOW_GIMBAL       (0)
 #define KD_CHASSIS_FOLLOW_GIMBAL       (10)
 #define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
-#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (5)
+#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (4)
 
 
 //防劈叉PID
@@ -251,6 +251,7 @@ typedef struct __Imu
 typedef struct Body
 {
     float x;          // (m)机体位移距离
+    float x_obv;      // (m)机体位移观测值
     float x_dot;      // (m/s)机体速度直接反馈值
     float x_dot_obv;  // (m/s)机体速度观测值
     float x_acc;      // (m/s^2)机体x轴加速度直接反馈值

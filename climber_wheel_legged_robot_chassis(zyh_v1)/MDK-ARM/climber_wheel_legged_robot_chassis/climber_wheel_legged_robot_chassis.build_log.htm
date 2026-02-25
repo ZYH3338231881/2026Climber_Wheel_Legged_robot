@@ -27,7 +27,24 @@ Project File Date:  02/23/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target 'climber_wheel_legged_robot_chassis'
-"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 0 Warning(s).
+compiling chassis_task.c...
+..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\chassis_task.c(691): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
+..\Chassis\chassis_task.c(691): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
+..\Chassis\chassis_task.c(659): warning:  #177-D: variable "rc_angle"  was declared but never referenced
+      int16_t rc_length = 0, rc_angle = 0;
+..\Chassis\chassis_task.c(669): warning:  #177-D: variable "computer_v_set"  was declared but never referenced
+  		ComputerSpeedVector_t computer_v_set={0.0f, 0.0f, 0.0f};
+..\Chassis\chassis_task.c(785): warning:  #177-D: function "ConsoleStandUp"  was declared but never referenced
+  static void ConsoleStandUp(void);//ÆðÁ¢¿ØÖÆ
+..\Chassis\chassis_task.c: 6 warnings, 0 errors
+linking...
+Program Size: Code=70272 RO-data=4992 RW-data=2952 ZI-data=23832  
+FromELF: creating hex file...
+"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -61,41 +78,41 @@ Package Vendor: Keil
       Include file:  CMSIS/Core/Include/tz_context.h
 
    * Component: ARM::CMSIS:DSP&Source@1.15.0
-      Include file:  Include/arm_math_f16.h
-      Include file:  Include/arm_common_tables_f16.h
-      Include file:  Include/arm_const_structs_f16.h
       Include file:  Include/arm_math.h
+      Include file:  Include/arm_math_f16.h
       Include file:  Include/arm_common_tables.h
+      Include file:  Include/arm_common_tables_f16.h
       Include file:  Include/arm_const_structs.h
-      Source file:   Source/FilteringFunctions/FilteringFunctionsF16.c
-      Source file:   Source/ComplexMathFunctions/ComplexMathFunctions.c
+      Include file:  Include/arm_const_structs_f16.h
+      Source file:   Source/BasicMathFunctions/BasicMathFunctionsF16.c
+      Source file:   Source/BasicMathFunctions/BasicMathFunctions.c
+      Source file:   Source/FilteringFunctions/FilteringFunctions.c
+      Source file:   Source/DistanceFunctions/DistanceFunctionsF16.c
+      Source file:   Source/SupportFunctions/SupportFunctions.c
+      Source file:   Source/InterpolationFunctions/InterpolationFunctions.c
+      Source file:   Source/QuaternionMathFunctions/QuaternionMathFunctions.c
+      Source file:   Source/MatrixFunctions/MatrixFunctionsF16.c
+      Source file:   Source/MatrixFunctions/MatrixFunctions.c
+      Source file:   Source/InterpolationFunctions/InterpolationFunctionsF16.c
+      Source file:   Source/BayesFunctions/BayesFunctions.c
       Source file:   Source/ControllerFunctions/ControllerFunctions.c
       Source file:   Source/DistanceFunctions/DistanceFunctions.c
-      Source file:   Source/BayesFunctions/BayesFunctionsF16.c
-      Source file:   Source/DistanceFunctions/DistanceFunctionsF16.c
-      Source file:   Source/MatrixFunctions/MatrixFunctionsF16.c
-      Source file:   Source/QuaternionMathFunctions/QuaternionMathFunctions.c
-      Source file:   Source/FastMathFunctions/FastMathFunctions.c
       Source file:   Source/CommonTables/CommonTables.c
-      Source file:   Source/FilteringFunctions/FilteringFunctions.c
-      Source file:   Source/StatisticsFunctions/StatisticsFunctionsF16.c
-      Source file:   Source/BasicMathFunctions/BasicMathFunctions.c
-      Source file:   Source/MatrixFunctions/MatrixFunctions.c
-      Source file:   Source/SupportFunctions/SupportFunctions.c
-      Source file:   Source/BayesFunctions/BayesFunctions.c
+      Source file:   Source/TransformFunctions/TransformFunctions.c
+      Source file:   Source/FastMathFunctions/FastMathFunctions.c
       Source file:   Source/StatisticsFunctions/StatisticsFunctions.c
       Source file:   Source/SVMFunctions/SVMFunctions.c
-      Source file:   Source/TransformFunctions/TransformFunctions.c
-      Source file:   Source/TransformFunctions/TransformFunctionsF16.c
-      Source file:   Source/InterpolationFunctions/InterpolationFunctions.c
-      Source file:   Source/BasicMathFunctions/BasicMathFunctionsF16.c
-      Source file:   Source/SupportFunctions/SupportFunctionsF16.c
+      Source file:   Source/StatisticsFunctions/StatisticsFunctionsF16.c
       Source file:   Source/FastMathFunctions/FastMathFunctionsF16.c
+      Source file:   Source/BayesFunctions/BayesFunctionsF16.c
       Source file:   Source/SVMFunctions/SVMFunctionsF16.c
-      Source file:   Source/InterpolationFunctions/InterpolationFunctionsF16.c
+      Source file:   Source/SupportFunctions/SupportFunctionsF16.c
+      Source file:   Source/FilteringFunctions/FilteringFunctionsF16.c
       Source file:   Source/CommonTables/CommonTablesF16.c
       Source file:   Source/ComplexMathFunctions/ComplexMathFunctionsF16.c
-Build Time Elapsed:  00:00:00
+      Source file:   Source/ComplexMathFunctions/ComplexMathFunctions.c
+      Source file:   Source/TransformFunctions/TransformFunctionsF16.c
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

@@ -56,7 +56,7 @@ void standup_STATE()
 			// printf("当前状态: 完成态\n");
 			if (CHASSIS.mode==CHASSIS_OFF_HOOK&&CHASSIS.last_mode!=CHASSIS_OFF_HOOK)
 			{
-				// printf("条件满足，左腿进入正常态");
+				// printf("  ");
 				StandUP_state_L = STATE_stretchleg;
 			}
 		break;

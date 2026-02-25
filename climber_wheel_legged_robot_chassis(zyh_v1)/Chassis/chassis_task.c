@@ -50,8 +50,6 @@ Calibrate_s CALIBRATE = {
 };
 int8_t TRANSITION_MATRIX[10] = {0};
 
-uint8_t Chassis_JumpFlag=0;
-uint16_t Chassis_JumpCount=0;
  void ChassisInit(void);
   void ChassisHandleException(void);
  void ChassisSetMode(void);
@@ -182,13 +180,16 @@ void chassis_task(void const * pvParamewwters)
 
 		
     // 初始化观测器 velocity  acceleration  二维卡尔曼滤波器
-    Kalman_Filter_Init(&OBSERVER.body.v_kf, 2, 0, 2);
-    float F[4] = {1, 0.005, 0, 1};//状态转移矩阵
+    Kalman_Filter_Init(&OBSERVER.body.v_kf, 2, 1, 2);
+    float F[4] = {1, 0.003, 0, 1};//状态转移矩阵
+    float B[2] = {0.003*0.003*0.5, 0.003};//输入矩阵
     float Q[4] = {VEL_PROCESS_NOISE, 0, 0, ACC_PROCESS_NOISE};//状态转移噪声
     float R[4] = {VEL_MEASURE_NOISE, 0, 0, ACC_MEASURE_NOISE};//测量噪声
     float P[4] = {100000, 0, 0, 100000};//协方差
     float H[4] = {1, 0, 0, 1};//观测矩阵
+    // 复制矩阵到滤波器
     memcpy(OBSERVER.body.v_kf.F_data, F, sizeof(F));
+    memcpy(OBSERVER.body.v_kf.B_data, B, sizeof(B));  // 设置控制矩阵
     memcpy(OBSERVER.body.v_kf.P_data, P, sizeof(P));
     memcpy(OBSERVER.body.v_kf.Q_data, Q, sizeof(Q));
     memcpy(OBSERVER.body.v_kf.R_data, R, sizeof(R));
@@ -499,7 +500,7 @@ void UpdateLegStatus(void)
 		    GetL0AndPhi0(CHASSIS.fdb.leg[i].joint.Phi1, CHASSIS.fdb.leg[i].joint.Phi4, L0_Phi0);
 		    //如果不考虑关节电机的phi1和phi4 那么L0 和  phi0的关系就是
         //屁股往前看               phi0都是  0-->>pi/2-->>pi
-        CHASSIS.fdb.leg[i].rod.L0 = L0_Phi0[0];
+        CHASSIS.fdb.leg[i].rod.L0 = L0_Phi0[0]  ;
         CHASSIS.fdb.leg[i].rod.Phi0 = L0_Phi0[1];
 		
 		    CHASSIS.fdb.leg[i].rod.Theta = M_PI_2 - CHASSIS.fdb.leg[i].rod.Phi0 - CHASSIS.fdb.body.phi;
@@ -565,14 +566,14 @@ void BodyMotionObserve(void)
 	   float speed = WHEEL_RADIUS * (CHASSIS.fdb.leg[0].wheel.Velocity + CHASSIS.fdb.leg[1].wheel.Velocity) / 2;
 
     // 加入卡曼滤波 
-	  // 使用kf同时估计加速度和速度,滤波更新
-      OBSERVER.body.v_kf.MeasuredVector[0] = speed;                   // 输入轮速线速度m/s
-      OBSERVER.body.v_kf.MeasuredVector[1] = CHASSIS.fdb.body.x_acc;  // 输入加速度    m/s^2
-      OBSERVER.body.v_kf.F_data[1] = CHASSIS.duration * MS_TO_S;      // 更新采样时间
+	  // 使用kf同时估计位移和速度,滤波更新
+      OBSERVER.body.v_kf.ControlVector[0] = CHASSIS.fdb.body.x_acc;
+      OBSERVER.body.v_kf.MeasuredVector[0] = CHASSIS.fdb.body.x;                   
+      OBSERVER.body.v_kf.MeasuredVector[1] = speed;  
 	
 	    Kalman_Filter_Update(&OBSERVER.body.v_kf);
-      CHASSIS.fdb.body.x_dot_obv = OBSERVER.body.v_kf.xhat_data[0];
-      CHASSIS.fdb.body.x_acc_obv = OBSERVER.body.v_kf.xhat_data[1];
+      CHASSIS.fdb.body.x_obv = OBSERVER.body.v_kf.xhat_data[0];//滤波后的位移
+      CHASSIS.fdb.body.x_dot_obv= OBSERVER.body.v_kf.xhat_data[1];//滤波后的速度
     
     // 不加入卡曼滤波
 //     CHASSIS.fdb.body.x_dot_obv = speed;
@@ -687,6 +688,7 @@ if (fabs(rc_wz_input) > 0.001f) {
     // 云台跟随模式
 #ifdef OPEN_CHASSIS_FOLLOW_GIMBAL
     float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
+		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
     float corrected_yaw_target = CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
     target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target);
 #else
