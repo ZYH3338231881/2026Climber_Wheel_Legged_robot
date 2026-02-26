@@ -18,6 +18,7 @@
 #include "CAN_receive.h"
 #include "bsp_rc.h"
 #include "computer_rec.h"
+#include "user_lib.h"
 #define CHASSIS_TASK_INIT_TIME 300
 #define CHASSIS_CONTROL_TIME_MS 3  //底盘控制周期3ms
 #define MS_TO_S 0.001f
@@ -177,14 +178,14 @@ void chassis_task(void const * pvParamewwters)
 	  LowPassFilterInit(&CHASSIS.lpf.R_theta, R_LEG_THETA_ALPHA);//腿theta误差值滤波
 		
 	  LowPassFilterInit(&CHASSIS.lpf.VX_filter, 0.9);//键鼠速度滤波
+    // 初始化加速度低通滤波器
+    LowPassFilterInit(&CHASSIS.lpf.x_acc_lpf, 0.95);//可根据需要调整alpha值
 
-		
-    // 初始化观测器 velocity  acceleration  二维卡尔曼滤波器
     Kalman_Filter_Init(&OBSERVER.body.v_kf, 2, 1, 2);
     float F[4] = {1, 0.003, 0, 1};//状态转移矩阵
     float B[2] = {0.003*0.003*0.5, 0.003};//输入矩阵
-    float Q[4] = {VEL_PROCESS_NOISE, 0, 0, ACC_PROCESS_NOISE};//状态转移噪声
-    float R[4] = {VEL_MEASURE_NOISE, 0, 0, ACC_MEASURE_NOISE};//测量噪声
+  float Q[4] = {0.1, 0, 0, 0.5};   // 位置过程噪声0.1，速度过程噪声0.5
+  float R[4] = {0.5, 0, 0, 10.0};  // 位置测量噪声0.5，速度测量噪声10.0
     float P[4] = {100000, 0, 0, 100000};//协方差
     float H[4] = {1, 0, 0, 1};//观测矩阵
     // 复制矩阵到滤波器
@@ -564,22 +565,22 @@ void UpdateLegStatus(void)
 void BodyMotionObserve(void)
 {
 	   float speed = WHEEL_RADIUS * (CHASSIS.fdb.leg[0].wheel.Velocity + CHASSIS.fdb.leg[1].wheel.Velocity) / 2;
+      CHASSIS.fdb.body.x_dot= speed;//原始速度
 
-    // 加入卡曼滤波 
-	  // 使用kf同时估计位移和速度,滤波更新
-      OBSERVER.body.v_kf.ControlVector[0] = CHASSIS.fdb.body.x_acc;
+      // 对加速度进行低通滤波
+      float filtered_acc = LowPassFilterCalc(&CHASSIS.lpf.x_acc_lpf, CHASSIS.fdb.body.x_acc);
+      OBSERVER.body.v_kf.ControlVector[0] = filtered_acc;
       OBSERVER.body.v_kf.MeasuredVector[0] = CHASSIS.fdb.body.x;                   
       OBSERVER.body.v_kf.MeasuredVector[1] = speed;  
 	
 	    Kalman_Filter_Update(&OBSERVER.body.v_kf);
-      CHASSIS.fdb.body.x_obv = OBSERVER.body.v_kf.xhat_data[0];//滤波后的位移
-      CHASSIS.fdb.body.x_dot_obv= OBSERVER.body.v_kf.xhat_data[1];//滤波后的速度
+//      CHASSIS.fdb.body.x_obv = OBSERVER.body.v_kf.xhat_data[0];//滤波后的位移
+//      CHASSIS.fdb.body.x_dot_obv= OBSERVER.body.v_kf.xhat_data[1];//滤波后的速度
     
     // 不加入卡曼滤波
-//     CHASSIS.fdb.body.x_dot_obv = speed;
-//     CHASSIS.fdb.body.x_acc_obv = CHASSIS.fdb.body.x_acc;
+     CHASSIS.fdb.body.x_dot_obv = speed;
+     CHASSIS.fdb.body.x_acc_obv = CHASSIS.fdb.body.x_acc;
 	
-      // 当目标速度为0，且速度设定小于阈值时，计算反馈距离,用于抑制车子静态位移
     if (fabs(CHASSIS.ref.speed_vector.vx) < WHEEL_DEADZONE) 
 		{
         CHASSIS.fdb.body.x += CHASSIS.fdb.body.x_dot_obv * CHASSIS.duration * MS_TO_S;
@@ -652,7 +653,10 @@ if (CHASSIS.mode == CHASSIS_FREE) {
  * @retval         none
  */
  float length = 0.135;//正常腿长
+ ChassisSpeedVector_t target_v_set = {0.0f, 0.0f, 0.0f};
 
+float vx_ramp_rate = 6.5f; // 每秒增加6.5m/s
+float current_set_vx = 0.0f;//当前设置的速度
  void ChassisReference(void)
  {
 	  int16_t rc_x = 0, rc_wz = 0;
@@ -663,16 +667,21 @@ if (CHASSIS.mode == CHASSIS_FREE) {
     rc_deadband_limit(CHASSIS.rc->ch4, rc_length, CHASSIS_RC_DEADLINE);
 //  rc_deadband_limit(CHASSIS.rc->ch3, rc_pitch, CHASSIS_RC_PITCH_DEADLINE);
 	 
-	
     // 计算速度向量
-    ChassisSpeedVector_t v_set = {0.0f, 0.0f, 0.0f};
-		ComputerSpeedVector_t computer_v_set={0.0f, 0.0f, 0.0f};
-
-	  v_set.vx = rc_x * RC_TO_ONE * MAX_SPEED_VECTOR_VX;
-		v_set.vx +=keyboard_data.Remote_Key_W*2.5;
-		v_set.vx -=keyboard_data.Remote_Key_S*1.2;
-		LowPassFilterCalc(&CHASSIS.lpf.VX_filter,v_set.vx);
-		v_set.vx=CHASSIS.lpf.VX_filter.out;
+	  target_v_set.vx = rc_x * RC_TO_ONE * MAX_SPEED_VECTOR_VX;
+		target_v_set.vx +=keyboard_data.Remote_Key_W*2.5;
+		target_v_set.vx -=keyboard_data.Remote_Key_S*2.5;
+    if (target_v_set.vx > current_set_vx) {
+    current_set_vx += vx_ramp_rate * CHASSIS.duration * MS_TO_S;
+    if (current_set_vx > target_v_set.vx) {
+        current_set_vx = target_v_set.vx;
+    }
+} else if (target_v_set.vx < current_set_vx) {
+    current_set_vx -= vx_ramp_rate * CHASSIS.duration * MS_TO_S;
+    if (current_set_vx < target_v_set.vx) {
+        current_set_vx = target_v_set.vx;
+    }
+}
 
 // 在ChassisReference函数中
 static float wz_smooth = 0.0f;  // 平滑后的角速度
@@ -695,10 +704,9 @@ if (fabs(rc_wz_input) > 0.001f) {
     target_wz = -rc_wz*RC_TO_ONE*MAX_SPEED_VECTOR_WZ;
 #endif
 }
-
 // 平滑过渡
 wz_smooth = wz_smooth * (1.0f - smooth_factor) + target_wz * smooth_factor;
-v_set.wz = wz_smooth;
+target_v_set.wz = wz_smooth;
 
 
 
@@ -707,9 +715,9 @@ v_set.wz = wz_smooth;
 		
 		switch (CHASSIS.mode) {
         case CHASSIS_FREE: {  // 底盘自由模式下，控制量为底盘坐标系下的速度
-            CHASSIS.ref.speed_vector.vx = v_set.vx;
+            CHASSIS.ref.speed_vector.vx = current_set_vx;
             CHASSIS.ref.speed_vector.vy = 0;
-            CHASSIS.ref.speed_vector.wz = v_set.wz;
+            CHASSIS.ref.speed_vector.wz = target_v_set.wz;
             break;
         }
 				case CHASSIS_OFF_HOOK:
@@ -735,11 +743,9 @@ v_set.wz = wz_smooth;
         CHASSIS.ref.leg_state[i].phi_dot   =  0;
     }
 		 // 腿部控制
-    static float angle = M_PI_2;
     switch (CHASSIS.mode) {
 				case CHASSIS_OFF_HOOK:
         case CHASSIS_FREE: {
-					       angle = M_PI_2;
 				         length=length-rc_length*RC_TO_ONE*0.001f;
 					  if (CHASSIS.step == JUMP_STEP_SQUST) 
             {
@@ -760,22 +766,14 @@ v_set.wz = wz_smooth;
 						
         } break;
         default: {
-            angle = M_PI_2; 
             length = 0.14f;
         }
     }
     length = fp32_constrain(length, MIN_LEG_LENGTH, MAX_LEG_LENGTH);
-    angle = fp32_constrain(angle, MIN_LEG_ANGLE, MAX_LEG_ANGLE);
 		
 
 		 CHASSIS.ref.rod_L0[0] = length;
      CHASSIS.ref.rod_L0[1] = length;
-
-		
-
-		
-    CHASSIS.ref.rod_Angle[0] = angle;//代表摆角的含义
-    CHASSIS.ref.rod_Angle[1] = angle;
 
     CHASSIS.ref.body.pitch = fp32_constrain(-rc_pitch * RC_TO_ONE * MAX_PITCH, MIN_PITCH, MAX_PITCH);
  }
@@ -1033,6 +1031,12 @@ static void LegTorqueController(void)
 								F_leg = PID_calc(&CHASSIS.pid.leg_length_length[i], CHASSIS.fdb.leg[i].rod.L0,CHASSIS.ref.rod_L0[i]);
 								CHASSIS.cmd.leg[i].rod.F =F0+F_leg- CHASSIS.fdb.leg[i].rod.F_spring; 
 							}
+							else if(CHASSIS.fdb.leg[0].is_take_off&&CHASSIS.fdb.leg[0].is_take_off)
+							{
+								F0=0;
+								F_leg = PID_calc(&CHASSIS.pid.leg_length_length[i], CHASSIS.fdb.leg[i].rod.L0,0.23);
+								CHASSIS.cmd.leg[i].rod.F = F0 + F_leg- CHASSIS.fdb.leg[i].rod.F_spring; 
+							}
 							else
 							{				
 								F0 =BODY_MASS_FN;
@@ -1044,12 +1048,18 @@ static void LegTorqueController(void)
 					PID_calc(&CHASSIS.pid.pitch_angle,CHASSIS.fdb.body.pitch,CHASSIS.ref.body.pitch);//右边抬起是pitch增大
 					if(CHASSIS.fdb.leg[0].is_take_off)
 		      {
-			    CHASSIS.pid.pitch_angle.out=0;
+						CHASSIS.pid.pitch_angle.out=0;
 		      }
 					if(CHASSIS.fdb.leg[1].is_take_off)
 		      {
-			    CHASSIS.pid.pitch_angle.out=0;
+						CHASSIS.pid.pitch_angle.out=0;
 		      }
+
+					
+					if(CHASSIS.fdb.leg[0].is_take_off&&CHASSIS.fdb.leg[1].is_take_off)
+					{
+						
+					}
 					CHASSIS.cmd.leg[0].rod.F-=CHASSIS.pid.pitch_angle.out;
 					CHASSIS.cmd.leg[1].rod.F+=CHASSIS.pid.pitch_angle.out;
 					

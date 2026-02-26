@@ -27,24 +27,89 @@ Project File Date:  02/23/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target 'climber_wheel_legged_robot_chassis'
+compiling State_chexk_task.c...
+..\Chassis\State_chexk_task.c(9): warning:  #1295-D: Deprecated declaration standup_STATE - give arg types
+  extern void standup_STATE();//腿部姿态调整
+..\Chassis\State_chexk_task.c(48): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  			if ((fabs(CHASSIS.fdb.leg[0].rod.Phi0-0.5)<0.1f))
+..\Chassis\State_chexk_task.c(73): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          if (CHASSIS.fdb.leg[1].rod.L0 > 0.28) 
+..\Chassis\State_chexk_task.c(82): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          if ((fabs(CHASSIS.fdb.leg[1].rod.Phi0 - 0.5) < 0.1))
+..\Chassis\State_chexk_task.c: 4 warnings, 0 errors
+compiling computer_rec.c...
+..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\computer_rec.c: 1 warning, 0 errors
+compiling bsp_can.c...
+..\BSP\bsp_can.c(162): warning:  #223-D: function "DmFdbData" declared implicitly
+  		   DmFdbData(&CAN1_DM_MEASURE[0],rx_data1);  //左前电机
+..\BSP\bsp_can.c(166): warning:  #223-D: function "DmFdbData" declared implicitly
+  		   DmFdbData(&CAN1_DM_MEASURE[1],rx_data1);  //左后电机
+..\BSP\bsp_can.c(170): warning:  #223-D: function "DmFdbData" declared implicitly
+  		   DmFdbData(&CAN1_DM_MEASURE[2],rx_data1);  //右前电机
+..\BSP\bsp_can.c(174): warning:  #223-D: function "DmFdbData" declared implicitly
+  		   DmFdbData(&CAN1_DM_MEASURE[3],rx_data1);  //右后电机
+..\BSP\bsp_can.c(153): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint8_t len;
+..\BSP\bsp_can.c(196): warning:  #223-D: function "DjiFdbData" declared implicitly
+  			 DjiFdbData(&CAN2_DJI_MEASURE[0], rx_data2);
+..\BSP\bsp_can.c(200): warning:  #223-D: function "DjiFdbData" declared implicitly
+    		 DjiFdbData(&CAN2_DJI_MEASURE[1], rx_data2);
+..\BSP\bsp_can.c(186): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint8_t len;
+..\BSP\bsp_can.c(213): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint8_t len;
+..\BSP\bsp_can.c: 9 warnings, 0 errors
+compiling chassis_balance_extra.c...
+..\Chassis\chassis_balance_extra.c(136): warning:  #550-D: variable "sin_theta3"  was set but never used
+  	float cos_theta3,sin_theta3,theta3,s3,alpha_s;
+..\Chassis\chassis_balance_extra.c(221): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      return WHEEL_BASE * tanf(theta1) -cosf(theta0) / cosf(theta1) * (WHEEL_BASE * tanf(theta0) - Ld0);
+..\Chassis\chassis_balance_extra.c(221): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      return WHEEL_BASE * tanf(theta1) -cosf(theta0) / cosf(theta1) * (WHEEL_BASE * tanf(theta0) - Ld0);
+..\Chassis\chassis_balance_extra.c: 3 warnings, 0 errors
+compiling main.c...
+../Chassis/computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/main.c: 1 warning, 0 errors
+compiling judge_paint_task.c...
+../Chassis/computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Judge\ui_frame1.h(28): warning:  #1295-D: Deprecated declaration ui_init_frame1_Ungroup - give arg types
+  void ui_init_frame1_Ungroup();
+..\Judge\ui_frame1.h(29): warning:  #1295-D: Deprecated declaration ui_update_frame1_Ungroup - give arg types
+  void ui_update_frame1_Ungroup();
+..\Judge\ui_frame1.h(30): warning:  #1295-D: Deprecated declaration ui_remove_frame1_Ungroup - give arg types
+  void ui_remove_frame1_Ungroup();
+..\Judge\ui.h(18): warning:  #1295-D: Deprecated declaration ui_init_frame1_Ungroup - give arg types
+  void ui_init_frame1_Ungroup();
+..\Judge\ui.h(19): warning:  #1295-D: Deprecated declaration ui_update_frame1_Ungroup - give arg types
+  void ui_update_frame1_Ungroup();
+..\Judge\ui.h(20): warning:  #1295-D: Deprecated declaration ui_remove_frame1_Ungroup - give arg types
+  void ui_remove_frame1_Ungroup();
+..\Judge\judge_paint_task.c: 7 warnings, 0 errors
+compiling freertos.c...
+compiling IMU_task.c...
+..\IMU\IMU_task.c(72): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  					  gyro[0]-=0.00280696363;   //减去陀螺仪0飘
+..\IMU\IMU_task.c: 1 warning, 0 errors
 compiling chassis_task.c...
 ..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
   #endif
-..\Chassis\chassis_task.c(691): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\Chassis\chassis_task.c(700): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
-..\Chassis\chassis_task.c(691): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\Chassis\chassis_task.c(700): warning:  #1035-D: single-precision operand implicitly converted to double-precision
   		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
-..\Chassis\chassis_task.c(659): warning:  #177-D: variable "rc_angle"  was declared but never referenced
+..\Chassis\chassis_task.c(663): warning:  #177-D: variable "rc_angle"  was declared but never referenced
       int16_t rc_length = 0, rc_angle = 0;
-..\Chassis\chassis_task.c(669): warning:  #177-D: variable "computer_v_set"  was declared but never referenced
-  		ComputerSpeedVector_t computer_v_set={0.0f, 0.0f, 0.0f};
-..\Chassis\chassis_task.c(785): warning:  #177-D: function "ConsoleStandUp"  was declared but never referenced
+..\Chassis\chassis_task.c(783): warning:  #177-D: function "ConsoleStandUp"  was declared but never referenced
   static void ConsoleStandUp(void);//起立控制
-..\Chassis\chassis_task.c: 6 warnings, 0 errors
+..\Chassis\chassis_task.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=70272 RO-data=4992 RW-data=2952 ZI-data=23832  
+Program Size: Code=70392 RO-data=4992 RW-data=2964 ZI-data=23844  
 FromELF: creating hex file...
-"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 6 Warning(s).
+"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 31 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -78,41 +143,41 @@ Package Vendor: Keil
       Include file:  CMSIS/Core/Include/tz_context.h
 
    * Component: ARM::CMSIS:DSP&Source@1.15.0
-      Include file:  Include/arm_math.h
-      Include file:  Include/arm_math_f16.h
-      Include file:  Include/arm_common_tables.h
-      Include file:  Include/arm_common_tables_f16.h
-      Include file:  Include/arm_const_structs.h
-      Include file:  Include/arm_const_structs_f16.h
-      Source file:   Source/BasicMathFunctions/BasicMathFunctionsF16.c
-      Source file:   Source/BasicMathFunctions/BasicMathFunctions.c
-      Source file:   Source/FilteringFunctions/FilteringFunctions.c
-      Source file:   Source/DistanceFunctions/DistanceFunctionsF16.c
-      Source file:   Source/SupportFunctions/SupportFunctions.c
-      Source file:   Source/InterpolationFunctions/InterpolationFunctions.c
-      Source file:   Source/QuaternionMathFunctions/QuaternionMathFunctions.c
-      Source file:   Source/MatrixFunctions/MatrixFunctionsF16.c
-      Source file:   Source/MatrixFunctions/MatrixFunctions.c
-      Source file:   Source/InterpolationFunctions/InterpolationFunctionsF16.c
-      Source file:   Source/BayesFunctions/BayesFunctions.c
-      Source file:   Source/ControllerFunctions/ControllerFunctions.c
-      Source file:   Source/DistanceFunctions/DistanceFunctions.c
-      Source file:   Source/CommonTables/CommonTables.c
-      Source file:   Source/TransformFunctions/TransformFunctions.c
-      Source file:   Source/FastMathFunctions/FastMathFunctions.c
-      Source file:   Source/StatisticsFunctions/StatisticsFunctions.c
       Source file:   Source/SVMFunctions/SVMFunctions.c
-      Source file:   Source/StatisticsFunctions/StatisticsFunctionsF16.c
-      Source file:   Source/FastMathFunctions/FastMathFunctionsF16.c
-      Source file:   Source/BayesFunctions/BayesFunctionsF16.c
-      Source file:   Source/SVMFunctions/SVMFunctionsF16.c
-      Source file:   Source/SupportFunctions/SupportFunctionsF16.c
-      Source file:   Source/FilteringFunctions/FilteringFunctionsF16.c
-      Source file:   Source/CommonTables/CommonTablesF16.c
-      Source file:   Source/ComplexMathFunctions/ComplexMathFunctionsF16.c
+      Source file:   Source/BayesFunctions/BayesFunctions.c
+      Source file:   Source/InterpolationFunctions/InterpolationFunctions.c
+      Source file:   Source/BasicMathFunctions/BasicMathFunctionsF16.c
+      Source file:   Source/DistanceFunctions/DistanceFunctions.c
+      Source file:   Source/FilteringFunctions/FilteringFunctions.c
+      Source file:   Source/TransformFunctions/TransformFunctions.c
+      Include file:  Include/arm_const_structs.h
+      Source file:   Source/CommonTables/CommonTables.c
+      Include file:  Include/arm_math.h
+      Include file:  Include/arm_common_tables.h
+      Source file:   Source/BasicMathFunctions/BasicMathFunctions.c
+      Include file:  Include/arm_common_tables_f16.h
       Source file:   Source/ComplexMathFunctions/ComplexMathFunctions.c
+      Source file:   Source/ControllerFunctions/ControllerFunctions.c
+      Source file:   Source/FastMathFunctions/FastMathFunctions.c
+      Include file:  Include/arm_const_structs_f16.h
+      Source file:   Source/QuaternionMathFunctions/QuaternionMathFunctions.c
+      Include file:  Include/arm_math_f16.h
+      Source file:   Source/MatrixFunctions/MatrixFunctions.c
+      Source file:   Source/StatisticsFunctions/StatisticsFunctions.c
+      Source file:   Source/SupportFunctions/SupportFunctions.c
+      Source file:   Source/SupportFunctions/SupportFunctionsF16.c
+      Source file:   Source/MatrixFunctions/MatrixFunctionsF16.c
+      Source file:   Source/CommonTables/CommonTablesF16.c
+      Source file:   Source/InterpolationFunctions/InterpolationFunctionsF16.c
+      Source file:   Source/DistanceFunctions/DistanceFunctionsF16.c
+      Source file:   Source/ComplexMathFunctions/ComplexMathFunctionsF16.c
+      Source file:   Source/FastMathFunctions/FastMathFunctionsF16.c
+      Source file:   Source/FilteringFunctions/FilteringFunctionsF16.c
+      Source file:   Source/BayesFunctions/BayesFunctionsF16.c
+      Source file:   Source/StatisticsFunctions/StatisticsFunctionsF16.c
       Source file:   Source/TransformFunctions/TransformFunctionsF16.c
-Build Time Elapsed:  00:00:04
+      Source file:   Source/SVMFunctions/SVMFunctionsF16.c
+Build Time Elapsed:  00:00:07
 </pre>
 </body>
 </html>

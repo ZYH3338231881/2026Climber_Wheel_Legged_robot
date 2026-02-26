@@ -1,0 +1,19 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'climber_wheel_legged_robot_chassis'
+compiling chassis_task.c...
+..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\chassis_task.c(700): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
+..\Chassis\chassis_task.c(700): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
+..\Chassis\chassis_task.c(663): warning:  #177-D: variable "rc_angle"  was declared but never referenced
+      int16_t rc_length = 0, rc_angle = 0;
+..\Chassis\chassis_task.c(783): warning:  #177-D: function "ConsoleStandUp"  was declared but never referenced
+  static void ConsoleStandUp(void);//ÆðÁ¢¿ØÖÆ
+..\Chassis\chassis_task.c: 5 warnings, 0 errors
+linking...
+Program Size: Code=70400 RO-data=4992 RW-data=2964 ZI-data=23844  
+FromELF: creating hex file...
+"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 5 Warning(s).
+Build Time Elapsed:  00:00:04

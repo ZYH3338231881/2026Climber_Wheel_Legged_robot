@@ -171,7 +171,7 @@ void GimbalConsole(void)
 	  gimbal_direct.reference.pitch=fp32_constrain(gimbal_direct.reference.pitch,gimbal_direct.lower_limit.pitch,gimbal_direct.upper_limit.pitch);
 		gimbal_direct.reference.yaw-=gimbal_direct.rc->rc.ch[0]*0.00002;
 		  /*              Êó±êyawÒ»½×µÍÍ¨ÂË²¨		  */
-		  LowPassFilterCalc(&Mouse_yaw_Filter,keyboard_data.Remote_Mouse_RL*0.00006);
+		  LowPassFilterCalc(&Mouse_yaw_Filter,keyboard_data.Remote_Mouse_RL*0.00008);
 	    gimbal_direct.reference.yaw-=Mouse_yaw_Filter.out;
       /*              SMC»¬Ä¤¿ØÖÆ              */
 		  float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);

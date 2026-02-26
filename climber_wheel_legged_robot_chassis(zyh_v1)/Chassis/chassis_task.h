@@ -104,6 +104,8 @@
 #define MAX_IOUT_CHASSIS_STAND_UP (0)
 #define MAX_OUT_CHASSIS_STAND_UP  (270)
 
+
+
 // 磨轮子用的pid
 #define KP_CHASSIS_WHEEL      (0)
 #define KI_CHASSIS_WHEEL       (0)
@@ -123,7 +125,7 @@
 #define KI_CHASSIS_FOLLOW_GIMBAL       (0)
 #define KD_CHASSIS_FOLLOW_GIMBAL       (10)
 #define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
-#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (4)
+#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (5)
 
 
 //防劈叉PID
@@ -176,12 +178,9 @@
 #define Leg_back_stop_time 300 // ms   起立向后摔腿停止时间
 #define Leg_back_stop_velocity 0.05f
 
-#define VEL_PROCESS_NOISE 25   // 速度过程噪声
-#define VEL_MEASURE_NOISE 800  // 速度测量噪声
 // 同时估计加速度和速度时对加速度的噪声
 // 更好的方法是设置为动态,当有冲击时/加加速度大时更相信轮速
-#define ACC_PROCESS_NOISE 2000  // 加速度过程噪声
-#define ACC_MEASURE_NOISE 0.01  // 加速度测量噪声
+
 
 #define STAND_UP_KP (4) // 起立收腿MIT_KP
 #define STAND_UP_KD (0.8)  // 起立收腿MIT_KD
@@ -200,7 +199,7 @@
 //#define BODY_MASS            (13.0f)      // (kg)机身重量   
 
 #define WHEEL_MASS           (0.5f)      // (kg)轮子重量  
-#define WHEEL_RADIUS         (0.09f)    // (m)轮子半径     
+#define WHEEL_RADIUS         (0.06f)    // (m)轮子半径     
 #define WHEEL_START_TORQUE   (0.3f)      // (Nm)轮子起动力矩  //待考量  
 #define WHEEL_BASE           (0.42)  // (m)驱动轮轴距  
 
@@ -410,7 +409,7 @@ typedef struct LPF
 	  LowPassFilter_t R_theta;//摆杆与竖直方向夹角滤波
 	  LowPassFilter_t VX_filter;//键鼠信号阶跃滤波
 	
-
+    LowPassFilter_t x_acc_lpf;//位移加速度低通滤波
 
 } LPF_t;
 

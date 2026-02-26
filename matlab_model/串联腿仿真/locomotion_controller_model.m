@@ -49,13 +49,13 @@ for step=1:length(L0s)
     %G系统矩阵  H空间矩阵
 
      Q_theta     = 4000;
-     Q_theta_dot = 200;%防止腿部关节过冲
-     Q_x         = 500;
-     Q_x_dot     = 50;
-     Q_phi       = 50000;
+     Q_theta_dot = 150;%防止腿部关节过冲
+     Q_x         = 400;
+     Q_x_dot     = 1000;
+     Q_phi       = 80000;
      Q_phi_dot   = 10;
      Q=diag([Q_theta Q_theta_dot Q_x Q_x_dot Q_phi Q_phi_dot]);
-     R=diag([150 5]);  
+     R=diag([300 12]);  
 
      %步兵较软参数 起立参数
      % Q_theta     = 500;
