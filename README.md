@@ -65,7 +65,7 @@
 2/28： 1.处理小陀螺情况下，切换会导致翻车问题
        2.增加键鼠快速修正问题（效果不好需要优化）
 
-2/29： 加入底盘跟随前馈，
+2/29： 加入底盘跟随前馈， 
 ## 项目结构
 - `climber_wheel_legged_robot_chassis`: 底盘控制相关代码
 - `climber_wheel_legged_robot_gimbal`: 云台控制相关代码
