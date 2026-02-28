@@ -30,6 +30,9 @@ void Keyboard_DataProcess(Keyboard_Data *keyboard,RC_ctrl_t *rc_ctrl)
 	keyboard->Remote_Key_W=rc_ctrl->key.v&0x0001;//前进
 	keyboard->Remote_Key_S=(rc_ctrl->key.v>>1)&0x0001;//后退
 	keyboard->Remote_Key_B=(rc_ctrl->key.v>>15)&0x0001; //跳跃
+	keyboard->Remote_Key_Ctrl=(rc_ctrl->key.v>>5)&0X0001;//CTRL
+  keyboard->Remote_Key_Shift=(rc_ctrl->key.v>>4)&0X0001;//SHIFT
+	keyboard->Remote_Key_R=(rc_ctrl->key.v>>8)&0x0001;//R
 
 	keyboard->Remote_Mouse_KeyL=rc_ctrl->mouse.press_l&0x0001;//手动射击
 	keyboard->Remote_Mouse_KeyR=rc_ctrl->mouse.press_r&0x0001;//自瞄射击开火

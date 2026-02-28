@@ -3,7 +3,7 @@
 <title>Static Call Graph - [climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Feb 26 17:10:02 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Feb 28 16:41:24 2026
 <BR><P>
 <H3>Maximum Stack Usage =        352 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -946,7 +946,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[e3]"></a>ChassisHandleException</STRONG> (Thumb, 118 bytes, Stack size 8 bytes, chassis_task.o(i.ChassisHandleException))
+<P><STRONG><a name="[e3]"></a>ChassisHandleException</STRONG> (Thumb, 124 bytes, Stack size 8 bytes, chassis_task.o(i.ChassisHandleException))
 <BR><BR>[Stack]<UL><LI>Max Depth = 92<LI>Call Chain = ChassisHandleException &rArr; DmEnable &rArr; EnableMotorMode &rArr; canx_send_data &rArr; HAL_FDCAN_AddMessageToTxFifoQ &rArr; FDCAN_CopyMessageToRAM
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
@@ -986,8 +986,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[f5]"></a>ChassisReference</STRONG> (Thumb, 608 bytes, Stack size 40 bytes, chassis_task.o(i.ChassisReference))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = ChassisReference
+<P><STRONG><a name="[f5]"></a>ChassisReference</STRONG> (Thumb, 860 bytes, Stack size 48 bytes, chassis_task.o(i.ChassisReference))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = ChassisReference
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_difference
@@ -1005,7 +1005,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
 </UL>
 
-<P><STRONG><a name="[20c]"></a>ChassisSetMode</STRONG> (Thumb, 172 bytes, Stack size 16 bytes, chassis_task.o(i.ChassisSetMode))
+<P><STRONG><a name="[20c]"></a>ChassisSetMode</STRONG> (Thumb, 180 bytes, Stack size 16 bytes, chassis_task.o(i.ChassisSetMode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = ChassisSetMode
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task
@@ -2225,7 +2225,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Kalman_Filter_Update
 </UL>
 
-<P><STRONG><a name="[22a]"></a>Keyboard_DataProcess</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, bsp_rc.o(i.Keyboard_DataProcess))
+<P><STRONG><a name="[22a]"></a>Keyboard_DataProcess</STRONG> (Thumb, 74 bytes, Stack size 0 bytes, bsp_rc.o(i.Keyboard_DataProcess))
 <BR><BR>[Called By]<UL><LI><a href="#[17b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sbus_frame_parse
 </UL>
 

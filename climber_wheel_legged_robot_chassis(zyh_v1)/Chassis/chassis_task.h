@@ -121,7 +121,7 @@
 //#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (3)
 
 // 云台跟随用的pid角度环
-#define KP_CHASSIS_FOLLOW_GIMBAL       (10)
+#define KP_CHASSIS_FOLLOW_GIMBAL       (8)
 #define KI_CHASSIS_FOLLOW_GIMBAL       (0)
 #define KD_CHASSIS_FOLLOW_GIMBAL       (10)
 #define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
