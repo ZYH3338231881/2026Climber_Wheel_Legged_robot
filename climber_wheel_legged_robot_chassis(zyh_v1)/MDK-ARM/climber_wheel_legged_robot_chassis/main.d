@@ -87,3 +87,4 @@ climber_wheel_legged_robot_chassis\main.o: ../DSP/Include/dsp/utils.h
 climber_wheel_legged_robot_chassis\main.o: ../DSP/Include/dsp/fast_math_functions.h
 climber_wheel_legged_robot_chassis\main.o: ../DSP/Include/dsp/basic_math_functions.h
 climber_wheel_legged_robot_chassis\main.o: ../Chassis/computer_rec.h
+climber_wheel_legged_robot_chassis\main.o: ../Chassis/TOF_distance.h

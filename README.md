@@ -68,6 +68,8 @@
        2.增加键鼠快速修正问题（效果不好需要优化）
 
 2/29： 加入底盘跟随前馈， 
+
+3.3： 取得重大进展，matlab中融入了增量式mpc控制，仿真中十分有效的解决了，徒增速度导致的翻车问题，证明增量式MPC确实在某一程度上可以增加车子的鲁棒性。
 ## 项目结构
 - `climber_wheel_legged_robot_chassis`: 底盘控制相关代码
 - `climber_wheel_legged_robot_gimbal`: 云台控制相关代码

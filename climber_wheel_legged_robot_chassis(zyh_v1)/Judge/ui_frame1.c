@@ -4,31 +4,34 @@
 //
 
 #include <string.h>
-
+#include "chassis_task.h"
 #include "ui_interface.h"
+extern Chassis_s CHASSIS ;
 
-ui_5_frame_t ui_frame1_Ungroup_0;
+ui_7_frame_t ui_frame1_Ungroup_0;
 
 ui_interface_rect_t *ui_frame1_Ungroup_Aim_range = (ui_interface_rect_t*)&(ui_frame1_Ungroup_0.data[0]);
 ui_interface_line_t *ui_frame1_Ungroup_JUMP2 = (ui_interface_line_t*)&(ui_frame1_Ungroup_0.data[1]);
-ui_interface_line_t *ui_frame1_Ungroup_JUMP0 = (ui_interface_line_t*)&(ui_frame1_Ungroup_0.data[2]);
-ui_interface_line_t *ui_frame1_Ungroup_JUMP1 = (ui_interface_line_t*)&(ui_frame1_Ungroup_0.data[3]);
-ui_interface_ellipse_t *ui_frame1_Ungroup_NewEllipse = (ui_interface_ellipse_t*)&(ui_frame1_Ungroup_0.data[4]);
+ui_interface_number_t *ui_frame1_Ungroup_velFloat = (ui_interface_number_t*)&(ui_frame1_Ungroup_0.data[2]);
+ui_interface_number_t *ui_frame1_Ungroup_goryFloat = (ui_interface_number_t*)&(ui_frame1_Ungroup_0.data[3]);
+ui_interface_line_t *ui_frame1_Ungroup_JUMP0 = (ui_interface_line_t*)&(ui_frame1_Ungroup_0.data[4]);
+ui_interface_line_t *ui_frame1_Ungroup_JUMP1 = (ui_interface_line_t*)&(ui_frame1_Ungroup_0.data[5]);
+ui_interface_ellipse_t *ui_frame1_Ungroup_NewEllipse = (ui_interface_ellipse_t*)&(ui_frame1_Ungroup_0.data[6]);
 
 void _ui_init_frame1_Ungroup_0() {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 7; i++) {
         ui_frame1_Ungroup_0.data[i].figure_name[0] = 1;
         ui_frame1_Ungroup_0.data[i].figure_name[1] = 0;
         ui_frame1_Ungroup_0.data[i].figure_name[2] = i + 0;
         ui_frame1_Ungroup_0.data[i].operate_type = 1;
     }
-    for (int i = 5; i < 5; i++) {
+    for (int i = 7; i < 7; i++) {
         ui_frame1_Ungroup_0.data[i].operate_type = 0;
     }
 
     ui_frame1_Ungroup_Aim_range->figure_type = 1;
     ui_frame1_Ungroup_Aim_range->operate_type = 1;
-    ui_frame1_Ungroup_Aim_range->layer = 1;
+    ui_frame1_Ungroup_Aim_range->layer = 0;
     ui_frame1_Ungroup_Aim_range->color = 4;
     ui_frame1_Ungroup_Aim_range->start_x = 551;
     ui_frame1_Ungroup_Aim_range->start_y = 267;
@@ -45,6 +48,26 @@ void _ui_init_frame1_Ungroup_0() {
     ui_frame1_Ungroup_JUMP2->width = 6;
     ui_frame1_Ungroup_JUMP2->end_x = 1201;
     ui_frame1_Ungroup_JUMP2->end_y = 404;
+
+    ui_frame1_Ungroup_velFloat->figure_type = 5;
+    ui_frame1_Ungroup_velFloat->operate_type = 1;
+    ui_frame1_Ungroup_velFloat->layer = 0;
+    ui_frame1_Ungroup_velFloat->color = 0;
+    ui_frame1_Ungroup_velFloat->start_x = 118;
+    ui_frame1_Ungroup_velFloat->start_y = 658;
+    ui_frame1_Ungroup_velFloat->width = 2;
+    ui_frame1_Ungroup_velFloat->font_size = 20;
+    ui_frame1_Ungroup_velFloat->number = 12345;
+
+    ui_frame1_Ungroup_goryFloat->figure_type = 5;
+    ui_frame1_Ungroup_goryFloat->operate_type = 1;
+    ui_frame1_Ungroup_goryFloat->layer = 0;
+    ui_frame1_Ungroup_goryFloat->color = 0;
+    ui_frame1_Ungroup_goryFloat->start_x = 118;
+    ui_frame1_Ungroup_goryFloat->start_y = 622;
+    ui_frame1_Ungroup_goryFloat->width = 2;
+    ui_frame1_Ungroup_goryFloat->font_size = 20;
+    ui_frame1_Ungroup_goryFloat->number = 12345;
 
     ui_frame1_Ungroup_JUMP0->figure_type = 0;
     ui_frame1_Ungroup_JUMP0->operate_type = 1;
@@ -77,25 +100,34 @@ void _ui_init_frame1_Ungroup_0() {
     ui_frame1_Ungroup_NewEllipse->ry = 76;
 
 
-    ui_proc_5_frame(&ui_frame1_Ungroup_0);
+    ui_proc_7_frame(&ui_frame1_Ungroup_0);
     SEND_MESSAGE((uint8_t *) &ui_frame1_Ungroup_0, sizeof(ui_frame1_Ungroup_0));
 }
 
-void _ui_update_frame1_Ungroup_0() {
-    for (int i = 0; i < 5; i++) {
+void _ui_update_frame1_Ungroup_0(){
+    for (int i = 0; i < 7; i++) {
         ui_frame1_Ungroup_0.data[i].operate_type = 2;
     }
+		
+		//----------------------------------------------------------------------------------------------------------------------------------
+		ui_frame1_Ungroup_goryFloat->font_size=15;
+		ui_frame1_Ungroup_goryFloat->number=CHASSIS.fdb.body.x_dot;
+		
+		ui_frame1_Ungroup_goryFloat->font_size=15;
+		ui_frame1_Ungroup_goryFloat->number=CHASSIS.fdb.body.yaw_dot;
+		//----------------------------------------------------------------------------------------------------------------------------------
 
-    ui_proc_5_frame(&ui_frame1_Ungroup_0);
+
+    ui_proc_7_frame(&ui_frame1_Ungroup_0);
     SEND_MESSAGE((uint8_t *) &ui_frame1_Ungroup_0, sizeof(ui_frame1_Ungroup_0));
 }
 
 void _ui_remove_frame1_Ungroup_0() {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 7; i++) {
         ui_frame1_Ungroup_0.data[i].operate_type = 3;
     }
 
-    ui_proc_5_frame(&ui_frame1_Ungroup_0);
+    ui_proc_7_frame(&ui_frame1_Ungroup_0);
     SEND_MESSAGE((uint8_t *) &ui_frame1_Ungroup_0, sizeof(ui_frame1_Ungroup_0));
 }
 
@@ -105,7 +137,7 @@ ui_interface_string_t* ui_frame1_Ungroup_Aim_Range_word = &(ui_frame1_Ungroup_1.
 void _ui_init_frame1_Ungroup_1() {
     ui_frame1_Ungroup_1.option.figure_name[0] = 1;
     ui_frame1_Ungroup_1.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_1.option.figure_name[2] = 5;
+    ui_frame1_Ungroup_1.option.figure_name[2] = 7;
     ui_frame1_Ungroup_1.option.operate_type = 1;
 
     ui_frame1_Ungroup_Aim_Range_word->figure_type = 7;
@@ -143,7 +175,7 @@ ui_interface_string_t* ui_frame1_Ungroup_MODE = &(ui_frame1_Ungroup_2.option);
 void _ui_init_frame1_Ungroup_2() {
     ui_frame1_Ungroup_2.option.figure_name[0] = 1;
     ui_frame1_Ungroup_2.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_2.option.figure_name[2] = 6;
+    ui_frame1_Ungroup_2.option.figure_name[2] = 8;
     ui_frame1_Ungroup_2.option.operate_type = 1;
 
     ui_frame1_Ungroup_MODE->figure_type = 7;
@@ -181,7 +213,7 @@ ui_interface_string_t* ui_frame1_Ungroup_loss_control = &(ui_frame1_Ungroup_3.op
 void _ui_init_frame1_Ungroup_3() {
     ui_frame1_Ungroup_3.option.figure_name[0] = 1;
     ui_frame1_Ungroup_3.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_3.option.figure_name[2] = 7;
+    ui_frame1_Ungroup_3.option.figure_name[2] = 9;
     ui_frame1_Ungroup_3.option.operate_type = 1;
 
     ui_frame1_Ungroup_loss_control->figure_type = 7;
@@ -219,7 +251,7 @@ ui_interface_string_t* ui_frame1_Ungroup_yaw_offest = &(ui_frame1_Ungroup_4.opti
 void _ui_init_frame1_Ungroup_4() {
     ui_frame1_Ungroup_4.option.figure_name[0] = 1;
     ui_frame1_Ungroup_4.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_4.option.figure_name[2] = 8;
+    ui_frame1_Ungroup_4.option.figure_name[2] = 10;
     ui_frame1_Ungroup_4.option.operate_type = 1;
 
     ui_frame1_Ungroup_yaw_offest->figure_type = 7;
@@ -257,7 +289,7 @@ ui_interface_string_t* ui_frame1_Ungroup_Vel = &(ui_frame1_Ungroup_5.option);
 void _ui_init_frame1_Ungroup_5() {
     ui_frame1_Ungroup_5.option.figure_name[0] = 1;
     ui_frame1_Ungroup_5.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_5.option.figure_name[2] = 9;
+    ui_frame1_Ungroup_5.option.figure_name[2] = 11;
     ui_frame1_Ungroup_5.option.operate_type = 1;
 
     ui_frame1_Ungroup_Vel->figure_type = 7;
@@ -295,7 +327,7 @@ ui_interface_string_t* ui_frame1_Ungroup_GORY = &(ui_frame1_Ungroup_6.option);
 void _ui_init_frame1_Ungroup_6() {
     ui_frame1_Ungroup_6.option.figure_name[0] = 1;
     ui_frame1_Ungroup_6.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_6.option.figure_name[2] = 10;
+    ui_frame1_Ungroup_6.option.figure_name[2] = 12;
     ui_frame1_Ungroup_6.option.operate_type = 1;
 
     ui_frame1_Ungroup_GORY->figure_type = 7;
@@ -333,7 +365,7 @@ ui_interface_string_t* ui_frame1_Ungroup_PITCH = &(ui_frame1_Ungroup_7.option);
 void _ui_init_frame1_Ungroup_7() {
     ui_frame1_Ungroup_7.option.figure_name[0] = 1;
     ui_frame1_Ungroup_7.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_7.option.figure_name[2] = 11;
+    ui_frame1_Ungroup_7.option.figure_name[2] = 13;
     ui_frame1_Ungroup_7.option.operate_type = 1;
 
     ui_frame1_Ungroup_PITCH->figure_type = 7;
@@ -371,7 +403,7 @@ ui_interface_string_t* ui_frame1_Ungroup_VISION = &(ui_frame1_Ungroup_8.option);
 void _ui_init_frame1_Ungroup_8() {
     ui_frame1_Ungroup_8.option.figure_name[0] = 1;
     ui_frame1_Ungroup_8.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_8.option.figure_name[2] = 12;
+    ui_frame1_Ungroup_8.option.figure_name[2] = 14;
     ui_frame1_Ungroup_8.option.operate_type = 1;
 
     ui_frame1_Ungroup_VISION->figure_type = 7;
@@ -409,7 +441,7 @@ ui_interface_string_t* ui_frame1_Ungroup_left_leg = &(ui_frame1_Ungroup_9.option
 void _ui_init_frame1_Ungroup_9() {
     ui_frame1_Ungroup_9.option.figure_name[0] = 1;
     ui_frame1_Ungroup_9.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_9.option.figure_name[2] = 13;
+    ui_frame1_Ungroup_9.option.figure_name[2] = 15;
     ui_frame1_Ungroup_9.option.operate_type = 1;
 
     ui_frame1_Ungroup_left_leg->figure_type = 7;
@@ -447,7 +479,7 @@ ui_interface_string_t* ui_frame1_Ungroup_right_leg = &(ui_frame1_Ungroup_10.opti
 void _ui_init_frame1_Ungroup_10() {
     ui_frame1_Ungroup_10.option.figure_name[0] = 1;
     ui_frame1_Ungroup_10.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_10.option.figure_name[2] = 14;
+    ui_frame1_Ungroup_10.option.figure_name[2] = 16;
     ui_frame1_Ungroup_10.option.operate_type = 1;
 
     ui_frame1_Ungroup_right_leg->figure_type = 7;
@@ -485,7 +517,7 @@ ui_interface_string_t* ui_frame1_Ungroup_CAP = &(ui_frame1_Ungroup_11.option);
 void _ui_init_frame1_Ungroup_11() {
     ui_frame1_Ungroup_11.option.figure_name[0] = 1;
     ui_frame1_Ungroup_11.option.figure_name[1] = 0;
-    ui_frame1_Ungroup_11.option.figure_name[2] = 15;
+    ui_frame1_Ungroup_11.option.figure_name[2] = 17;
     ui_frame1_Ungroup_11.option.operate_type = 1;
 
     ui_frame1_Ungroup_CAP->figure_type = 7;

@@ -10,6 +10,8 @@
 
 extern ui_interface_rect_t *ui_frame1_Ungroup_Aim_range;
 extern ui_interface_line_t *ui_frame1_Ungroup_JUMP2;
+extern ui_interface_number_t *ui_frame1_Ungroup_velFloat;
+extern ui_interface_number_t *ui_frame1_Ungroup_goryFloat;
 extern ui_interface_line_t *ui_frame1_Ungroup_JUMP0;
 extern ui_interface_line_t *ui_frame1_Ungroup_JUMP1;
 extern ui_interface_ellipse_t *ui_frame1_Ungroup_NewEllipse;

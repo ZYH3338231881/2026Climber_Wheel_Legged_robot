@@ -79,9 +79,9 @@ climber_wheel_legged_robot_chassis\judge_paint_task.o: ../DSP/Include/dsp/utils.
 climber_wheel_legged_robot_chassis\judge_paint_task.o: ../DSP/Include/dsp/fast_math_functions.h
 climber_wheel_legged_robot_chassis\judge_paint_task.o: ../DSP/Include/dsp/basic_math_functions.h
 climber_wheel_legged_robot_chassis\judge_paint_task.o: ..\Judge\ui_interface.h
+climber_wheel_legged_robot_chassis\judge_paint_task.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 climber_wheel_legged_robot_chassis\judge_paint_task.o: ..\Judge\ui_types.h
 climber_wheel_legged_robot_chassis\judge_paint_task.o: ../Core/Inc/usart.h
-climber_wheel_legged_robot_chassis\judge_paint_task.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 climber_wheel_legged_robot_chassis\judge_paint_task.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
 climber_wheel_legged_robot_chassis\judge_paint_task.o: ..\Judge\ui_frame1.h
 climber_wheel_legged_robot_chassis\judge_paint_task.o: ..\Judge\ui.h

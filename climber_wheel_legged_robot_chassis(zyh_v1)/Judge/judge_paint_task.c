@@ -18,7 +18,6 @@ void UI_Task(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-		ui_init_frame1_Ungroup();
 		osDelay(1);
 
   }

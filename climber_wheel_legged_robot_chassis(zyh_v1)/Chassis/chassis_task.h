@@ -38,7 +38,7 @@
 #define JUMP_STEP_JUMP     2  // 跳跃状态——跳跃
 #define JUMP_STEP_RECOVERY 3  // 跳跃状态——收腿
 
-#define MAX_STEP_TIME           5000  // 最大步骤时间
+#define MAX_STEP_TIME           1000  // 最大步骤时间
 
 #define NORMAL_STEP_TIME        0  // 正常状态
 #define JUMP_STEP_TIME_SQUST    50  // 跳跃状态——蹲下
@@ -67,8 +67,8 @@
 
 //yaw轴跟踪速度环PID参数
 #define KP_CHASSIS_YAW_VELOCITY        (2.0f)
-#define KI_CHASSIS_YAW_VELOCITY        (0.05f)
-#define KD_CHASSIS_YAW_VELOCITY        (10.0f)
+#define KI_CHASSIS_YAW_VELOCITY        (0.0f)
+#define KD_CHASSIS_YAW_VELOCITY        (20.0f)
 #define MAX_IOUT_CHASSIS_YAW_VELOCITY  (0.5f)
 #define MAX_OUT_CHASSIS_YAW_VELOCITY   (10.0f)
 
@@ -121,7 +121,7 @@
 //#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (3)
 
 // 云台跟随用的pid角度环
-#define KP_CHASSIS_FOLLOW_GIMBAL       (8)
+#define KP_CHASSIS_FOLLOW_GIMBAL       (5)
 #define KI_CHASSIS_FOLLOW_GIMBAL       (0)
 #define KD_CHASSIS_FOLLOW_GIMBAL       (10)
 #define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
@@ -228,7 +228,7 @@
 #define CHASSIS_WZ_CHANNEL     2  // 旋转的遥控器通道号码
 
 #define RC_TO_ONE 0.0015151515151515f  // (1/660)遥控器通道值归一化系数
-#define MAX_SPEED_VECTOR_VX  (4.5f)
+#define MAX_SPEED_VECTOR_VX  (5.5f)
 #define MAX_SPEED_VECTOR_WZ  (15.0f)
 
 #define PITCH_VEL_LIMIT_FACTOR  (0.1f)    // pitch角速度抑制比例系数

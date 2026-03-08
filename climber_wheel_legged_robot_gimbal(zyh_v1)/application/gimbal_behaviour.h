@@ -11,11 +11,11 @@
 #define GIMBAL_LOWER_LIMIT_PITCH (-0.3f)
 
 //YAW ANGLE
-#define KP_GIMBAL_YAW_ANGLE (130)//150
+#define KP_GIMBAL_YAW_ANGLE (150)//150
 #define KI_GIMBAL_YAW_ANGLE (0)
-#define KD_GIMBAL_YAW_ANGLE (50)//70
+#define KD_GIMBAL_YAW_ANGLE (1400)//70
 #define MAX_IOUT_GIMBAL_YAW_ANGLE (3)
-#define MAX_OUT_GIMBAL_YAW_ANGLE (20)
+#define MAX_OUT_GIMBAL_YAW_ANGLE (15)
 //VELOCITY:角速度
 #define KP_GIMBAL_YAW_VELOCITY (500)//1200
 #define KI_GIMBAL_YAW_VELOCITY (2)
@@ -40,7 +40,7 @@
 //PITCH ANGLE
 #define KP_GIMBAL_PITCH_ANGLE (170)     //保证位置响应较快
 #define KI_GIMBAL_PITCH_ANGLE (0)        
-#define KD_GIMBAL_PITCH_ANGLE (500)       //位置稳态，过多可能冲过头
+#define KD_GIMBAL_PITCH_ANGLE (2000)       //位置稳态，过多可能冲过头
 #define MAX_IOUT_GIMBAL_PITCH_ANGLE (5)
 #define MAX_OUT_GIMBAL_PITCH_ANGLE (20)  //在速度单环pid下实际可能出现的最大转速
 //VELOCITY:角速度
@@ -70,7 +70,7 @@
 
 //旋转方向
 #define GIMBAL_DIRECT_YAW_DIRECTION (1)
-#define GIMBAL_DIRECT_PITCH_DIRECTION (-1)
+#define GIMBAL_DIRECT_PITCH_DIRECTION (1)
 
 //减速比
 #define GIMBAL_DIRECT_YAW_REDUCTION_RATIO (1)
@@ -82,7 +82,7 @@
 
 //电机角度中值设置
 //#define GIMBAL_DIRECT_PITCH_MID (-3.14082575f)  //云台初始化正对齐的时候使用的pitch轴正中心量
-#define GIMBAL_DIRECT_YAW_MID (-2.73968983)    //云台初始化正对齐的时候使用的yaw轴正中心量
+#define GIMBAL_DIRECT_YAW_MID (2.01488376)    //云台初始化正对齐的时候使用的yaw轴正中心量
 
 //gimbal_init-------------------------------
 #define GIMBAL_INIT_TIME (uint32_t)1000

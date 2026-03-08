@@ -19,10 +19,11 @@
 #include "bsp_rc.h"
 #include "computer_rec.h"
 #include "user_lib.h"
+#include "TOF_distance.h"
 #define CHASSIS_TASK_INIT_TIME 300
 #define CHASSIS_CONTROL_TIME_MS 3  //底盘控制周期3ms
 #define MS_TO_S 0.001f
-#define GIMBAL_DIRECT_YAW_MID (-2.73968983)    //云台初始化正对齐的时候使用的yaw轴正中心量
+#define GIMBAL_DIRECT_YAW_MID (2.01488376)    //云台初始化正对齐的时候使用的yaw轴正中心量
 #define rc_deadband_limit(input, output, dealine)          \
     {                                                      \
         if ((input) > (dealine) || (input) < -(dealine)) { \
@@ -33,6 +34,7 @@
     }
 extern  Keyboard_Data keyboard_data;
 extern  JudgementDataTypedef JudgementData;
+extern TOF_data_t tof_data;
 
 CTOM_message_t ctom_message;
 //机器人结构体
@@ -50,16 +52,15 @@ Calibrate_s CALIBRATE = {
     .calibrated = false,
 };
 int8_t TRANSITION_MATRIX[10] = {0};
-
  void ChassisInit(void);
-  void ChassisHandleException(void);
+ void ChassisHandleException(void);
+
  void ChassisSetMode(void);
  void ChassisObserver(void);
  void ChassisReference(void);
  void ChassisConsole(void);
  void ChassisSendCmd(void);
  void ChassisHandleException(void);
-
 
 void chassis_task(void const * pvParamewwters)
 {
@@ -79,7 +80,8 @@ void chassis_task(void const * pvParamewwters)
         // 计算控制量
         ChassisConsole();
         // 发送控制量
-      ChassisSendCmd();
+        ChassisSendCmd();
+			  
 			  MToC_sendControl(3,0x555,JudgementData.power_heat_data_t.shooter_17_heat1,JudgementData.shoot_data_t.initial_speed);
 //       vTaskDelay(CHASSIS_CONTROL_TIME_MS);
     }
@@ -287,55 +289,19 @@ extern void GetMotorMeasure(Motor_s * p_motor);
 	 CHASSIS.step_time++;
 	 
 	 UpdateMotorStatus(); // 更新电机状态
-
    UpdateBodyStatus (); // 更新机体状态
-
 	 UpdateLegStatus  ();  // 更新腿部状态
-	 
 	 UpdateStepStatus();   // 状态转移更新
-   
 	 BodyMotionObserve();  // 机体运动状态观测器
 	 
 	 UpdateGimbalStatus(); //更新云台状态
-	 
-	 UpdateCalibrateStatus();
-
 }
 
  static void UpdateGimbalStatus(void)
  {
 	   CHASSIS.fdb.gimbal.gimbal_yaw_6020=ctom_message.gimbal_yaw_6020;
  }
- static void UpdateCalibrateStatus(void)
-{
-    if ((CHASSIS.mode == CHASSIS_CALIBRATE) &&
-        fabs(CHASSIS.joint_motor[0].fdb.pos) < ZERO_POS_THRESHOLD &&
-        fabs(CHASSIS.joint_motor[1].fdb.pos) < ZERO_POS_THRESHOLD &&
-        fabs(CHASSIS.joint_motor[2].fdb.pos) < ZERO_POS_THRESHOLD &&
-        fabs(CHASSIS.joint_motor[3].fdb.pos) < ZERO_POS_THRESHOLD) {
-        CALIBRATE.calibrated = true;
-    }
-
-    // m  
-    uint32_t now = HAL_GetTick();
-    if (CHASSIS.mode == CHASSIS_CALIBRATE) 
-    {
-        for (uint8_t i = 0; i < 4; i++) 
-        {  
-            CALIBRATE.velocity[i] = CHASSIS.joint_motor[i].fdb.vel;
-            if (CALIBRATE.velocity[i] > CALIBRATE_STOP_VELOCITY) {  // 速度大于阈值时重置计时
-                CALIBRATE.reached[i] = false;
-                CALIBRATE.stpo_time[i] = now;
-            } 
-            else
-            {
-                if(now - CALIBRATE.stpo_time[i] > CALIBRATE_STOP_TIME) {
-                    CALIBRATE.reached[i] = true;
-                }
-            }
-        }
-    }
-}
+ 
 void UpdateBodyStatus()
 {
  //记得检测是否和模型一致
@@ -548,9 +514,7 @@ void UpdateLegStatus(void)
             CHASSIS.fdb.leg[i].take_off_time = 0;
         }
     }
-//	CHASSIS.fdb.two_leg_err=CHASSIS.fdb.leg[0].rod.Theta-CHASSIS.fdb.leg[1].rod.Theta;
 }
-
 /**
  * @brief  机体运动状态观测器
  * @param  none
@@ -597,7 +561,7 @@ void BodyMotionObserve(void)
 #define StateTransfer()    \
     CHASSIS.step_time = 0; \
     CHASSIS.step = TRANSITION_MATRIX[CHASSIS.step];
-
+//&&(tof_data.distance<70)&&(tof_data.distance>60)
 static void UpdateStepStatus(void)
 {
 	
@@ -629,7 +593,6 @@ if (CHASSIS.mode == CHASSIS_FREE) {
         CHASSIS.step_time = 0;
         CHASSIS.step = NORMAL_STEP;
     }
-  
 }
 
 #undef StateTransfer
@@ -642,7 +605,7 @@ if (CHASSIS.mode == CHASSIS_FREE) {
  float length = 0.135;//正常腿长
  ChassisSpeedVector_t target_v_set = {0.0f, 0.0f, 0.0f};
 
-float vx_ramp_rate = 6.5f; // 每秒增加6.5m/s
+float vx_ramp_rate = 8.5f; // 每秒增加6.5m/s
 float current_set_vx = 0.0f;//当前设置的速度
 // 角速度斜坡函数
 float current_wz = 0.0f;
@@ -650,14 +613,15 @@ float wz_ramp_rate = 15.5f; // 每秒增加10rad/s
  void ChassisReference(void)
  {
 	  int16_t rc_x = 0, rc_wz = 0;
-    int16_t rc_length = 0, rc_angle = 0;
+    int16_t rc_length = 0, rc_angle = 0,rc_follow_gimbal=0;
     float rc_pitch = 0;
     rc_deadband_limit(CHASSIS.rc->ch1, rc_x, CHASSIS_RC_DEADLINE);    //右竖直拨杆控制前进后退
-    rc_deadband_limit(CHASSIS.rc->ch2, rc_wz, CHASSIS_RC_DEADLINE);   //右水平拨杆控制旋转
+//    rc_deadband_limit(CHASSIS.rc->ch2, rc_wz, CHASSIS_RC_DEADLINE);   //右水平拨杆控制旋转
     rc_deadband_limit(CHASSIS.rc->ch4, rc_length, CHASSIS_RC_DEADLINE);
+	  rc_deadband_limit(CHASSIS.rc->ch2, rc_follow_gimbal,CHASSIS_RC_DEADLINE);
 //  rc_deadband_limit(CHASSIS.rc->ch3, rc_pitch, CHASSIS_RC_PITCH_DEADLINE);
 	 
-	 
+float rc_follow_gimbal_input=-rc_follow_gimbal*RC_TO_ONE;
 	 
 
 //--------------------------------------小陀螺处理---------------------------------------------------------------------------------
@@ -701,16 +665,15 @@ if (is_spin_mode) {
     float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
 		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
     float corrected_yaw_target = CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
-    target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target);
+    target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*4.5+keyboard_data.Remote_Mouse_RL*0.01;
   #else
     target_wz = -rc_wz*RC_TO_ONE*MAX_SPEED_VECTOR_WZ;
   #endif
    target_v_set.wz = target_wz;
 }
 //---------------------------------------------------------------------------------------------------------------------------- 
-	 
-	 
-	 
+
+
 //---------------------------------纵向控制----------------------------------------------------------------------------------
 	 
     // 计算速度向量
@@ -1071,7 +1034,7 @@ static void LegTorqueController(void)
 							else if(CHASSIS.fdb.leg[0].is_take_off&&CHASSIS.fdb.leg[0].is_take_off)
 							{
 								F0=0;
-								F_leg = PID_calc(&CHASSIS.pid.leg_length_length[i], CHASSIS.fdb.leg[i].rod.L0,0.23);
+								F_leg = PID_calc(&CHASSIS.pid.leg_length_length[i], CHASSIS.fdb.leg[i].rod.L0,0.19);
 								CHASSIS.cmd.leg[i].rod.F = F0 + F_leg- CHASSIS.fdb.leg[i].rod.F_spring; 
 							}
 							else
@@ -1247,13 +1210,14 @@ void ChassisHandleException()
     osDelay(1);
     DmEnable(&CHASSIS.joint_motor[3]);
 	} 
-
-  if ((CHASSIS.mode==CHASSIS_FREE&&CHASSIS.last_mode!=CHASSIS_FREE)||keyboard_data.Remote_Key_R)
+	//当切换到底盘控制模式/按键按下R/底盘起立模式
+  if ((CHASSIS.mode==CHASSIS_FREE&&CHASSIS.last_mode!=CHASSIS_FREE)||keyboard_data.Remote_Key_R||(CHASSIS.mode==CHASSIS_STAND_UP&&CHASSIS.last_mode!=CHASSIS_STAND_UP))
   {
     memset(&CHASSIS.fdb,0,sizeof(CHASSIS.fdb));
     CHASSIS.fdb.leg[0].is_take_off = false;
     CHASSIS.fdb.leg[1].is_take_off = false;
   }
+	
   
 	CHASSIS.last_mode=CHASSIS.mode;    
 

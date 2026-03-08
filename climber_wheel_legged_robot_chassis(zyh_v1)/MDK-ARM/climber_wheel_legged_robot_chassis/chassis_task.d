@@ -87,3 +87,4 @@ climber_wheel_legged_robot_chassis\chassis_task.o: ../Core/Inc/usart.h
 climber_wheel_legged_robot_chassis\chassis_task.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
 climber_wheel_legged_robot_chassis\chassis_task.o: ..\Chassis\State_chexk_task.h
 climber_wheel_legged_robot_chassis\chassis_task.o: ..\Chassis\computer_rec.h
+climber_wheel_legged_robot_chassis\chassis_task.o: ..\Chassis\TOF_distance.h

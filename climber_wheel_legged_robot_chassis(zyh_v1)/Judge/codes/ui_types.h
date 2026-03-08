@@ -1,12 +1,11 @@
 //
-// Created by bismarckkk on 2025/3/22.
-// Dynamic Edition
+// Created by bismarckkk on 2024/2/17.
 //
 
 #ifndef UI_TYPES_H
 #define UI_TYPES_H
 
-// #define MANUAL_DIRTY
+// User Code Begin
 
 #if defined(__GNUC__) || defined(__CC_ARM)
 #define MESSAGE_PACKED __attribute__((packed))
@@ -15,13 +14,15 @@
 #error "MESSAGE_PACKED not defined for this compiler"
 #endif
 
+// User Code End
+
 #define PRIMITIVE_CAT(x, y) x ## y
 #define CAT(x, y) PRIMITIVE_CAT(x, y)
 
 #define DEFINE_MESSAGE(name, p_a, p_b, p_c, p_d, p_e)   \
 typedef struct {                                        \
 uint8_t figure_name[3];                                 \
-uint32_t operate_type:3;                               \
+uint32_t operate_type:3;                                \
 uint32_t figure_type:3;                                 \
 uint32_t layer:4;                                       \
 uint32_t color:4;                                       \
@@ -98,18 +99,5 @@ typedef struct {
     ui_interface_string_t option;
     uint16_t crc16;
 } MESSAGE_PACKED ui_string_frame_t;
-
-typedef struct {
-    ui_frame_header_t header;
-    uint8_t delete_type;
-    uint8_t layer;
-    uint16_t crc16;
-} MESSAGE_PACKED ui_delete_frame_t;
-
-extern ui_string_frame_t _ui_string_frame;
-extern ui_1_frame_t _ui_1_frame;
-extern ui_2_frame_t _ui_2_frame;
-extern ui_5_frame_t _ui_5_frame;
-extern ui_7_frame_t _ui_7_frame;
 
 #endif //UI_TYPES_H

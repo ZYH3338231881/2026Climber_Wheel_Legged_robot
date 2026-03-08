@@ -40,6 +40,7 @@
 #include "CAN_receive.h"
 #include "chassis_task.h"
 #include "computer_rec.h"
+#include "TOF_distance.h"
 extern uint8_t rx_buff[BUFF_SIZE];
 
 /* USER CODE END Includes */
@@ -92,7 +93,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-                                                             HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -119,6 +120,7 @@ int main(void)
   MX_UART5_Init();
   MX_USART1_UART_Init();
   MX_UART7_Init();
+  MX_USART10_UART_Init();
   /* USER CODE BEGIN 2 */
   FDCAN1_Config();
 	FDCAN2_Config();
@@ -127,8 +129,9 @@ int main(void)
 	
  HAL_UARTEx_ReceiveToIdle_IT(&huart5,rx_buff, 18);
  Computer_rec_init();
+ TOF_control_init();
 
-
+	HAL_GPIO_WritePin(Power_5v_GPIO_Port,Power_5v_Pin,1);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */

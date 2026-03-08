@@ -15,7 +15,7 @@
 #include "AutoGimbal.h"
 #include "shoot_fric_trigger.h"
 #define GIMBAL_TASK_INIT_TIME 500
-
+//控制周期500HZ
 extern visionDataStu_t visionDataStu;
 extern Shoot_s SHOOT;
 //云台控制所有相关数据
@@ -40,7 +40,7 @@ void gimbal_task(void const *pvParameters)
 			GimbalConsole();
 			GimbalSendCmd();
 	    send_nuc();
-			osDelay(1);
+			osDelay(2);
     }
 }
 
@@ -90,7 +90,7 @@ void send_nuc()
     message.tail[0] = 'E';
     message.tail[1] = 'N';
     
-    HAL_UART_Transmit(&huart1, (uint8_t*)&message, sizeof(message), 100);
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t*)&message, sizeof(message));
 }
 
 

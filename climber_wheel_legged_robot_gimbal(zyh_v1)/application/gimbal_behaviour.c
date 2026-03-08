@@ -43,7 +43,7 @@ void GimbalInit(void)
 	 
 	 LowPassFilterInit(&Mouse_yaw_Filter,0.9);
 	 
-	 SMC_Init(&yaw_smc,80,10,0.0001,6500,0.5,16384);
+	 SMC_Init(&yaw_smc,80,10,0.0001,6500,0.8,16384);
    //滑膜面参数C 增益K 控制死区单位是弧度   
    //step4 初始化电机
    MotorInit(&gimbal_direct.yaw,GIMBAL_DIRECT_YAW_ID,GIMBAL_DIRECT_YAW_CAN,GIMBAL_DIRECT_YAW_MOTOR_TYPE,GIMBAL_DIRECT_YAW_DIRECTION,GIMBAL_DIRECT_YAW_REDUCTION_RATIO,GIMBAL_DIRECT_YAW_MODE);
@@ -53,6 +53,8 @@ void GimbalInit(void)
 	 //step6 模式设置初始化
    gimbal_direct.mode=GIMBAL_ZERO_FORCE;
    gimbal_direct.last_mode = GIMBAL_ZERO_FORCE;
+	 
+	 
 }
 
 
@@ -169,10 +171,10 @@ void GimbalConsole(void)
   {
 		gimbal_direct.reference.pitch-=keyboard_data.Remote_Mouse_DU*0.00002;
 	  gimbal_direct.reference.pitch=fp32_constrain(gimbal_direct.reference.pitch,gimbal_direct.lower_limit.pitch,gimbal_direct.upper_limit.pitch);
-		gimbal_direct.reference.yaw-=gimbal_direct.rc->rc.ch[0]*0.00002;
+		gimbal_direct.reference.yaw-=gimbal_direct.rc->rc.ch[2]*0.00003;
 		  /*              鼠标yaw一阶低通滤波		  */
-		  LowPassFilterCalc(&Mouse_yaw_Filter,keyboard_data.Remote_Mouse_RL*0.00008);
-		  Mouse_yaw_Filter.out=fp32_constrain(Mouse_yaw_Filter.out,-0.035,+0.035);
+		  LowPassFilterCalc(&Mouse_yaw_Filter,keyboard_data.Remote_Mouse_RL*0.00006);
+		  Mouse_yaw_Filter.out=fp32_constrain(Mouse_yaw_Filter.out,-0.040,+0.040);
 	    gimbal_direct.reference.yaw-=Mouse_yaw_Filter.out;
       /*              SMC滑膜控制              */
 		  float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);

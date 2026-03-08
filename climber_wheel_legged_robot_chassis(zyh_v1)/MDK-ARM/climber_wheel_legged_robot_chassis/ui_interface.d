@@ -1,7 +1,6 @@
 climber_wheel_legged_robot_chassis\ui_interface.o: ..\Judge\ui_interface.c
-climber_wheel_legged_robot_chassis\ui_interface.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
-climber_wheel_legged_robot_chassis\ui_interface.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 climber_wheel_legged_robot_chassis\ui_interface.o: ..\Judge\ui_interface.h
+climber_wheel_legged_robot_chassis\ui_interface.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 climber_wheel_legged_robot_chassis\ui_interface.o: ..\Judge\ui_types.h
 climber_wheel_legged_robot_chassis\ui_interface.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
 climber_wheel_legged_robot_chassis\ui_interface.o: ../Core/Inc/usart.h
@@ -45,3 +44,4 @@ climber_wheel_legged_robot_chassis\ui_interface.o: ../Drivers/STM32H7xx_HAL_Driv
 climber_wheel_legged_robot_chassis\ui_interface.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h
 climber_wheel_legged_robot_chassis\ui_interface.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 climber_wheel_legged_robot_chassis\ui_interface.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
+climber_wheel_legged_robot_chassis\ui_interface.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
