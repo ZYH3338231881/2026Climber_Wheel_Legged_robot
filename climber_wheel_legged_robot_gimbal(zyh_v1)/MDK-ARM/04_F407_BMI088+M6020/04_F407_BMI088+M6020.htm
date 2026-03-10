@@ -3,7 +3,7 @@
 <title>Static Call Graph - [04_F407_BMI088+M6020\04_F407_BMI088+M6020.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image 04_F407_BMI088+M6020\04_F407_BMI088+M6020.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sun Mar 08 15:56:52 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Mar 10 19:49:02 2026
 <BR><P>
 <H3>Maximum Stack Usage =        344 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -552,7 +552,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GimbalConsole
 </UL>
 
-<P><STRONG><a name="[b3]"></a>__aeabi_f2d</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, f2d.o(.text))
+<P><STRONG><a name="[b2]"></a>__aeabi_f2d</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, f2d.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GimbalConsole
 </UL>
 
@@ -926,18 +926,18 @@ Global Symbols
 <LI><a href="#[165]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ShootObserver
 </UL>
 
-<P><STRONG><a name="[af]"></a>GimbalConsole</STRONG> (Thumb, 768 bytes, Stack size 40 bytes, gimbal_behaviour.o(i.GimbalConsole))
+<P><STRONG><a name="[af]"></a>GimbalConsole</STRONG> (Thumb, 732 bytes, Stack size 40 bytes, gimbal_behaviour.o(i.GimbalConsole))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = GimbalConsole &rArr; __aeabi_dsub &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SMC_Tick
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_calc
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fp32_constrain
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_difference
-<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LowPassFilterCalc
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_difference
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LowPassFilterCalc
 <LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gimbal_task
@@ -1809,7 +1809,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sbus_to_rc
 </UL>
 
-<P><STRONG><a name="[b4]"></a>LowPassFilterCalc</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, user_lib.o(i.LowPassFilterCalc))
+<P><STRONG><a name="[b3]"></a>LowPassFilterCalc</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, user_lib.o(i.LowPassFilterCalc))
 <BR><BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GimbalConsole
 </UL>
 
@@ -2353,7 +2353,7 @@ Global Symbols
 <LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_asinf
 </UL>
 
-<P><STRONG><a name="[b2]"></a>angle_difference</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, user_lib.o(i.angle_difference))
+<P><STRONG><a name="[b4]"></a>angle_difference</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, user_lib.o(i.angle_difference))
 <BR><BR>[Calls]<UL><LI><a href="#[176]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;normalize_angle
 </UL>
 <BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GimbalConsole
@@ -2591,7 +2591,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
 </UL>
 <P><STRONG><a name="[176]"></a>normalize_angle</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, user_lib.o(i.normalize_angle))
-<BR><BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_difference
+<BR><BR>[Called By]<UL><LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;angle_difference
 </UL>
 
 <P><STRONG><a name="[8f]"></a>osDelay</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, cmsis_os.o(i.osDelay))

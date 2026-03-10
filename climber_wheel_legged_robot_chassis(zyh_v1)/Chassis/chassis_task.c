@@ -23,7 +23,7 @@
 #define CHASSIS_TASK_INIT_TIME 300
 #define CHASSIS_CONTROL_TIME_MS 3  //底盘控制周期3ms
 #define MS_TO_S 0.001f
-#define GIMBAL_DIRECT_YAW_MID (2.01488376)    //云台初始化正对齐的时候使用的yaw轴正中心量
+#define GIMBAL_DIRECT_YAW_MID (0.452524424)    //云台初始化正对齐的时候使用的yaw轴正中心量
 #define rc_deadband_limit(input, output, dealine)          \
     {                                                      \
         if ((input) > (dealine) || (input) < -(dealine)) { \
@@ -80,7 +80,7 @@ void chassis_task(void const * pvParamewwters)
         // 计算控制量
         ChassisConsole();
         // 发送控制量
-        ChassisSendCmd();
+//        ChassisSendCmd();
 			  
 			  MToC_sendControl(3,0x555,JudgementData.power_heat_data_t.shooter_17_heat1,JudgementData.shoot_data_t.initial_speed);
 //       vTaskDelay(CHASSIS_CONTROL_TIME_MS);
@@ -161,31 +161,21 @@ void chassis_task(void const * pvParamewwters)
     PID_init(&CHASSIS.pid.chassis_follow_gimbal, PID_POSITION, chassis_folllow_gimbal, MAX_OUT_CHASSIS_FOLLOW_GIMBAL,MAX_IOUT_CHASSIS_FOLLOW_GIMBAL);
 		
     // 初始化低通滤波器
-    LowPassFilterInit(&CHASSIS.lpf.leg_l0_accel_filter[0], LEG_DDL0_LPF_ALPHA);//腿长L0加速度滤波
-    LowPassFilterInit(&CHASSIS.lpf.leg_l0_accel_filter[1], LEG_DDL0_LPF_ALPHA);
-    LowPassFilterInit(&CHASSIS.lpf.leg_phi0_accel_filter[0], LEG_DDPHI0_LPF_ALPHA);//机体phi0与水平方向夹角加速度滤波
-    LowPassFilterInit(&CHASSIS.lpf.leg_phi0_accel_filter[1], LEG_DDPHI0_LPF_ALPHA);
-    LowPassFilterInit(&CHASSIS.lpf.leg_theta_accel_filter[0], LEG_DDTHETA_LPF_ALPHA);//机体系theta加速度滤波
-    LowPassFilterInit(&CHASSIS.lpf.leg_theta_accel_filter[1], LEG_DDTHETA_LPF_ALPHA);
     LowPassFilterInit(&CHASSIS.lpf.support_force_filter[0], LEG_SUPPORT_FORCE_LPF_ALPHA);//支持力滤波
     LowPassFilterInit(&CHASSIS.lpf.support_force_filter[1], LEG_SUPPORT_FORCE_LPF_ALPHA);
-    LowPassFilterInit(&CHASSIS.lpf.pitch, CHASSIS_PICTH_ALPHA);//pitch轴滤波
-	  LowPassFilterInit(&CHASSIS.lpf.L_theta, L_LEG_THETA_ALPHA);//腿theta误差值滤波
-	  LowPassFilterInit(&CHASSIS.lpf.R_theta, R_LEG_THETA_ALPHA);//腿theta误差值滤波
 	  LowPassFilterInit(&CHASSIS.lpf.VX_filter, 0.9);//键鼠速度滤波
     // 初始化加速度低通滤波器
-    LowPassFilterInit(&CHASSIS.lpf.x_acc_lpf, 0.95);//可根据需要调整alpha值
-
-    Kalman_Filter_Init(&OBSERVER.body.v_kf, 2, 1, 2);
-    float F[4] = {1, 0.003, 0, 1};//状态转移矩阵
-    float B[2] = {0.003*0.003*0.5, 0.003};//输入矩阵
-  float Q[4] = {0.1, 0, 0, 0.5};   // 位置过程噪声0.1，速度过程噪声0.5
-  float R[4] = {0.5, 0, 0, 10.0};  // 位置测量噪声0.5，速度测量噪声10.0
-    float P[4] = {100000, 0, 0, 100000};//协方差
-    float H[4] = {1, 0, 0, 1};//观测矩阵
-    // 复制矩阵到滤波器
+    LowPassFilterInit(&CHASSIS.lpf.x_acc_lpf, 0.9);//可根据需要调整alpha值
+    // 初始化机体速度观测器
+    // 使用kf同时估计速度和加速度
+    Kalman_Filter_Init(&OBSERVER.body.v_kf, 2, 0, 2);
+float F[4] = {1, 0.005, 0, 1};
+// 增大对速度观测噪声的惩罚，让滤波更“不信任”传感器
+float Q[4] = {0.05f, 0, 0, 0.02f}; // 减小过程噪声，更信任模型预测
+float R[4] = {1.0f, 0, 0, 0.0f};   // 增大观测噪声，过滤传感器噪声
+float H[4] = {1, 0, 0, 0};         // 修正观测矩阵：只观测速度，不观测加速度
+float P[4] = {100000, 0, 0, 100000}; 
     memcpy(OBSERVER.body.v_kf.F_data, F, sizeof(F));
-    memcpy(OBSERVER.body.v_kf.B_data, B, sizeof(B));  // 设置控制矩阵
     memcpy(OBSERVER.body.v_kf.P_data, P, sizeof(P));
     memcpy(OBSERVER.body.v_kf.Q_data, Q, sizeof(Q));
     memcpy(OBSERVER.body.v_kf.R_data, R, sizeof(R));
@@ -317,8 +307,6 @@ void UpdateBodyStatus()
 	CHASSIS.fdb.body.yaw=CHASSIS.imu->angle[2];
 	CHASSIS.fdb.body.yaw_dot=CHASSIS.imu->gyro[2];
 	
-  // 滤波计算轴pitch lpf.pitch  因为高低差往往是突然出现的
-	LowPassFilterCalc(&CHASSIS.lpf.pitch, CHASSIS.fdb.body.pitch);
 	
 	 // 更新加速度反馈数据，记录下来方便使用
     float ax = CHASSIS.imu->accel[0];
@@ -521,22 +509,35 @@ void UpdateLegStatus(void)
  */
 void BodyMotionObserve(void)
 {
-	   float speed = WHEEL_RADIUS * (CHASSIS.fdb.leg[0].wheel.Velocity + CHASSIS.fdb.leg[1].wheel.Velocity) / 2;
-      CHASSIS.fdb.body.x_dot= speed;//原始速度
+	   float left_leg_wheelspeed = WHEEL_RADIUS * CHASSIS.fdb.leg[0].wheel.Velocity
+																+CHASSIS.fdb.leg[0].rod.L0*CHASSIS.fdb.leg[0].rod.dTheta*cosf(CHASSIS.fdb.leg[0].rod.Theta)
+																+CHASSIS.fdb.leg[0].rod.dL0*sinf(CHASSIS.fdb.leg[0].rod.Theta);
+		 
+		 float right_leg_wheelspeed = WHEEL_RADIUS * CHASSIS.fdb.leg[1].wheel.Velocity
+																+CHASSIS.fdb.leg[1].rod.L0*CHASSIS.fdb.leg[1].rod.dTheta*cosf(CHASSIS.fdb.leg[1].rod.Theta)
+																+CHASSIS.fdb.leg[1].rod.dL0*sinf(CHASSIS.fdb.leg[1].rod.Theta);
+			
+		 float speed=(left_leg_wheelspeed+right_leg_wheelspeed)/2.0f;
+		 
+		
+	
+			CHASSIS.fdb.body.x_dot= speed;//原始速度
 
       // 对加速度进行低通滤波
       float filtered_acc = LowPassFilterCalc(&CHASSIS.lpf.x_acc_lpf, CHASSIS.fdb.body.x_acc);
-      OBSERVER.body.v_kf.ControlVector[0] = filtered_acc;
-      OBSERVER.body.v_kf.MeasuredVector[0] = CHASSIS.fdb.body.x;                   
-      OBSERVER.body.v_kf.MeasuredVector[1] = speed;  
-	
-	    Kalman_Filter_Update(&OBSERVER.body.v_kf);
-//      CHASSIS.fdb.body.x_obv = OBSERVER.body.v_kf.xhat_data[0];//滤波后的位移
-//      CHASSIS.fdb.body.x_dot_obv= OBSERVER.body.v_kf.xhat_data[1];//滤波后的速度
-    
-    // 不加入卡曼滤波
-     CHASSIS.fdb.body.x_dot_obv = speed;
-     CHASSIS.fdb.body.x_acc_obv = CHASSIS.fdb.body.x_acc;
+
+		 
+		 // 使用kf同时估计加速度和速度,滤波更新
+				OBSERVER.body.v_kf.MeasuredVector[0] = speed;                   // 输入轮速
+				OBSERVER.body.v_kf.MeasuredVector[1] = CHASSIS.lpf.x_acc_lpf.out;  // 输入加速度
+				OBSERVER.body.v_kf.F_data[1] = CHASSIS.duration * MS_TO_S;      // 更新采样时间
+				Kalman_Filter_Update(&OBSERVER.body.v_kf);
+//		 
+    CHASSIS.fdb.body.x_dot_obv = OBSERVER.body.v_kf.xhat_data[0];//滤波后的速度
+    CHASSIS.fdb.body.x_acc_obv= OBSERVER.body.v_kf.xhat_data[1];//滤波后的·加速度
+			  
+				// CHASSIS.fdb.body.x_dot_obv = speed;
+				// CHASSIS.fdb.body.x_acc_obv = CHASSIS.fdb.body.x_acc;
 	
     if (fabs(CHASSIS.ref.speed_vector.vx) < WHEEL_DEADZONE) 
 		{
@@ -628,7 +629,7 @@ float rc_follow_gimbal_input=-rc_follow_gimbal*RC_TO_ONE;
 // 计算目标角速度
 float target_wz;
 float rc_wz_input = -rc_wz*RC_TO_ONE*MAX_SPEED_VECTOR_WZ;
-// 小陀螺模式标志
+//// 小陀螺模式标志
 static bool is_spin_mode = false;
 
 // 判断是否进入小陀螺模式
@@ -665,7 +666,7 @@ if (is_spin_mode) {
     float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
 		yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.3,M_PI*0.3);
     float corrected_yaw_target = CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
-    target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*4.5+keyboard_data.Remote_Mouse_RL*0.01;
+    target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*8.5+keyboard_data.Remote_Mouse_RL*0.01;
   #else
     target_wz = -rc_wz*RC_TO_ONE*MAX_SPEED_VECTOR_WZ;
   #endif
@@ -746,7 +747,7 @@ else
     switch (CHASSIS.mode) {
 				case CHASSIS_OFF_HOOK:
         case CHASSIS_FREE: {
-				         length=length-rc_length*RC_TO_ONE*0.001f;
+				     length=length-rc_length*RC_TO_ONE*0.001f;
 					  if (CHASSIS.step == JUMP_STEP_SQUST) 
             {
               length = MIN_LEG_LENGTH;
@@ -759,23 +760,24 @@ else
             {
               length = MIN_LEG_LENGTH ;
             }
-						else
-						{
-							
-						}
-						
         } break;
         default: {
             length = 0.14f;
         }
     }
-    length = fp32_constrain(length, MIN_LEG_LENGTH, MAX_LEG_LENGTH);
-		
 
-		 CHASSIS.ref.rod_L0[0] = length;
-     CHASSIS.ref.rod_L0[1] = length;
+			//如果检测到离地注意设置腿长为目标腿长加上0.1
+			if (CHASSIS.fdb.leg[0].is_take_off==1&&CHASSIS.fdb.leg[1].is_take_off==1)
+			{
+						 CHASSIS.ref.rod_L0[0] = length+0.1;
+						 CHASSIS.ref.rod_L0[1] = length+0.1;
+			}
+			else
+			{
+						 CHASSIS.ref.rod_L0[0] = length;
+						 CHASSIS.ref.rod_L0[1] = length;
+			}
 
-    CHASSIS.ref.body.pitch = fp32_constrain(-rc_pitch * RC_TO_ONE * MAX_PITCH, MIN_PITCH, MAX_PITCH);
  }
 static void ConsoleZeroForce(void);//零力控制
 static void ConsoleNormal(void);//正常控制
@@ -1015,6 +1017,9 @@ static void LocomotionController(void)
 float F0, F_leg;
 static void LegTorqueController(void)
 {
+	 CHASSIS.ref.rod_L0[0]  = fp32_constrain(CHASSIS.ref.rod_L0[0], MIN_LEG_LENGTH, MAX_LEG_LENGTH);
+	 CHASSIS.ref.rod_L0[1]  = fp32_constrain(CHASSIS.ref.rod_L0[1], MIN_LEG_LENGTH, MAX_LEG_LENGTH);
+
 	  if(CHASSIS.mode==CHASSIS_FREE)
 		{
 			
@@ -1030,12 +1035,6 @@ static void LegTorqueController(void)
 								F0 =50;
 								F_leg = PID_calc(&CHASSIS.pid.leg_length_length[i], CHASSIS.fdb.leg[i].rod.L0,CHASSIS.ref.rod_L0[i]);
 								CHASSIS.cmd.leg[i].rod.F =F0+F_leg- CHASSIS.fdb.leg[i].rod.F_spring; 
-							}
-							else if(CHASSIS.fdb.leg[0].is_take_off&&CHASSIS.fdb.leg[0].is_take_off)
-							{
-								F0=0;
-								F_leg = PID_calc(&CHASSIS.pid.leg_length_length[i], CHASSIS.fdb.leg[i].rod.L0,0.19);
-								CHASSIS.cmd.leg[i].rod.F = F0 + F_leg- CHASSIS.fdb.leg[i].rod.F_spring; 
 							}
 							else
 							{				
@@ -1178,7 +1177,7 @@ void SendWheelMotorCmd(void);
  * @param chassis
  */
  
- fp32 current_to_torque=0.00042063763;
+ fp32 current_to_torque=0.00046063763;
  void SendWheelMotorCmd(void)
  {
 	     switch (CHASSIS.mode) {

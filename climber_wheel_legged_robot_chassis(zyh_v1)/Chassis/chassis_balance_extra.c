@@ -17,19 +17,40 @@ extern Chassis_s CHASSIS ;
 {
     float t1 = l;
     float t2 = l * l; 
-    float t3 = l * l * l;  
-k[0][0] = -117.5301f * t3 + 193.0881f * t2 + -119.8740f * t1 + -0.0467f;
-k[0][1] = 10.0938f * t3 + -6.7596f * t2 + -4.5094f * t1 + 0.0730f;
-k[0][2] = -1.6822f * t3 + 5.7308f * t2 + -4.3446f * t1 + -0.0526f;
-k[0][3] = -1.1406f * t3 + 9.0462f * t2 + -7.7924f * t1 + -0.3738f;
-k[0][4] = 151.4787f * t3 + -99.0451f * t2 + -16.9507f * t1 + 24.3999f;
-k[0][5] = -0.0686f * t3 + 5.1673f * t2 + -7.2795f * t1 + 3.7766f;
-k[1][0] = 866.8396f * t3 + -751.8268f * t2 + 119.9603f * t1 + 59.8045f;
-k[1][1] = 56.3871f * t3 + -65.5165f * t2 + 23.6962f * t1 + 1.3015f;
-k[1][2] = 42.3722f * t3 + -29.6981f * t2 + -1.8013f * t1 + 5.2580f;
-k[1][3] = 26.7571f * t3 + 1.7402f * t2 + -26.3722f * t1 + 13.7861f;
-k[1][4] = 591.1373f * t3 + -980.3100f * t2 + 567.0386f * t1 + -22.1164f;
-k[1][5] = 69.9482f * t3 + -112.5365f * t2 + 65.3072f * t1 + -4.6109f;
+    float t3 = l * l * l;
+
+if(CHASSIS.mode==CHASSIS_STAND_UP)  
+{
+k[0][0] = -198.5526f * t3 + 240.5928f * t2 + -122.8236f * t1 + -6.0633f;
+k[0][1] = 0.2905f * t3 + 0.5795f * t2 + -8.4417f * t1 + -0.3246f;
+k[0][2] = -18.6488f * t3 + 22.9639f * t2 + -10.3291f * t1 + -1.3522f;
+k[0][3] = -12.1718f * t3 + 17.0661f * t2 + -9.2703f * t1 + -2.6949f;
+k[0][4] = -69.9934f * t3 + 126.2554f * t2 + -87.6682f * t1 + 28.4210f;
+k[0][5] = -20.9971f * t3 + 28.8769f * t2 + -16.3728f * t1 + 4.9776f;
+k[1][0] = 141.8965f * t3 + -75.0062f * t2 + -33.0022f * t1 + 36.7073f;
+k[1][1] = 13.2390f * t3 + -12.6443f * t2 + 2.6696f * t1 + 2.6246f;
+k[1][2] = -5.0505f * t3 + 22.8887f * t2 + -21.7466f * t1 + 7.9310f;
+k[1][3] = -51.3276f * t3 + 75.7273f * t2 + -44.7869f * t1 + 12.7109f;
+k[1][4] = 610.5073f * t3 + -705.5404f * t2 + 297.0660f * t1 + 13.3755f;
+k[1][5] = 97.5366f * t3 + -112.6718f * t2 + 47.8899f * t1 + 0.0769f;
+
+}
+else
+{
+k[0][0] = 18.1297f * t3 + 49.4338f * t2 + -75.1465f * t1 + -1.1877f;
+k[0][1] = 17.3659f * t3 + -15.8239f * t2 + -1.9522f * t1 + -0.0993f;
+k[0][2] = 6.7133f * t3 + -1.8760f * t2 + -2.6169f * t1 + 0.0165f;
+k[0][3] = 17.3316f * t3 + -6.1611f * t2 + -5.6502f * t1 + -0.0958f;
+k[0][4] = 127.2522f * t3 + -112.1324f * t2 + 7.6898f * t1 + 18.4330f;
+k[0][5] = -4.8252f * t3 + 6.2661f * t2 + -5.5171f * t1 + 3.2137f;
+k[1][0] = 1146.9340f * t3 + -1196.8276f * t2 + 329.5126f * t1 + 53.8246f;
+k[1][1] = 41.7245f * t3 + -67.1658f * t2 + 32.9986f * t1 + 3.6531f;
+k[1][2] = 67.2710f * t3 + -60.0815f * t2 + 7.1621f * t1 + 7.1551f;
+k[1][3] = 106.1840f * t3 + -88.3353f * t2 + -1.6004f * t1 + 19.3386f;
+k[1][4] = -207.7701f * t3 + -289.3988f * t2 + 437.0307f * t1 + -31.5340f;
+k[1][5] = 14.4677f * t3 + -68.5070f * t2 + 62.2963f * t1 + -8.2472f;
+
+}
 
 
 
@@ -230,24 +251,24 @@ inline float CalcLegLengthDiff(float Ld0, float theta0, float theta1)
  *备注:无
  */
 
-void Leg_Controller_Pitch_Control(float Pitch_Target,float *LeftLeg_DeltaL0,float *RightLeg_DeltaL0,float *LeftLeg_DeltaF,float *RightLeg_DeltaF)
-{
-	float Rl=WHEEL_BASE/2; //轮子轴距一半
-	float Delta_L0=CHASSIS.fdb.leg[1].rod.L0-CHASSIS.fdb.leg[0].rod.L0;//右腿减去左腿
-	float BC=Delta_L0*arm_cos_f32(CHASSIS.lpf.pitch.out-Pitch_Target)-2.0f*Rl*arm_sin_f32(CHASSIS.lpf.pitch.out-Pitch_Target);
-	float FD=Delta_L0*arm_sin_f32(CHASSIS.lpf.pitch.out-Pitch_Target)+2.0f*Rl*arm_cos_f32(CHASSIS.lpf.pitch.out-Pitch_Target);
-	float tan_delta,L0d_r,L0d_l;
-	if(FD==0){L0d_r=L0d_l=0;}
-	else
-	{
-		tan_delta=BC/FD;
-		L0d_r=Rl*tan_delta;
-		L0d_l=-Rl*tan_delta;
-	}
-	(*LeftLeg_DeltaL0)=L0d_l;
-	(*RightLeg_DeltaL0)=L0d_r;
-	//暂时未考虑高速离心力补偿
-}
+//void Leg_Controller_Pitch_Control(float Pitch_Target,float *LeftLeg_DeltaL0,float *RightLeg_DeltaL0,float *LeftLeg_DeltaF,float *RightLeg_DeltaF)
+//{
+//	float Rl=WHEEL_BASE/2; //轮子轴距一半
+//	float Delta_L0=CHASSIS.fdb.leg[1].rod.L0-CHASSIS.fdb.leg[0].rod.L0;//右腿减去左腿
+//	float BC=Delta_L0*arm_cos_f32(CHASSIS.lpf.pitch.out-Pitch_Target)-2.0f*Rl*arm_sin_f32(CHASSIS.lpf.pitch.out-Pitch_Target);
+//	float FD=Delta_L0*arm_sin_f32(CHASSIS.lpf.pitch.out-Pitch_Target)+2.0f*Rl*arm_cos_f32(CHASSIS.lpf.pitch.out-Pitch_Target);
+//	float tan_delta,L0d_r,L0d_l;
+//	if(FD==0){L0d_r=L0d_l=0;}
+//	else
+//	{
+//		tan_delta=BC/FD;
+//		L0d_r=Rl*tan_delta;
+//		L0d_l=-Rl*tan_delta;
+//	}
+//	(*LeftLeg_DeltaL0)=L0d_l;
+//	(*RightLeg_DeltaL0)=L0d_r;
+//	//暂时未考虑高速离心力补偿
+//}
 
 /**
  * @brief 通过L0和Phi0的值计算关节phi1和phi4

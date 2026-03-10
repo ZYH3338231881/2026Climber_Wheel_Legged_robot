@@ -68,9 +68,9 @@
 //yaw轴跟踪速度环PID参数
 #define KP_CHASSIS_YAW_VELOCITY        (2.0f)
 #define KI_CHASSIS_YAW_VELOCITY        (0.0f)
-#define KD_CHASSIS_YAW_VELOCITY        (20.0f)
-#define MAX_IOUT_CHASSIS_YAW_VELOCITY  (0.5f)
-#define MAX_OUT_CHASSIS_YAW_VELOCITY   (10.0f)
+#define KD_CHASSIS_YAW_VELOCITY        (10.0f)
+#define MAX_IOUT_CHASSIS_YAW_VELOCITY  (0.0f)
+#define MAX_OUT_CHASSIS_YAW_VELOCITY   (7.0f)
 
 
 // vel_add PID参数
@@ -90,20 +90,19 @@
 #define MAX_OUT_CHASSIS_PITCH_ANGLE   (60)
 
 // 腿长跟踪长度环PID参数
-#define KP_CHASSIS_LEG_LENGTH_LENGTH        (3000.0f)
+#define KP_CHASSIS_LEG_LENGTH_LENGTH        (2800.0f)
 #define KI_CHASSIS_LEG_LENGTH_LENGTH        (0.0f)
-#define KD_CHASSIS_LEG_LENGTH_LENGTH        (9000.0f)
+#define KD_CHASSIS_LEG_LENGTH_LENGTH        (7000.0f)
 #define MAX_IOUT_CHASSIS_LEG_LENGTH_LENGTH  (0.0f)
 #define MAX_OUT_CHASSIS_LEG_LENGTH_LENGTH   (250.0f)
 #define N_LEG_LENGTH_LENGTH                 (0.2f)
 
 // 起立用的pid
-#define KP_CHASSIS_STAND_UP       (1200)
+#define KP_CHASSIS_STAND_UP       (800)
 #define KI_CHASSIS_STAND_UP       (0)
 #define KD_CHASSIS_STAND_UP       (100)
 #define MAX_IOUT_CHASSIS_STAND_UP (0)
 #define MAX_OUT_CHASSIS_STAND_UP  (270)
-
 
 
 // 磨轮子用的pid
@@ -121,7 +120,7 @@
 //#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (3)
 
 // 云台跟随用的pid角度环
-#define KP_CHASSIS_FOLLOW_GIMBAL       (5)
+#define KP_CHASSIS_FOLLOW_GIMBAL       (3)
 #define KI_CHASSIS_FOLLOW_GIMBAL       (0)
 #define KD_CHASSIS_FOLLOW_GIMBAL       (10)
 #define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
@@ -195,7 +194,7 @@
 #define J3_ANGLE_OFFSET     (-0.0500469208 )        // (rad)关节3角度偏移量(电机0点到水平线的夹角)
 
 
-#define WHEEL_DEADZONE (0.01f)  // (m/s)轮子速度死区       //待考量
+#define WHEEL_DEADZONE (0.001f)  // (m/s)轮子速度死区       //待考量
 //#define BODY_MASS            (13.0f)      // (kg)机身重量   
 
 #define WHEEL_MASS           (0.5f)      // (kg)轮子重量  
@@ -204,7 +203,7 @@
 #define WHEEL_BASE           (0.42)  // (m)驱动轮轴距  
 
 // 支持力阈值，当支持力小于这个值时认为离地
-#define TAKE_OFF_FN_THRESHOLD (10.0f)  //待考量，建议可以用vofa打印出来
+#define TAKE_OFF_FN_THRESHOLD (20.0f)  //待考量，建议可以用vofa打印出来
 // 触地状态切换时间阈值，当时间接触或离地时间超过这个值时切换触地状态
 #define TOUCH_TOGGLE_THRESHOLD (50)
 #define MIN_LEG_LENGTH       ( 0.14f)         //最短腿长  
@@ -217,6 +216,12 @@
 #define SPRING_X_CONST  0.0515f   //弹簧力臂长度
 #define SPRING_F_RAW    300.0f    //弹簧原始力
 
+#define VEL_PROCESS_NOISE 25   // 速度过程噪声
+#define VEL_MEASURE_NOISE 800  // 速度测量噪声
+// 同时估计加速度和速度时对加速度的噪声
+// 更好的方法是设置为动态,当有冲击时/加加速度大时更相信轮速
+#define ACC_PROCESS_NOISE 2000  // 加速度过程噪声
+#define ACC_MEASURE_NOISE 0.01  // 加速度测量噪声
 
 
 #define MAX_TP    (15)    //限制最大旋转扭矩
@@ -228,12 +233,12 @@
 #define CHASSIS_WZ_CHANNEL     2  // 旋转的遥控器通道号码
 
 #define RC_TO_ONE 0.0015151515151515f  // (1/660)遥控器通道值归一化系数
-#define MAX_SPEED_VECTOR_VX  (5.5f)
-#define MAX_SPEED_VECTOR_WZ  (15.0f)
+#define MAX_SPEED_VECTOR_VX  (3.5f)
+#define MAX_SPEED_VECTOR_WZ  (9.0f)
 
 #define PITCH_VEL_LIMIT_FACTOR  (0.1f)    // pitch角速度抑制比例系数
 #define FF_RATIO                (0.25f)   // 前馈比例系数
-#define max_joint_tor_move      (20.0f)   // (Nm)运动时关节最大扭矩
+#define max_joint_tor_move      (25.0f)   // (Nm)运动时关节最大扭矩
 #define max_joint_tor_stand     (30.0f)  // 	起立时候的关节最大扭矩
 #define min_joint_tor_move      (-max_joint_tor_move)  // 
 #define min_joint_tor_stand     (-max_joint_tor_stand)  // 
@@ -400,15 +405,8 @@ typedef struct
 
 typedef struct LPF
 {
-    LowPassFilter_t leg_l0_accel_filter[2];
-    LowPassFilter_t leg_phi0_accel_filter[2];
-    LowPassFilter_t leg_theta_accel_filter[2];
     LowPassFilter_t support_force_filter[2];
-    LowPassFilter_t pitch;//机体翻滚角度
-	  LowPassFilter_t L_theta;//摆杆与竖直方向夹角滤波
-	  LowPassFilter_t R_theta;//摆杆与竖直方向夹角滤波
 	  LowPassFilter_t VX_filter;//键鼠信号阶跃滤波
-	
     LowPassFilter_t x_acc_lpf;//位移加速度低通滤波
 
 } LPF_t;

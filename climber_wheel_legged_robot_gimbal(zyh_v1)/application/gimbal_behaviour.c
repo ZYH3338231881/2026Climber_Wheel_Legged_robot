@@ -163,8 +163,10 @@ void GimbalConsole(void)
     // 使用角度差值归一化来处理跨越π边界的问题
     float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.yaw.fdb.pos);
     float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
-    gimbal_direct.yaw.set.vel=PID_calc(&gimbal_direct_pid.yaw_angle, gimbal_direct.feedback_pos.yaw, corrected_yaw_target);
-    gimbal_direct.yaw.set.curr=gimbal_direct.yaw.direction * PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
+    /*              SMC滑膜控制              */
+				yaw_smc.ref=corrected_yaw_target;
+				SMC_Tick(&yaw_smc,gimbal_direct.feedback_pos.yaw, gimbal_direct.feedback_vel.yaw);
+				gimbal_direct.yaw.set.curr=yaw_smc.u;
 	}
 	
   else if (gimbal_direct.mode == GIMBAL_HAND)
@@ -176,14 +178,20 @@ void GimbalConsole(void)
 		  LowPassFilterCalc(&Mouse_yaw_Filter,keyboard_data.Remote_Mouse_RL*0.00006);
 		  Mouse_yaw_Filter.out=fp32_constrain(Mouse_yaw_Filter.out,-0.040,+0.040);
 	    gimbal_direct.reference.yaw-=Mouse_yaw_Filter.out;
-      /*              SMC滑膜控制              */
-		  float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);
-      float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
-			yaw_smc.ref=corrected_yaw_target;
-			SMC_Tick(&yaw_smc,gimbal_direct.feedback_pos.yaw, gimbal_direct.feedback_vel.yaw);
-			gimbal_direct.yaw.set.curr=yaw_smc.u;
 
-		
+
+      //速度环yaw轴控制
+      gimbal_direct.yaw.set.vel=-gimbal_direct.rc->rc.ch[2]*0.1;
+      gimbal_direct.yaw.set.curr=gimbal_direct.yaw.direction * PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
+
+
+      /*              SMC滑膜控制              */
+		  // float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);
+      // float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
+			// yaw_smc.ref=corrected_yaw_target;
+			// SMC_Tick(&yaw_smc,gimbal_direct.feedback_pos.yaw, gimbal_direct.feedback_vel.yaw);
+			// gimbal_direct.yaw.set.curr=yaw_smc.u;
+
       /*              串级控制                  */
 		  gimbal_direct.pitch.set.vel=PID_calc(&gimbal_direct_pid.pitch_angle,gimbal_direct.pitch.direction *gimbal_direct.feedback_pos.pitch,gimbal_direct.reference.pitch);
       gimbal_direct.pitch.set.curr= PID_calc(&gimbal_direct_pid.pitch_velocity,gimbal_direct.pitch.direction *gimbal_direct.feedback_vel.pitch,gimbal_direct.pitch.set.vel);
