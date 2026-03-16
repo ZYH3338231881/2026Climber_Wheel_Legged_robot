@@ -27,7 +27,12 @@ typedef CAN_HandleTypeDef hcan_t;
 // 接收数据
 static DjiMotorMeasure_t CAN1_DJI_MEASURE[11];
 static DjiMotorMeasure_t CAN2_DJI_MEASURE[11];
+static DmMeasure_s CAN1_DM_MEASURE[4];
+static DmMeasure_s CAN2_DM_MEASURE[4];
+
 extern Gimbal_s gimbal_direct;
+
+
 typedef struct __CanCtrlData
 {
     hcan_t * hcan;
@@ -35,8 +40,11 @@ typedef struct __CanCtrlData
     uint8_t tx_data[8];
 } CanCtrlData_s;
 
-
-
+CanCtrlData_s CAN_CTRL_DATA = {
+    .tx_header.IDE = CAN_ID_STD,
+    .tx_header.RTR = CAN_RTR_DATA,
+    .tx_header.DLC = 8,
+};
 /**
  * @brief          获取DJI电机接收数据指针
  * @param[in]      can can口 (1 or 2)
@@ -83,8 +91,51 @@ void DjiFdbData(DjiMotorMeasure_t * dji_measure, uint8_t * rx_data)
     dji_measure->speed_rpm = (uint16_t)((rx_data)[2] << 8 | (rx_data)[3]);
     dji_measure->given_current = (uint16_t)((rx_data)[4] << 8 | (rx_data)[5]);
     dji_measure->temperate = (rx_data)[6];
-
     dji_measure->last_fdb_time = HAL_GetTick();
+}
+
+
+/**
+ * @brief        DmFdbData: 获取DM电机反馈数据函数
+ * @param[out]   dm_measure 达妙电机数据缓存
+ * @param[in]    rx_data 指向包含反馈数据的数组指针
+ * @note         从接收到的数据中提取DM电机的反馈信息，包括电机ID、状态、位置、速度、扭矩以及相关温度参数
+ */
+void DmFdbData(DmMeasure_s * dm_measure, uint8_t * rx_data)
+{
+    dm_measure->id = (rx_data[0]) & 0x0F;
+    dm_measure->state = (rx_data[0]) >> 4;
+    dm_measure->p_int = (rx_data[1] << 8) | rx_data[2];
+    dm_measure->v_int = (rx_data[3] << 4) | (rx_data[4] >> 4);
+    dm_measure->t_int = ((rx_data[4] & 0xF) << 8) | rx_data[5];
+    dm_measure->pos = uint_to_float(dm_measure->p_int, DM_P_MIN, DM_P_MAX, 16);  // (-12.5,12.5)
+    dm_measure->vel = uint_to_float(dm_measure->v_int, DM_V_MIN, DM_V_MAX, 12);  // (-45.0,45.0)
+    dm_measure->tor = uint_to_float(dm_measure->t_int, DM_T_MIN, DM_T_MAX, 12);  // (-18.0,18.0)
+    dm_measure->t_mos = (float)(rx_data[6]);
+    dm_measure->t_rotor = (float)(rx_data[7]);
+
+    dm_measure->last_fdb_time = HAL_GetTick();
+}
+/**
+ * @brief          获取DM电机反馈数据
+ * @param[out]     motor 电机结构体 
+ * @param[in]      dm_measure 电机反馈数据缓存区
+ * @return         none
+ */
+static void GetDmFdbData(Motor_s * motor, const DmMeasure_s * dm_measure)
+{
+    motor->fdb.pos = dm_measure->pos;
+    motor->fdb.vel = dm_measure->vel;
+    motor->fdb.tor = dm_measure->tor;
+    motor->fdb.temp = dm_measure->t_mos;
+    motor->fdb.state = dm_measure->state;
+
+    uint32_t now = HAL_GetTick();
+    if (now - dm_measure->last_fdb_time > MOTOR_STABLE_RUNNING_TIME) {
+        motor->offline = true;
+    } else {
+        motor->offline = false;
+    }
 }
 
 void GetMotorMeasure(Motor_s * p_motor)
@@ -99,7 +150,15 @@ void GetMotorMeasure(Motor_s * p_motor)
             const DjiMotorMeasure_t * p_dji_motor_measure =GetDjiMotorMeasurePoint(p_motor->can, p_motor->id + 3);
 						GetDjiFdbData(p_motor, p_dji_motor_measure);
         } break;
-
+				case DM_4310:   
+					{
+					     if (p_motor->can == 1) {
+                GetDmFdbData(p_motor, &CAN1_DM_MEASURE[p_motor->id - 1]);
+            } else {
+                GetDmFdbData(p_motor, &CAN2_DM_MEASURE[p_motor->id - 1]);
+            }
+			  	}break;
+					
         default:
             break;
     }
@@ -138,34 +197,78 @@ static void DecodeStdIdData(hcan_t * CAN, CAN_RxHeaderTypeDef * rx_header, uint8
             }
             return;
         }
+				
+				case DM_M1_ID:
+        case DM_M2_ID:
+        case DM_M3_ID:
+        case DM_M4_ID:
+        case DM_M5_ID:
+        case DM_M6_ID: {  // 以上ID为DM电机标识符
+            static uint8_t i = 0;
+            i = rx_header->StdId - DM_M1_ID;
+            if (CAN == &hcan1)  // 接收到的数据是通过 CAN1 接收的
+            {
+                DmFdbData(&CAN1_DM_MEASURE[i], rx_data);
+            } else if (CAN == &hcan2)  // 接收到的数据是通过 CAN2 接收的
+            {
+                DmFdbData(&CAN2_DM_MEASURE[i], rx_data);
+            }
+            return;
+        }
         default: {
             break;
         }
     }
 
 }
-MTOC_message_t mtoc_mesasge;
 
+MTOC_message_t mtoc_mesasge;
 void M_communication_c(MTOC_message_t *mtoc_mesasge,uint8_t *rx_data)
 {
    static uint8_t is_first_msg = 1;
    uint16_t new_power_heat = (uint16_t)(rx_data[0] << 8 | rx_data[1]);
-   
    if (is_first_msg)
    {
-       mtoc_mesasge->power_heat = new_power_heat;
-       is_first_msg = 0;
-       return;
+   mtoc_mesasge->power_heat = new_power_heat;
+   is_first_msg = 0;
+   return;
    }
-
    if(new_power_heat > mtoc_mesasge->power_heat)
    {
-       mtoc_mesasge->bullet_count += (new_power_heat - mtoc_mesasge->power_heat + 5) / 10;
+   mtoc_mesasge->bullet_count += (new_power_heat - mtoc_mesasge->power_heat + 5) / 10;
    }
    mtoc_mesasge->power_heat = new_power_heat;
-	 
 	 mtoc_mesasge->bullet_speed=(int16_t)(rx_data[2] << 8 | rx_data[3]) / 1000.0f;
+	 
+	 mtoc_mesasge->key_v=(uint16_t)((rx_data[4] << 8 | rx_data[5]));
+	 
+	 mtoc_mesasge->mode=rx_data[6];
+	 
+	 mtoc_mesasge->receive_chassis_thing=rx_data[7];
 }
+
+void M_communication_c_556(MTOC_message_t *mtoc_mesasge,uint8_t *rx_data)
+{
+	mtoc_mesasge->mouse_RL=(uint16_t)((rx_data[0] << 8 | rx_data[1]));
+	
+	mtoc_mesasge->mouse_UD=(uint16_t)((rx_data[2] << 8 | rx_data[3]));
+	
+	mtoc_mesasge->yaw_control=(uint16_t)((rx_data[4] << 8 | rx_data[5]));
+	
+	mtoc_mesasge->pitch_control=(uint16_t)((rx_data[6] << 8 | rx_data[7]));
+}
+
+void M_communication_c_557(MTOC_message_t *mtoc_mesasge,uint8_t *rx_data)
+{
+	mtoc_mesasge->mouse_press_l=rx_data[0];
+	mtoc_mesasge->mouse_press_r=rx_data[1];
+	
+	mtoc_mesasge->chassis_yaw_speed=(int16_t)(rx_data[2] << 8 | rx_data[3]) / 1000.0f;
+	
+
+	
+}
+
 
 //gimbal--can1--fifo1  云台接收控制主要有3  两个6020  一个拨盘电机发射
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
@@ -181,8 +284,20 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
     }
 		 if (rx_header.StdId == 0x555)  // 接收到的数据标识符为StdId
     {
-		M_communication_c(&mtoc_mesasge,rx_data);
+			M_communication_c(&mtoc_mesasge,rx_data);
     }
+		 if (rx_header.StdId == 0x556)
+		{
+			M_communication_c_556(&mtoc_mesasge,rx_data);
+		}
+		if (rx_header.StdId == 0x557)
+		{
+			M_communication_c_557(&mtoc_mesasge,rx_data);
+		}
+		if(rx_header.StdId==0x02)//达妙电机yaw
+		{
+			DmFdbData(&CAN1_DM_MEASURE[0],rx_data);
+		}
 }
 
 
@@ -198,16 +313,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     {
         DecodeStdIdData(hcan, &rx_header, rx_data);
     }
+		if(rx_header.StdId==0x04)//达妙电机pitch
+		{
+			DmFdbData(&CAN2_DM_MEASURE[2],rx_data);
+		}
 		
 
 }
 
 
-CanCtrlData_s CAN_CTRL_DATA = {
-    .tx_header.IDE = CAN_ID_STD,
-    .tx_header.RTR = CAN_RTR_DATA,
-    .tx_header.DLC = 8,
-};
 
 /**
  * @brief          发送控制数据
@@ -285,8 +399,125 @@ void SendData(uint8_t can,uint16_t std_id,uint8_t *data)
 
     CAN_SendTxMessage(&CAN_CTRL_DATA);
 }
-//C板发送给妙板
+/**
+ * @brief      获取can总线句柄
+ * @param[in]  motor 电机结构体
+ * @return     can总线句柄
+ * @note       获取电机结构体中的can号，返回对应的can总线句柄，同时检测电机类型是否为达妙电机
+ */
+static hcan_t * GetHcanPoint(Motor_s * motor)
+{
+    if (!( motor->type == DM_4310)) return NULL;
 
+    if (motor->can == 1)
+        return &hcan1;
+    else if (motor->can == 2)
+        return &hcan2;
+
+    return NULL;
+}
+/**
+************************************************************************
+* @brief      	EnableMotorMode: 启用电机模式函数
+* @param[in]    hcan:     指向CAN_HandleTypeDef结构的指针
+* @param[in]    motor_id: 电机ID，指定目标电机
+* @param[in]    mode_id:  模式ID，指定要开启的模式
+* @retval     	void
+* @details    	通过CAN总线向特定电机发送启用特定模式的命令
+************************************************************************
+**/
+static void EnableMotorMode(hcan_t * hcan, uint16_t motor_id, uint16_t mode_id)
+{
+    CAN_CTRL_DATA.hcan = hcan;
+
+    CAN_CTRL_DATA.tx_header.StdId = motor_id + mode_id;
+
+    CAN_CTRL_DATA.tx_data[0] = 0xFF;
+    CAN_CTRL_DATA.tx_data[1] = 0xFF;
+    CAN_CTRL_DATA.tx_data[2] = 0xFF;
+    CAN_CTRL_DATA.tx_data[3] = 0xFF;
+    CAN_CTRL_DATA.tx_data[4] = 0xFF;
+    CAN_CTRL_DATA.tx_data[5] = 0xFF;
+    CAN_CTRL_DATA.tx_data[6] = 0xFF;
+    CAN_CTRL_DATA.tx_data[7] = 0xFC;
+
+    CAN_SendTxMessage(&CAN_CTRL_DATA);
+}
+
+/**
+ * @brief          达妙电机使能
+ * @param[in]      motor 电机结构体
+ * @param[in]      mode_id 模式ID
+ * @retval         none
+ */
+void DmEnable(Motor_s * motor)
+{
+    hcan_t * hcan = GetHcanPoint(motor);
+    if (hcan == NULL) return;
+
+    EnableMotorMode(hcan, motor->id, motor->mode);
+}
+/**
+************************************************************************
+* @brief      	MitCtrl: MIT模式下的电机控制函数
+* @param[in]    hcan:			指向CAN_HandleTypeDef结构的指针，用于指定CAN总线
+* @param[in]    motor_id:	    电机ID，指定目标电机
+* @param[in]    pos:			位置给定值
+* @param[in]    vel:			速度给定值
+* @param[in]    kp:				位置比例系数
+* @param[in]    kd:				位置微分系数
+* @param[in]    torq:			转矩给定值
+* @retval     	void
+* @details    	通过CAN总线向电机发送MIT模式下的控制帧。
+************************************************************************
+**/
+static void MitCtrl(
+    hcan_t * hcan, uint16_t motor_id, float pos, float vel, float kp, float kd, float torq)
+{
+    uint16_t pos_tmp, vel_tmp, kp_tmp, kd_tmp, tor_tmp;
+
+    CAN_CTRL_DATA.hcan = hcan;
+
+    CAN_CTRL_DATA.tx_header.StdId = motor_id + DM_MODE_MIT;
+
+    pos_tmp = float_to_uint(pos, DM_P_MIN, DM_P_MAX, 16);
+    vel_tmp = float_to_uint(vel, DM_V_MIN, DM_V_MAX, 12);
+    kp_tmp = float_to_uint(kp, DM_KP_MIN, DM_KP_MAX, 12);
+    kd_tmp = float_to_uint(kd, DM_KD_MIN, DM_KD_MAX, 12);
+    tor_tmp = float_to_uint(torq, DM_T_MIN, DM_T_MAX, 12);
+
+    CAN_CTRL_DATA.tx_data[0] = (pos_tmp >> 8);
+    CAN_CTRL_DATA.tx_data[1] = pos_tmp;
+    CAN_CTRL_DATA.tx_data[2] = (vel_tmp >> 4);
+    CAN_CTRL_DATA.tx_data[3] = ((vel_tmp & 0xF) << 4) | (kp_tmp >> 8);
+    CAN_CTRL_DATA.tx_data[4] = kp_tmp;
+    CAN_CTRL_DATA.tx_data[5] = (kd_tmp >> 4);
+    CAN_CTRL_DATA.tx_data[6] = ((kd_tmp & 0xF) << 4) | (tor_tmp >> 8);
+    CAN_CTRL_DATA.tx_data[7] = tor_tmp;
+
+    CAN_SendTxMessage(&CAN_CTRL_DATA);
+}
+
+/**
+ * @brief          达妙电机MIT控制
+ * @param[in]      motor 电机结构体
+ * @retval         none
+ */
+void DmMitCtrl(Motor_s * motor, float kp, float kd)
+{
+    hcan_t * hcan = GetHcanPoint(motor);
+    if (hcan == NULL) return;
+
+    MitCtrl(hcan, motor->id, motor->set.pos, motor->set.vel, kp, kd, motor->set.tor);
+}
+
+
+
+
+
+
+
+//C板发送给妙板 can的板件通讯
 void CToM_sendControl(uint8_t can, uint16_t std_id, int16_t yaw)
 {
 	 
@@ -310,6 +541,8 @@ void CToM_sendControl(uint8_t can, uint16_t std_id, int16_t yaw)
     CAN_CTRL_DATA.tx_data[7] = 0;	
     CAN_SendTxMessage(&CAN_CTRL_DATA);
 }
+
+
 
 
 

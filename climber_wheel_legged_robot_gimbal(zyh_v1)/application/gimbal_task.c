@@ -39,13 +39,10 @@ void gimbal_task(void const *pvParameters)
 			GimbalReference();
 			GimbalConsole();
 			GimbalSendCmd();
-	    send_nuc();
-			osDelay(2);
+	     send_nuc();
+			osDelay(1);
     }
 }
-
-
-	
 void send_nuc()
 {
     typedef struct __attribute__((packed)) GimbalToVision 
@@ -53,8 +50,8 @@ void send_nuc()
        uint8_t head[2]; 
        uint8_t mode;   //  0: ¿ÕÏÐ, 1: ×ÔÃé, 2: Ð¡·û, 3: ´ó·û 
        float q[4];     //  wxyzË³Ðò 
-       float yaw; 
-       float yaw_vel; 
+       float yaw;
+       float yaw_vel;
        float pitch; 
        float pitch_vel; 
        float bullet_speed; 

@@ -2,6 +2,7 @@
 #include "string.h"
 #include "usart.h"
 #include "Keyboard.h"
+#include "chassis_task.h"
 #define SBUS_HEAD 0X0F
 #define SBUS_END 0X00
 #define REMOTE_RC_OFFSET 1024
@@ -15,6 +16,7 @@ uint8_t rx_buff[BUFF_SIZE];
 
 RC_ctrl_t rc_ctrl = rc_Init;
 Keyboard_Data keyboard_data;
+extern CTOM_message_t ctom_message;
 
 /*
  *函数简介:键盘数据处理
@@ -22,6 +24,7 @@ Keyboard_Data keyboard_data;
  *返回类型:无
  *备注:无
  */
+ 
 void Keyboard_DataProcess(Keyboard_Data *keyboard,RC_ctrl_t *rc_ctrl)
 {
 	

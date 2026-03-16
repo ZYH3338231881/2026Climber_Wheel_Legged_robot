@@ -5,6 +5,7 @@
 #include "struct_typedef.h"
 #include "user_lib.h"
 #include "fdcan.h"
+#include "chassis_task.h"
 // 电机参数设置结构体
 
 static CanCtrlData_s CAN_CTRL_DATA = {
@@ -12,6 +13,8 @@ static CanCtrlData_s CAN_CTRL_DATA = {
     .tx_header.TxFrameType = FDCAN_DATA_FRAME,//数据帧
     .tx_header.DataLength = 8,  //数据长度
 };
+extern Chassis_s CHASSIS;
+
 /**
  * @brief          通过CAN控制DJI电机(支持GM3508 GM2006 GM6020)
  * @param[in]      can 发送数据使用的can口(1/2)
@@ -426,7 +429,7 @@ void DmSpeedCtrl(Motor_s * motor)
 /************************ END OF FILE ************************/
 
 
-void MToC_sendControl(uint8_t can, uint16_t std_id, int16_t power_heat,fp32 bullet_speed)
+void MToC_sendControl(uint8_t can, uint16_t std_id, int16_t power_heat,fp32 bullet_speed,uint16_t v,uint8_t mode)
 {
 	 
     hcan_t * hcan = NULL;
@@ -437,7 +440,7 @@ void MToC_sendControl(uint8_t can, uint16_t std_id, int16_t power_heat,fp32 bull
 		else if (can == 3)
         hcan = &hfdcan3;
     if (hcan == NULL) return;
-		int16_t bullet_speed_int16=(int16_t)((bullet_speed) * 1000); // 假设放大1000倍保留精
+		int16_t bullet_speed_int16=(int16_t)((bullet_speed) * 1000); 
                                                 
     CAN_CTRL_DATA.hcan = hcan;
 
@@ -447,9 +450,9 @@ void MToC_sendControl(uint8_t can, uint16_t std_id, int16_t power_heat,fp32 bull
     CAN_CTRL_DATA.tx_data[1] = power_heat;
     CAN_CTRL_DATA.tx_data[2] = bullet_speed_int16>>8;
     CAN_CTRL_DATA.tx_data[3] = bullet_speed_int16;
-    CAN_CTRL_DATA.tx_data[4] = 0;
-    CAN_CTRL_DATA.tx_data[5] = 0;
-    CAN_CTRL_DATA.tx_data[6] = 0;
-    CAN_CTRL_DATA.tx_data[7] = 0;
+    CAN_CTRL_DATA.tx_data[4] = v>>8;
+    CAN_CTRL_DATA.tx_data[5] = v;
+    CAN_CTRL_DATA.tx_data[6] =mode ;
+    CAN_CTRL_DATA.tx_data[7] = CHASSIS.fdb.tell_gimbal_thing;
     canx_send_data(CAN_CTRL_DATA.hcan,CAN_CTRL_DATA.tx_header.Identifier,CAN_CTRL_DATA.tx_data,8);
 }

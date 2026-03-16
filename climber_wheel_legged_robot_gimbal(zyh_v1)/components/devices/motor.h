@@ -9,6 +9,7 @@ typedef enum __MotorType {
     DJI_M2006 = 0,
     DJI_M3508,
     DJI_M6020,
+	  DM_4310,
 } MotorType_e;
 /**
  * @brief  通用电机结构体

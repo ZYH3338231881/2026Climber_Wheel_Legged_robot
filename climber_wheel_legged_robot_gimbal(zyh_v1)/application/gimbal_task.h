@@ -6,8 +6,6 @@
 #include "remote_control.h"
 #include "gimbal_behaviour.h"
 #include "user_lib.h"
-
-
  
 
 /**

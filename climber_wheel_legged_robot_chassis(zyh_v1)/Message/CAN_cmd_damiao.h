@@ -40,6 +40,9 @@ extern void DmMitCtrlPosition(Motor_s * motor, float kp, float kd);
 extern void DmPosCtrl(Motor_s * motor);    //TODO：测试可用性
 extern void DmSpeedCtrl(Motor_s * motor);  //TODO：测试可用性
 extern void CanCmdDjiMotor(hcan_t * hcan, uint16_t std_id, int16_t curr_1, int16_t curr_2, int16_t curr_3, int16_t curr_4);
-extern void MToC_sendControl(uint8_t can, uint16_t std_id, int16_t power_heat , fp32 bullet_speed);
+extern void MToC_sendControl(uint8_t can, uint16_t std_id, int16_t power_heat,fp32 bullet_speed,uint16_t v,uint8_t mode);
+
+
+
 #endif /* CAN_CMD_DAMIAO_H */
 /************************ END OF FILE ************************/

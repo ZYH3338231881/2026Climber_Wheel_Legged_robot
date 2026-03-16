@@ -3,8 +3,10 @@
 #include "CAN_receive.h"
 #include "AutoGimbal.h"
 #include "remote_control.h"
+#include "gimbal_behaviour.h"
 extern visionDataStu_t visionDataStu;
 extern Keyboard_Data keyboard_data;
+extern MTOC_message_t mtoc_mesasge;
 
 Shoot_s SHOOT = {
   .mode = LOAD_STOP,
@@ -17,7 +19,8 @@ Shoot_s SHOOT = {
   .heat_limit = 0,
 };
 
-fp32 TRIGGER_SPEED=530.0f;
+fp32 TRIGGER_SPEED=340.0f;  
+//fp32 TRIGGER_SPEED=450.0f; 
 
 uint8_t fric_ui;
 fp32 delta;
@@ -56,7 +59,7 @@ void ShootSetMode(void)
 		SHOOT.mode = LOAD_STOP;   //停止拨盘
 
 	}
-	else if (switch_is_up(SHOOT.rc->rc.s[1])&&switch_is_up(SHOOT.rc->rc.s[0]))//双上可以射击
+	else if (mtoc_mesasge.mode==GIMBAL_HAND)//双上可以射击
   {
       //清弹
     SHOOT.state = FRIC_READY;//准备发射
@@ -128,7 +131,7 @@ void ShootReference(void)
   break;
   case LOAD_BURSTFIRE:
 	{  //开火条件，满足遥控器、鼠标左击，鼠标右击需要自瞄给开火位置
-		if(SHOOT.rc->rc.ch[4]==660||keyboard_data.Remote_Mouse_KeyL||(visionDataStu.mode == 2 && keyboard_data.Remote_Mouse_KeyR))
+		if(SHOOT.rc->rc.ch[4]==660||mtoc_mesasge.mouse_press_l||(visionDataStu.mode == 2 && keyboard_data.Remote_Mouse_KeyR))
 		{
 				SHOOT.REF.trigger_speed_ref = TRIGGER_SPEED;
 		}
@@ -179,7 +182,7 @@ void ShootSendCmd(void)
 		
 		if(SHOOT.state==FRIC_READY)
 		{
-			    CanCmdDjiMotor(2,STD_ID,SHOOT.fric_motor[1].set.curr,SHOOT.fric_motor[0].set.curr,0,0);
+//			    CanCmdDjiMotor(2,STD_ID,SHOOT.fric_motor[1].set.curr,SHOOT.fric_motor[0].set.curr,0,0);
 		}
 		else
 		{

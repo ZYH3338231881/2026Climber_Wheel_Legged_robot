@@ -22,7 +22,7 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\Desktop\2026RM\A_climber_code\climber_wheel_legged_robot_gimbal(zyh_v1)\MDK-ARM\04_F407_BMI088+M6020.uvprojx
-Project File Date:  02/05/2026
+Project File Date:  03/16/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
@@ -32,13 +32,17 @@ compiling gimbal_behaviour.c...
           /************************ END OF FILE ************************/
 ../components/controller/slidingmodec.h(41): warning:  #1-D: last line of file ends without a newline
   #endif // SLIDING_MODE_C_H
-..\application\gimbal_behaviour.c(242): warning:  #1295-D: Deprecated declaration C_communication_M - give arg types
+..\application\gimbal_behaviour.c(122): warning:  #188-D: enumerated type mixed with another type
+  	gimbal_direct.mode = mtoc_mesasge.mode;
+..\application\gimbal_behaviour.c(124): warning:  #188-D: enumerated type mixed with another type
+  	gimbal_direct.last_mode = current_mode;
+..\application\gimbal_behaviour.c(266): warning:  #1295-D: Deprecated declaration C_communication_M - give arg types
   void C_communication_M();//C板传输给妙板的数据
-..\application\gimbal_behaviour.c: 3 warnings, 0 errors
+..\application\gimbal_behaviour.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=60060 RO-data=856 RW-data=1544 ZI-data=53144  
+Program Size: Code=90692 RO-data=856 RW-data=1560 ZI-data=53776  
 FromELF: creating hex file...
-"04_F407_BMI088+M6020\04_F407_BMI088+M6020.axf" - 0 Error(s), 3 Warning(s).
+"04_F407_BMI088+M6020\04_F407_BMI088+M6020.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 

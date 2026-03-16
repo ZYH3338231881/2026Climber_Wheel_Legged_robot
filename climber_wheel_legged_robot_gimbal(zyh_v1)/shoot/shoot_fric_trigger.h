@@ -42,8 +42,8 @@
 #define STD_ID 0x200
 //单环拨弹速度
 //摩擦轮速度
-#define FRIC_R_SPEED                  (666.0f) 
-#define FRIC_L_SPEED                  (-666.0f) 
+#define FRIC_R_SPEED                  (660.0f) 
+#define FRIC_L_SPEED                  (-660.0f) 
 #define FRIC_SPEED_LIMIT            (600.0f) 
 
 /*ECD parameters------------*/
@@ -74,7 +74,7 @@
 #define TRIGGER_ANGEL_PID_MAX_IOUT (30.0f)
 
 //摩擦轮电机PID
-#define FRIC_SPEED_PID_KP (666.0f)
+#define FRIC_SPEED_PID_KP (10.0f)
 #define FIRC_SPEED_PID_KI (0.6f)
 #define FRIC_SPEED_PID_KD (1.0f)
 

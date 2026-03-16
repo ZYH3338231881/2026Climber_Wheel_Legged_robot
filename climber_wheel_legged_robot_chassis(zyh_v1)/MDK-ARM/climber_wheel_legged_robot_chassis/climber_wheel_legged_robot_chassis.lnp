@@ -54,6 +54,8 @@
 "climber_wheel_legged_robot_chassis\state_chexk_task.o"
 "climber_wheel_legged_robot_chassis\keyboard.o"
 "climber_wheel_legged_robot_chassis\tof_distance.o"
+"climber_wheel_legged_robot_chassis\chassis_power_control.o"
+"climber_wheel_legged_robot_chassis\talk_task.o"
 "climber_wheel_legged_robot_chassis\pid.o"
 "climber_wheel_legged_robot_chassis\kalman_filter.o"
 "climber_wheel_legged_robot_chassis\quaternionekf.o"

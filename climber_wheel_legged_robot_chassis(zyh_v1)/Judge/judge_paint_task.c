@@ -11,14 +11,25 @@
 #include "ui.h"
 #include "task.h"
 #include "usart.h"
+
+
+
 void UI_Task(void const * argument)
 {
   /* USER CODE BEGIN UI_Task */
+    // 初始化所有UI元素
+    ui_init_frame1_Ungroup();
+    // 初始化其他UI分组...
 
   /* Infinite loop */
   for(;;)
   {
-		osDelay(1);
+		// 更新所有UI元素 Z 
+		    ui_init_frame1_Ungroup();
+
+    ui_update_frame1_Ungroup();
+		// 更新其他UI分组...
+		
 
   }
   /* USER CODE END UI_Task */

@@ -39,12 +39,71 @@ typedef enum {
     DJI_M10_ID = 0x20A,  // 6020电机ID
     DJI_M11_ID = 0x20B,  // 6020电机ID
 } DJI_Motor_ID;
+
+// clang-format off  DM4310
+#define DM_MODE_MIT      0x000
+#define DM_MODE_POS      0x100
+#define DM_MODE_SPEED    0x200
+#define DM_MODE_POSI     0x300
+#define DM_P_MIN   -3.14159f
+#define DM_P_MAX    3.14159f
+#define DM_V_MIN   -30.0f
+#define DM_V_MAX    30.0f
+#define DM_KP_MIN   0.0f
+#define DM_KP_MAX   500.0f
+#define DM_KD_MIN   0.0f
+#define DM_KD_MAX   5.0f
+#define DM_T_MIN   -10.0f
+#define DM_T_MAX    10.0f
+
+typedef struct
+{
+    int id;
+    int state;
+    int p_int;
+    int v_int;
+    int t_int;
+    int kp_int;
+    int kd_int;
+
+    float pos;
+    float vel;
+    float tor;
+    float Kp;
+    float Kd;
+
+    float t_mos;
+    float t_rotor;
+
+    uint32_t last_fdb_time;  //上次反馈时间
+} DmMeasure_s;
 typedef struct __MTOC_message
 {
 	uint16_t power_heat;
 	uint16_t bullet_count;
   fp32 bullet_speed;	
+	int16_t mouse_RL;
+	int16_t mouse_UD;
+	int16_t yaw_control;
+	int16_t pitch_control;
+	uint16_t key_v;
+	uint8_t mode;
+	uint8_t mouse_press_l;
+  uint8_t mouse_press_r;
+	fp32 chassis_yaw_speed;
+	uint8_t receive_chassis_thing;
+
 }MTOC_message_t;
+typedef enum __DmMotorType{
+    DM_M1_ID = 0x51,
+    DM_M2_ID,
+    DM_M3_ID,
+    DM_M4_ID,
+    DM_M5_ID,
+    DM_M6_ID,
+} DmMotorType_e;
+
+
 
 extern MTOC_message_t mtoc_mesasge;
 
@@ -59,8 +118,10 @@ void GetMotorMeasure(Motor_s * p_motor);
 static void DecodeStdIdData(hcan_t * CAN, CAN_RxHeaderTypeDef * rx_header, uint8_t rx_data[8]);
 void CanCmdDjiMotor(uint8_t can, uint16_t std_id, int16_t curr_1, int16_t curr_2, int16_t curr_3, int16_t curr_4);
 void SendData(uint8_t can,uint16_t std_id,uint8_t *data);
+void DmMitCtrl(Motor_s * motor, float kp, float kd);
 
 void CToM_sendControl(uint8_t can, uint16_t std_id, int16_t yaw);
 
+void DmEnable(Motor_s * motor);
 
 #endif

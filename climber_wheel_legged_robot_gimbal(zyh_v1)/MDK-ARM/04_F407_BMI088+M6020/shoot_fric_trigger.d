@@ -72,3 +72,5 @@
 04_f407_bmi088+m6020\shoot_fric_trigger.o: ../application/CAN_receive.h
 04_f407_bmi088+m6020\shoot_fric_trigger.o: ../Inc/can.h
 04_f407_bmi088+m6020\shoot_fric_trigger.o: ../application/AutoGimbal.h
+04_f407_bmi088+m6020\shoot_fric_trigger.o: ../application/gimbal_behaviour.h
+04_f407_bmi088+m6020\shoot_fric_trigger.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h

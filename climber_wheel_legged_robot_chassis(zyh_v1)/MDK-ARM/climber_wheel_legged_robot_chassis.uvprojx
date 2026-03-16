@@ -1833,6 +1833,26 @@
               <FileType>5</FileType>
               <FilePath>..\Chassis\TOF_distance.h</FilePath>
             </File>
+            <File>
+              <FileName>chassis_power_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Chassis\chassis_power_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>chassis_power_control.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Chassis\chassis_power_control.h</FilePath>
+            </File>
+            <File>
+              <FileName>talk_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Chassis\talk_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>talk_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Chassis\talk_task.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -65,15 +65,22 @@
 #define MAX_IOUT_CHASSIS_YAW_ANGLE  (0)
 #define MAX_OUT_CHASSIS_YAW_ANGLE   (0)
 
-//yaw轴跟踪速度环PID参数
-#define KP_CHASSIS_YAW_VELOCITY        (2.0f)
+
+
+
+// 云台跟随用的单环  
+#define KP_CHASSIS_FOLLOW_GIMBAL       (5)
+#define KI_CHASSIS_FOLLOW_GIMBAL       (0)
+#define KD_CHASSIS_FOLLOW_GIMBAL       (50)
+#define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
+#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (9)
+
+#define KP_CHASSIS_YAW_VELOCITY        (1.1f)
 #define KI_CHASSIS_YAW_VELOCITY        (0.0f)
-#define KD_CHASSIS_YAW_VELOCITY        (10.0f)
+#define KD_CHASSIS_YAW_VELOCITY        (5.0f)
 #define MAX_IOUT_CHASSIS_YAW_VELOCITY  (0.0f)
-#define MAX_OUT_CHASSIS_YAW_VELOCITY   (7.0f)
+#define MAX_OUT_CHASSIS_YAW_VELOCITY   (2.0f)
 
-
-// vel_add PID参数
 #define KP_CHASSIS_VEL_ADD        (0) //0.1
 #define KI_CHASSIS_VEL_ADD        (0)//0.005
 #define KD_CHASSIS_VEL_ADD        (0)//0.001
@@ -90,19 +97,19 @@
 #define MAX_OUT_CHASSIS_PITCH_ANGLE   (60)
 
 // 腿长跟踪长度环PID参数
-#define KP_CHASSIS_LEG_LENGTH_LENGTH        (2800.0f)
+#define KP_CHASSIS_LEG_LENGTH_LENGTH        (3500.0f)
 #define KI_CHASSIS_LEG_LENGTH_LENGTH        (0.0f)
-#define KD_CHASSIS_LEG_LENGTH_LENGTH        (7000.0f)
+#define KD_CHASSIS_LEG_LENGTH_LENGTH        (15000.0f)
 #define MAX_IOUT_CHASSIS_LEG_LENGTH_LENGTH  (0.0f)
-#define MAX_OUT_CHASSIS_LEG_LENGTH_LENGTH   (250.0f)
+#define MAX_OUT_CHASSIS_LEG_LENGTH_LENGTH   (400.0f)
 #define N_LEG_LENGTH_LENGTH                 (0.2f)
 
 // 起立用的pid
-#define KP_CHASSIS_STAND_UP       (800)
+#define KP_CHASSIS_STAND_UP       (1300)
 #define KI_CHASSIS_STAND_UP       (0)
 #define KD_CHASSIS_STAND_UP       (100)
 #define MAX_IOUT_CHASSIS_STAND_UP (0)
-#define MAX_OUT_CHASSIS_STAND_UP  (270)
+#define MAX_OUT_CHASSIS_STAND_UP  (350)
 
 
 // 磨轮子用的pid
@@ -112,19 +119,13 @@
 #define MAX_IOUT_CHASSIS_WHEEL (0)
 #define MAX_OUT_CHASSIS_WHEEL  (0)
 
-//// 云台跟随用的单环
+ 
+//// 云台跟随用的pid角度环
 //#define KP_CHASSIS_FOLLOW_GIMBAL       (3)
 //#define KI_CHASSIS_FOLLOW_GIMBAL       (0)
-//#define KD_CHASSIS_FOLLOW_GIMBAL       (500)
+//#define KD_CHASSIS_FOLLOW_GIMBAL       (10)
 //#define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
-//#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (3)
-
-// 云台跟随用的pid角度环
-#define KP_CHASSIS_FOLLOW_GIMBAL       (3)
-#define KI_CHASSIS_FOLLOW_GIMBAL       (0)
-#define KD_CHASSIS_FOLLOW_GIMBAL       (10)
-#define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
-#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (5)
+//#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (5)
 
 
 //防劈叉PID
@@ -138,13 +139,13 @@
 //左腿追右腿
 #define KP_CHASSIS_CAHSE_LEG_L_to_R        (170)
 #define KI_CHASSIS_CAHSE_LEG_L_to_R        (0)
-#define KD_CHASSIS_CAHSE_LEG_L_to_R        (1500)
+#define KD_CHASSIS_CAHSE_LEG_L_to_R        (1200)
 #define MAX_IOUT_CHASSIS_CAHSE_LEG_L_to_R  (0)
 #define MAX_OUT_CHASSIS_CAHSE_LEG_L_to_R   (10)
 //右腿追左腿
 #define KP_CHASSIS_CAHSE_LEG_R_to_L        (170)
 #define KI_CHASSIS_CAHSE_LEG_R_to_L        (0)
-#define KD_CHASSIS_CAHSE_LEG_R_to_L        (1500)
+#define KD_CHASSIS_CAHSE_LEG_R_to_L        (1200)
 #define MAX_IOUT_CHASSIS_CAHSE_LEG_R_to_L  (0)
 #define MAX_OUT_CHASSIS_CAHSE_LEG_R_to_L   (10)
 
@@ -203,7 +204,7 @@
 #define WHEEL_BASE           (0.42)  // (m)驱动轮轴距  
 
 // 支持力阈值，当支持力小于这个值时认为离地
-#define TAKE_OFF_FN_THRESHOLD (20.0f)  //待考量，建议可以用vofa打印出来
+#define TAKE_OFF_FN_THRESHOLD (10.0f)  //待考量，建议可以用vofa打印出来
 // 触地状态切换时间阈值，当时间接触或离地时间超过这个值时切换触地状态
 #define TOUCH_TOGGLE_THRESHOLD (50)
 #define MIN_LEG_LENGTH       ( 0.14f)         //最短腿长  
@@ -232,9 +233,9 @@
 #define CHASSIS_X_CHANNEL      1  // 前后的遥控器通道号码
 #define CHASSIS_WZ_CHANNEL     2  // 旋转的遥控器通道号码
 
-#define RC_TO_ONE 0.0015151515151515f  // (1/660)遥控器通道值归一化系数
-#define MAX_SPEED_VECTOR_VX  (3.5f)
-#define MAX_SPEED_VECTOR_WZ  (9.0f)
+#define RC_TO_ONE 0.0015151515151515f   // (1/660)遥控器通道值归一化系数
+#define MAX_SPEED_VECTOR_VX  (2.5f)
+#define MAX_SPEED_VECTOR_WZ  (8.0f)
 
 #define PITCH_VEL_LIMIT_FACTOR  (0.1f)    // pitch角速度抑制比例系数
 #define FF_RATIO                (0.25f)   // 前馈比例系数
@@ -242,6 +243,8 @@
 #define max_joint_tor_stand     (30.0f)  // 	起立时候的关节最大扭矩
 #define min_joint_tor_move      (-max_joint_tor_move)  // 
 #define min_joint_tor_stand     (-max_joint_tor_stand)  // 
+
+#define GIMBAL_DIRECT_YAW_MID (1.6637702)    //云台初始化正对齐的时候使用的yaw轴正中心量
 
 #define X_ADD_RATIO 1   //位移设定缩放系数
 typedef struct __Imu
@@ -380,6 +383,7 @@ typedef struct
     LegState_t leg_state[2];  // 0-左 1-右
     ChassisSpeedVector_t speed_vector;
 	  Gimbal_t gimbal;
+	  uint8_t tell_gimbal_thing;       //反馈云台标志位 0.自由运动  1.小陀螺
 } Fdb_t;
 
 typedef struct
@@ -449,17 +453,9 @@ typedef struct Calibrate
 
 
 typedef enum {
-    CHASSIS_OFF=0,        // 底盘关闭
     CHASSIS_SAFE=1,       // 底盘无力，所有控制量置0
-	CHASSIS_STAND_UP=2,   // 底盘起立，从倒地状态到站立状态的中间过程
-    CHASSIS_FREE=3,       // 底盘不跟随云台 以底盘为坐标系移动
-    CHASSIS_CALIBRATE=4,  // 底盘校准
-    CHASSIS_FOLLOW_GIMBAL_YAW=5,  // 底盘跟随云台（运动方向为云台坐标系方向，需进行坐标转换）
-    CHASSIS_READY=6,
-    CHASSIS_CRASHING=7,   // 底盘接地状态，进行缓冲
-    CHASSIS_AUTO=8,       // 底盘自动模式
-    CHASSIS_OFF_HOOK=9,   // 底盘脱困模式
-    CHASSIS_CUSTOM=12,      // 自定义模式
+		CHASSIS_STAND_UP=2,   // 底盘起立，从倒地状态到站立状态的中间过程
+    CHASSIS_FREE=3,       // 底盘随云台，以云台为坐标系移动
 } ChassisMode_e;
 typedef struct Cmd
 {

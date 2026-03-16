@@ -69,6 +69,7 @@ osThreadId Chassis_TaskHandle;
 osThreadId IMU_taskHandle;
 osThreadId State_checkHandle;
 osThreadId MY_UI_TaskHandle;
+osThreadId Talk_TaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -80,6 +81,7 @@ extern void chassis_task(void const * argument);
 void imu_task(void const * argument);
 void State_check_task(void const * argument);
 void UI_Task(void const * argument);
+void Talk_Task_start(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -145,6 +147,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of MY_UI_Task */
   osThreadDef(MY_UI_Task, UI_Task, osPriorityNormal, 0, 512);
   MY_UI_TaskHandle = osThreadCreate(osThread(MY_UI_Task), NULL);
+
+  /* definition and creation of Talk_Task */
+  osThreadDef(Talk_Task, Talk_Task_start, osPriorityNormal, 0, 128);
+  Talk_TaskHandle = osThreadCreate(osThread(Talk_Task), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -300,6 +306,24 @@ __weak void UI_Task(void const * argument)
     osDelay(1);
   }
   /* USER CODE END UI_Task */
+}
+
+/* USER CODE BEGIN Header_Talk_Task_start */
+/**
+* @brief Function implementing the Talk_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Talk_Task_start */
+__weak void Talk_Task_start(void const * argument)
+{
+  /* USER CODE BEGIN Talk_Task_start */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Talk_Task_start */
 }
 
 /* Private application code --------------------------------------------------*/

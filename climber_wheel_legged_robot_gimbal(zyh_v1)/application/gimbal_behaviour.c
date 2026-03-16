@@ -43,16 +43,24 @@ void GimbalInit(void)
 	 
 	 LowPassFilterInit(&Mouse_yaw_Filter,0.9);
 	 
-	 SMC_Init(&yaw_smc,80,10,0.0001,6500,0.8,16384);
-   //滑膜面参数C 增益K 控制死区单位是弧度   
+SMC_Init(&yaw_smc, 5, 0.5, 0.005, 10, 0.8, 10);   //滑膜面参数C 增益K 控制死区单位是弧度   
+	 
+	 
    //step4 初始化电机
-   MotorInit(&gimbal_direct.yaw,GIMBAL_DIRECT_YAW_ID,GIMBAL_DIRECT_YAW_CAN,GIMBAL_DIRECT_YAW_MOTOR_TYPE,GIMBAL_DIRECT_YAW_DIRECTION,GIMBAL_DIRECT_YAW_REDUCTION_RATIO,GIMBAL_DIRECT_YAW_MODE);
-   MotorInit(&gimbal_direct.pitch,GIMBAL_DIRECT_PITCH_ID,GIMBAL_DIRECT_PITCH_CAN,GIMBAL_DIRECT_PITCH_MOTOR_TYPE,GIMBAL_DIRECT_PITCH_DIRECTION,GIMBAL_DIRECT_PITCH_REDUCTION_RATIO,GIMBAL_DIRECT_PITCH_MODE);
+   MotorInit(&gimbal_direct.yaw,GIMBAL_DIRECT_YAW_ID,GIMBAL_DIRECT_YAW_CAN,GIMBAL_DIRECT_YAW_MOTOR_TYPE,GIMBAL_DIRECT_YAW_DIRECTION,1,DM_MODE_MIT);
+   MotorInit(&gimbal_direct.pitch,GIMBAL_DIRECT_PITCH_ID,GIMBAL_DIRECT_PITCH_CAN,GIMBAL_DIRECT_PITCH_MOTOR_TYPE,GIMBAL_DIRECT_PITCH_DIRECTION,1,DM_MODE_MIT);
 
+	 
+	 DmEnable(&gimbal_direct.yaw);
+	 DmEnable(&gimbal_direct.pitch);
+
+	 
 	 
 	 //step6 模式设置初始化
    gimbal_direct.mode=GIMBAL_ZERO_FORCE;
    gimbal_direct.last_mode = GIMBAL_ZERO_FORCE;
+	 
+	 
 	 
 	 
 }
@@ -60,26 +68,7 @@ void GimbalInit(void)
 
 void GimbalSetMode(void)
 {
-	if(switch_is_down(gimbal_direct.rc->rc.s[1])&&switch_is_down(gimbal_direct.rc->rc.s[0]))//双下无力
-	{
-		gimbal_direct.mode=GIMBAL_ZERO_FORCE;
-	}
-	else if (switch_is_up(gimbal_direct.rc->rc.s[1])&&switch_is_down(gimbal_direct.rc->rc.s[0]))//左上右下云台手动控制
-	{
-		gimbal_direct.mode=GIMBAL_HAND;
-	}
-  else if (switch_is_mid(gimbal_direct.rc->rc.s[1])&&switch_is_down(gimbal_direct.rc->rc.s[0]))//左中右下云台初始化
-	{
-		gimbal_direct.mode=GIMBAL_INIT;
-	}
-	  else if (switch_is_up(gimbal_direct.rc->rc.s[1])&&switch_is_up(gimbal_direct.rc->rc.s[0]))//左上右上云台自瞄
-	{
-		gimbal_direct.mode=GIMBAL_AUTO_AIM;
-	}
-  else
-	{
-		gimbal_direct.mode=GIMBAL_ZERO_FORCE;
-	}
+
 }
 
 /**
@@ -91,7 +80,7 @@ void GimbalObserver(void)
 {
 	//电机相关数据更新
   GetMotorMeasure(&gimbal_direct.yaw);
-  GetMotorMeasure(&gimbal_direct.pitch);
+  GetMotorMeasure(&gimbal_direct.pitch); 
 	
 	//IMU相关数据更新
 	
@@ -105,6 +94,18 @@ void GimbalObserver(void)
 	gimbal_direct.duration = xTaskGetTickCount() - gimbal_direct.last_time;
   gimbal_direct.last_time = xTaskGetTickCount();
 	
+	if(gimbal_direct.yaw.offline==1||gimbal_direct.pitch.offline==1)
+	{
+	 DmEnable(&gimbal_direct.yaw);
+	 osDelay(1);
+	 DmEnable(&gimbal_direct.pitch);
+	 osDelay(1);
+	 DmEnable(&gimbal_direct.yaw);
+	 osDelay(1);
+	 DmEnable(&gimbal_direct.pitch);
+	 osDelay(1);
+	}
+	
 }
 
 
@@ -114,32 +115,34 @@ void GimbalObserver(void)
  * @retval         none
  */
 void GimbalReference(void) 
-{
-	//切入手动模式，更新数据GIMBAL_HAND
-  if((gimbal_direct.mode ==GIMBAL_HAND)&&(gimbal_direct.last_mode!=GIMBAL_HAND))
-  {
-    gimbal_direct.reference.pitch=0;
-    gimbal_direct.reference.yaw=gimbal_direct.feedback_pos.yaw;
-  }
-	//切入自瞄模式更新当前数据GIMBAL_AUTO_AIM
-   else if((gimbal_direct.mode ==GIMBAL_AUTO_AIM)&&(gimbal_direct.last_mode!=GIMBAL_AUTO_AIM))
-  {
-    gimbal_direct.reference.pitch=gimbal_direct.feedback_pos.pitch;
-    gimbal_direct.reference.yaw=gimbal_direct.feedback_pos.yaw;   
+{	
+	// 保存当前模式
+	uint8_t current_mode = gimbal_direct.mode;
+	// 更新新模式
+	gimbal_direct.mode = mtoc_mesasge.mode;
+	// 更新上一模式
+	gimbal_direct.last_mode = current_mode;
+	
+	// 模式切换处理
+	if (gimbal_direct.mode != gimbal_direct.last_mode)
+	{
+		// 切入手动模式
+		if (gimbal_direct.mode == GIMBAL_HAND)
+		{
+			gimbal_direct.reference.pitch = gimbal_direct.feedback_pos.pitch;
+			gimbal_direct.reference.yaw = gimbal_direct.feedback_pos.yaw;
+		}
+		// 切入初始化模式
+		else if (gimbal_direct.mode == GIMBAL_INIT)
+		{
+			gimbal_direct.reference.pitch = 0;
+			gimbal_direct.reference.yaw = gimbal_direct.feedback_pos.yaw;
+		}
+		// 其他模式切换可以在这里添加
 	}
-
-	//切入云台初始化模式更新当前数据GIMBAL_INIT
-   else if((gimbal_direct.mode ==GIMBAL_INIT)&&(gimbal_direct.last_mode!=GIMBAL_INIT))
-  {
-    gimbal_direct.reference.pitch=gimbal_direct.feedback_pos.pitch;
-    gimbal_direct.reference.yaw=gimbal_direct.feedback_pos.yaw;  
-	}
-  gimbal_direct.last_mode=gimbal_direct.mode; //上一运行模式更新
-
-
 }
 /*-------------------- Console --------------------*/
-
+ bool is_small_spin_mode = false;
 /**
  * @brief          计算控制量
  * @param[in]      none
@@ -149,59 +152,80 @@ void GimbalConsole(void)
 {
   if (gimbal_direct.mode == GIMBAL_ZERO_FORCE)
   {
-    gimbal_direct.pitch.set.curr=0;
-    gimbal_direct.yaw.set.curr=0;
+    gimbal_direct.pitch.set.tor=0;
+    gimbal_direct.yaw.set.tor=0;
   }
 	  else if (gimbal_direct.mode == GIMBAL_INIT)
   {
-		gimbal_direct.reference.pitch=0;
+//     pitch串级
+		gimbal_direct.reference.pitch = 0 ;
 	  gimbal_direct.reference.pitch=fp32_constrain(gimbal_direct.reference.pitch,gimbal_direct.lower_limit.pitch,gimbal_direct.upper_limit.pitch);
-		gimbal_direct.reference.yaw=GIMBAL_DIRECT_YAW_MID;
-		
     gimbal_direct.pitch.set.vel=PID_calc(&gimbal_direct_pid.pitch_angle,gimbal_direct.pitch.direction *gimbal_direct.feedback_pos.pitch,gimbal_direct.reference.pitch);
-    gimbal_direct.pitch.set.curr= PID_calc(&gimbal_direct_pid.pitch_velocity,gimbal_direct.pitch.direction *gimbal_direct.feedback_vel.pitch,gimbal_direct.pitch.set.vel);
-    // 使用角度差值归一化来处理跨越π边界的问题
-    float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.yaw.fdb.pos);
-    float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
-    /*              SMC滑膜控制              */
-				yaw_smc.ref=corrected_yaw_target;
-				SMC_Tick(&yaw_smc,gimbal_direct.feedback_pos.yaw, gimbal_direct.feedback_vel.yaw);
-				gimbal_direct.yaw.set.curr=yaw_smc.u;
+    gimbal_direct.pitch.set.tor= PID_calc(&gimbal_direct_pid.pitch_velocity,gimbal_direct.pitch.direction *gimbal_direct.feedback_vel.pitch,gimbal_direct.pitch.set.vel);
+		
+//    /*              SMC滑膜控制              */
+//		gimbal_direct.reference.yaw=GIMBAL_DIRECT_YAW_MID;
+//    float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.yaw.fdb.pos);
+//    float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;	
+//		yaw_smc.ref=corrected_yaw_target;
+//		SMC_Tick(&yaw_smc,gimbal_direct.feedback_pos.yaw, gimbal_direct.feedback_vel.yaw);
+//	  gimbal_direct.yaw.set.tor=yaw_smc.u;
+		
+//                    yaw轴-串级控制
+		gimbal_direct.reference.yaw=GIMBAL_DIRECT_YAW_MID;
+    gimbal_direct.yaw.set.vel=PID_calc(&gimbal_direct_pid.yaw_angle, gimbal_direct.yaw.fdb.pos, gimbal_direct.reference.yaw);
+    gimbal_direct.yaw.set.tor=gimbal_direct.yaw.direction * PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
 	}
 	
-  else if (gimbal_direct.mode == GIMBAL_HAND)
+  else if (gimbal_direct.mode == GIMBAL_HAND&&mtoc_mesasge.mouse_press_r!=1)
   {
-		gimbal_direct.reference.pitch-=keyboard_data.Remote_Mouse_DU*0.00002;
-	  gimbal_direct.reference.pitch=fp32_constrain(gimbal_direct.reference.pitch,gimbal_direct.lower_limit.pitch,gimbal_direct.upper_limit.pitch);
-		gimbal_direct.reference.yaw-=gimbal_direct.rc->rc.ch[2]*0.00003;
-		  /*              鼠标yaw一阶低通滤波		  */
-		  LowPassFilterCalc(&Mouse_yaw_Filter,keyboard_data.Remote_Mouse_RL*0.00006);
-		  Mouse_yaw_Filter.out=fp32_constrain(Mouse_yaw_Filter.out,-0.040,+0.040);
-	    gimbal_direct.reference.yaw-=Mouse_yaw_Filter.out;
+//                    yaw轴-串级控制
+//	gimbal_direct.reference.yaw-=mtoc_mesasge.yaw_control*0.000013;
+//	float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);
+//	float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
+//	gimbal_direct.yaw.set.vel=PID_calc(&gimbal_direct_pid.yaw_angle, gimbal_direct.feedback_pos.yaw, corrected_yaw_target);
+//	gimbal_direct.yaw.set.tor=gimbal_direct.yaw.direction * PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
+//		//速度环yaw轴控制
+		
+				if(mtoc_mesasge.receive_chassis_thing==1)//底盘开启小陀螺模式
+				{
+					if(!is_small_spin_mode)
+					{
+						// 模式切换时，将参考值设置为当前反馈位置，避免跳变
+						gimbal_direct.reference.yaw = gimbal_direct.feedback_pos.yaw;
+						is_small_spin_mode = true;
+					}
+					
+					gimbal_direct.reference.yaw -= mtoc_mesasge.yaw_control * 0.000013;
+					gimbal_direct.reference.yaw -= mtoc_mesasge.mouse_RL * 0.00005;
+					float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);
+					float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
+					gimbal_direct.yaw.set.vel = PID_calc(&gimbal_direct_pid.yaw_angle, gimbal_direct.feedback_pos.yaw, corrected_yaw_target);
+					gimbal_direct.yaw.set.tor = gimbal_direct.yaw.direction * PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
+				}
+				else
+				{
+						is_small_spin_mode = false;
+						gimbal_direct.yaw.set.vel=-mtoc_mesasge.yaw_control*0.023-mtoc_mesasge.mouse_RL*0.05;
+						gimbal_direct.yaw.set.tor=gimbal_direct.yaw.direction*PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
+//					gimbal_direct.reference.yaw -= mtoc_mesasge.mouse_RL * 0.00006;
+//					float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);
+//					float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
+//					gimbal_direct.yaw.set.vel = PID_calc(&gimbal_direct_pid.yaw_angle, gimbal_direct.feedback_pos.yaw, corrected_yaw_target);
+//					gimbal_direct.yaw.set.tor = gimbal_direct.yaw.direction * PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
 
+				}
 
-      //速度环yaw轴控制
-      gimbal_direct.yaw.set.vel=-gimbal_direct.rc->rc.ch[2]*0.1;
-      gimbal_direct.yaw.set.curr=gimbal_direct.yaw.direction * PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
+		
 
-
-      /*              SMC滑膜控制              */
-		  // float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);
-      // float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
-			// yaw_smc.ref=corrected_yaw_target;
-			// SMC_Tick(&yaw_smc,gimbal_direct.feedback_pos.yaw, gimbal_direct.feedback_vel.yaw);
-			// gimbal_direct.yaw.set.curr=yaw_smc.u;
-
-      /*              串级控制                  */
+      /*             pitch-串级控制                    */
+			gimbal_direct.reference.pitch+=mtoc_mesasge.mouse_UD*0.00003;
+			gimbal_direct.reference.pitch=fp32_constrain(gimbal_direct.reference.pitch,gimbal_direct.lower_limit.pitch,gimbal_direct.upper_limit.pitch);
 		  gimbal_direct.pitch.set.vel=PID_calc(&gimbal_direct_pid.pitch_angle,gimbal_direct.pitch.direction *gimbal_direct.feedback_pos.pitch,gimbal_direct.reference.pitch);
-      gimbal_direct.pitch.set.curr= PID_calc(&gimbal_direct_pid.pitch_velocity,gimbal_direct.pitch.direction *gimbal_direct.feedback_vel.pitch,gimbal_direct.pitch.set.vel);
-//    使用角度差值归一化来处理跨越π边界的问题
-//    float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);
-//    float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
-//    gimbal_direct.yaw.set.vel=PID_calc(&gimbal_direct_pid.yaw_angle, gimbal_direct.feedback_pos.yaw, corrected_yaw_target);
-//    gimbal_direct.yaw.set.curr=gimbal_direct.yaw.direction * PID_calc(&gimbal_direct_pid.yaw_velocity,gimbal_direct.feedback_vel.yaw,gimbal_direct.yaw.set.vel);
+      gimbal_direct.pitch.set.tor= PID_calc(&gimbal_direct_pid.pitch_velocity,gimbal_direct.pitch.direction *gimbal_direct.feedback_vel.pitch,gimbal_direct.pitch.set.vel);
+
 	}
-	 else if (gimbal_direct.mode == GIMBAL_AUTO_AIM)
+	 else if (gimbal_direct.mode == GIMBAL_HAND&&mtoc_mesasge.mouse_press_r==1)
   {	
     
     if(visionDataStu.mode >= 1)
@@ -223,7 +247,7 @@ void GimbalConsole(void)
 		float yaw_angle_diff = angle_difference(gimbal_direct.reference.yaw, gimbal_direct.feedback_pos.yaw);
     float corrected_yaw_target = gimbal_direct.feedback_pos.yaw + yaw_angle_diff;
 		yaw_smc.ref=corrected_yaw_target;
-		SMC_Tick(&yaw_smc,gimbal_direct.feedback_pos.yaw, gimbal_direct.feedback_vel.yaw);
+		SMC_Tick(&yaw_smc,gimbal_direct.feedback_pos.yaw, gimbal_direct.feedback_vel.yaw+mtoc_mesasge.chassis_yaw_speed);
 		gimbal_direct.yaw.set.curr=yaw_smc.u;
 	 
 	 // 使用角度差值归一化来处理跨越π边界的问题
@@ -234,8 +258,8 @@ void GimbalConsole(void)
    	}
 	else
 	{
-		gimbal_direct.pitch.set.curr=0;
-    gimbal_direct.yaw.set.curr=0;
+		gimbal_direct.pitch.set.tor=0;
+    gimbal_direct.yaw.set.tor=0;
 	}
 }
 /*-------------------- Cmd --------------------*/
@@ -248,11 +272,13 @@ void C_communication_M();//C板传输给妙板的数据
  */
 void GimbalSendCmd(void) 
 {
-    CanCmdDjiMotor(GIMBAL_CAN_CMD_YAW,GIMBAL_STDID_1,gimbal_direct.yaw.set.curr,0,0,0);
-	  CanCmdDjiMotor(GIMBAL_CAN_CMD_PITCH,GIMBAL_STDID_1,0,gimbal_direct.pitch.set.curr,0,0);
+//    CanCmdDjiMotor(GIMBAL_CAN_CMD_YAW,GIMBAL_STDID_1,gimbal_direct.yaw.set.curr,0,0,0);
+//	  CanCmdDjiMotor(GIMBAL_CAN_CMD_PITCH,GIMBAL_STDID_1,0,gimbal_direct.pitch.set.curr,0,0);
+	
+		DmMitCtrl(&gimbal_direct.yaw,0,0);
+		DmMitCtrl(&gimbal_direct.pitch,0,0);
 	  C_communication_M();
 }
-
 
 void C_communication_M() 
 { 
