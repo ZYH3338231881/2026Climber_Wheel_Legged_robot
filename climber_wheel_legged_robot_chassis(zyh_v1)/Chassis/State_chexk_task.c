@@ -35,17 +35,17 @@ void init_loss_control_detector(void)
 {
     // 初始化左腿失控检测器
     leg_loss_control[0].max_phi_error = 0.6f;      // 最大phi位置误差阈值
-    leg_loss_control[0].max_theta_error = 1.1f;    // 最大theta角度误差阈值
+    leg_loss_control[0].max_theta_error = 0.9f;    // 最大theta角度误差阈值
     leg_loss_control[0].overturn_phi_threshold = 1.2f; // 翻车phi角度阈值
-    leg_loss_control[0].confirm_threshold = 1000;   // 确认阈值  
+    leg_loss_control[0].confirm_threshold = 600;   // 确认阈值  
     leg_loss_control[0].detect_count = 0;
     leg_loss_control[0].state = LOSS_CONTROL_NORMAL;
     
     // 初始化右腿失控检测器
     leg_loss_control[1].max_phi_error = 0.6f;      // 最大phi位置误差阈值
-    leg_loss_control[1].max_theta_error = 1.1f;    // 最大theta角度误差阈值
+    leg_loss_control[1].max_theta_error = 0.9f;    // 最大theta角度误差阈值
     leg_loss_control[1].overturn_phi_threshold = 1.2f; // 翻车phi角度阈值
-    leg_loss_control[1].confirm_threshold = 1000;   // 确认阈值
+    leg_loss_control[1].confirm_threshold = 600;   // 确认阈值
     leg_loss_control[1].detect_count = 0;
     leg_loss_control[1].state = LOSS_CONTROL_NORMAL;
 }
@@ -96,6 +96,12 @@ void check_loss_control()
                         detector->state = LOSS_CONTROL_NORMAL;
                         detector->detect_count = 0;
                     }
+                }
+								 else if (current_phi > detector->overturn_phi_threshold)
+                {
+                    detector->state = LOSS_CONTROL_OVERTURN;
+
+                    // 
                 }
                 else
                 {

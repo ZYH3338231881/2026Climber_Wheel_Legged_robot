@@ -2004,44 +2004,24 @@
               <FilePath>..\Judge\judge_paint_task.c</FilePath>
             </File>
             <File>
-              <FileName>ui.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Judge\ui.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_default.c</FileName>
+              <FileName>judge_send_app.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Judge\ui_default.c</FilePath>
+              <FilePath>..\Judge\judge_send_app.c</FilePath>
             </File>
             <File>
-              <FileName>ui_default.h</FileName>
+              <FileName>judge_send_app.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\Judge\ui_default.h</FilePath>
+              <FilePath>..\Judge\judge_send_app.h</FilePath>
             </File>
             <File>
-              <FileName>ui_frame1.c</FileName>
+              <FileName>crc_check.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Judge\ui_frame1.c</FilePath>
+              <FilePath>..\Judge\crc_check.c</FilePath>
             </File>
             <File>
-              <FileName>ui_frame1.h</FileName>
+              <FileName>crc_check.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\Judge\ui_frame1.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_interface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Judge\ui_interface.c</FilePath>
-            </File>
-            <File>
-              <FileName>ui_interface.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Judge\ui_interface.h</FilePath>
-            </File>
-            <File>
-              <FileName>ui_types.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Judge\ui_types.h</FilePath>
+              <FilePath>..\Judge\crc_check.h</FilePath>
             </File>
           </Files>
         </Group>

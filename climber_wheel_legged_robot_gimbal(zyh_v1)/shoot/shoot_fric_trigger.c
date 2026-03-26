@@ -7,6 +7,7 @@
 extern visionDataStu_t visionDataStu;
 extern Keyboard_Data keyboard_data;
 extern MTOC_message_t mtoc_mesasge;
+extern Gimbal_s gimbal_direct;
 
 Shoot_s SHOOT = {
   .mode = LOAD_STOP,
@@ -19,7 +20,7 @@ Shoot_s SHOOT = {
   .heat_limit = 0,
 };
 
-fp32 TRIGGER_SPEED=340.0f;  
+fp32 TRIGGER_SPEED=310.0f;  
 //fp32 TRIGGER_SPEED=450.0f; 
 
 uint8_t fric_ui;
@@ -51,31 +52,33 @@ void ShootInit(void)
 
 }
 
+uint8_t fric_flag=0;
 void ShootSetMode(void)
 {
-	if(switch_is_down(SHOOT.rc->rc.s[1])&&switch_is_down(SHOOT.rc->rc.s[0]))//双下无力
-	{
-		SHOOT.state=FRIC_NOT_READY;//不准备发射
-		SHOOT.mode = LOAD_STOP;   //停止拨盘
 
+	// 通信标志位控制摩擦轮
+	if(mtoc_mesasge.fric_flag==1)
+	{
+		fric_flag=1;
 	}
-	else if (mtoc_mesasge.mode==GIMBAL_HAND)//双上可以射击
-  {
-      //清弹
-    SHOOT.state = FRIC_READY;//准备发射
-    SHOOT.mode = LOAD_BURSTFIRE;//连发对速度闭环
- }
-  else if (switch_is_up(SHOOT.rc->rc.s[1])&&switch_is_down(SHOOT.rc->rc.s[0]))//左上右下云台手动控制，拨盘 3508同时射击
-  {
-      //清弹
-    SHOOT.state = FRIC_READY;//准备发射
-    SHOOT.mode = LOAD_BURSTFIRE;//连发对速度闭环
-  }
-  else
-  { 
-	  SHOOT.state=FRIC_NOT_READY;//不准备发射
-		SHOOT.mode =LOAD_STOP;   //停止拨盘
-  }
+		if(mtoc_mesasge.fric_flag==0)
+	{  
+		fric_flag=0;
+	}
+	
+	// 设置摩擦轮速度
+	if(fric_flag==1||gimbal_direct.mode==GIMBAL_HAND)
+	{
+		SHOOT.REF.fric_speed_ref_L=FRIC_L_SPEED;
+		SHOOT.REF.fric_speed_ref_R=FRIC_R_SPEED;
+	}
+	else
+	{
+		SHOOT.REF.fric_speed_ref_L=0;
+		SHOOT.REF.fric_speed_ref_R=0;
+	}
+	
+
 }
 
 /*-------------------- Observe --------------------*/
@@ -106,45 +109,20 @@ void ShootObserver(void)
  */
 void ShootReference(void) 
 {
-	  switch (SHOOT.state)
-  {
-  case FRIC_NOT_READY:
-  SHOOT.REF.fric_speed_ref_R=0.0f;
-  SHOOT.REF.fric_speed_ref_L=0.0f;
-  break;
 
-  case FRIC_READY:
-  SHOOT.REF.fric_speed_ref_R=FRIC_R_SPEED;
-  SHOOT.REF.fric_speed_ref_L=FRIC_L_SPEED;
-  break;
-  
-  default:
-  break;
-  }
-	
-	 switch (SHOOT.mode)
-  {
-  case LOAD_STOP:
-	{
-	SHOOT.REF.trigger_speed_ref=0.0f;
-	}
-  break;
-  case LOAD_BURSTFIRE:
-	{  //开火条件，满足遥控器、鼠标左击，鼠标右击需要自瞄给开火位置
-		if(SHOOT.rc->rc.ch[4]==660||mtoc_mesasge.mouse_press_l||(visionDataStu.mode == 2 && keyboard_data.Remote_Mouse_KeyR))
+		if((mtoc_mesasge.mouse_press_l||(visionDataStu.mode == 2 &&mtoc_mesasge.mouse_press_r)||(mtoc_mesasge.trigger_flag==1))&&mtoc_mesasge.power_heat<=175)
 		{
 				SHOOT.REF.trigger_speed_ref = TRIGGER_SPEED;
+		}
+		else if(mtoc_mesasge.key_v>>10==1)
+		{
+				SHOOT.REF.trigger_speed_ref =-500;
 		}
 		else
 		{
 				SHOOT.REF.trigger_speed_ref = 0;
 		} 
-	}
-  break;
 
-  default:
-    break;
-  }
 }
 
 
@@ -171,21 +149,11 @@ void ShootConsole(void)
  */
 void ShootSendCmd(void) 
 {		
-    if(SHOOT.mode==LOAD_BURSTFIRE)
-		{
+
 					CanCmdDjiMotor(1,STD_ID,0,0,SHOOT.trigger_motor.set.curr,0);
-		}
-		else
-		{
-				  CanCmdDjiMotor(1,STD_ID,0,0,0,0);
-		}
-		
-		if(SHOOT.state==FRIC_READY)
-		{
-//			    CanCmdDjiMotor(2,STD_ID,SHOOT.fric_motor[1].set.curr,SHOOT.fric_motor[0].set.curr,0,0);
-		}
-		else
-		{
-					CanCmdDjiMotor(2,STD_ID,0,0,0,0);
-		}
+
+			    CanCmdDjiMotor(2,STD_ID,SHOOT.fric_motor[1].set.curr,SHOOT.fric_motor[0].set.curr,0,0);
+
 }
+
+

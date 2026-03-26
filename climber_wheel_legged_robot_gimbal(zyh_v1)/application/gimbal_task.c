@@ -39,7 +39,7 @@ void gimbal_task(void const *pvParameters)
 			GimbalReference();
 			GimbalConsole();
 			GimbalSendCmd();
-	     send_nuc();
+	    send_nuc();
 			osDelay(1);
     }
 }
@@ -48,14 +48,14 @@ void send_nuc()
     typedef struct __attribute__((packed)) GimbalToVision 
     { 
        uint8_t head[2]; 
-       uint8_t mode;   //  0: 空闲, 1: 自瞄, 2: 小符, 3: 大符 
-       float q[4];     //  wxyz顺序 
-       float yaw;
-       float yaw_vel;
+       uint8_t mode;  // 0: 空闲, 1: 自瞄, 2: 小符, 3: 大符 
+       float yaw; 
+       float yaw_vel; 
        float pitch; 
        float pitch_vel; 
+       float roll; 
        float bullet_speed; 
-       uint16_t bullet_count;   //  子弹累计发送次数 
+       uint16_t bullet_count;  // 子弹累计发送次数 
        uint8_t tail[2]; 
     } GimbalToVision_t;
 
@@ -70,24 +70,20 @@ void send_nuc()
         message.mode = 0; 
     }
     
-    message.q[0] = INS.q[0];
-    message.q[1] = INS.q[1];
-    message.q[2] = INS.q[2];
-    message.q[3] = INS.q[3];
-    
     message.yaw = gimbal_direct.feedback_pos.yaw; 
     message.yaw_vel = gimbal_direct.feedback_vel.yaw; 
     
-    message.pitch = gimbal_direct.feedback_pos.pitch;
-    message.pitch_vel = gimbal_direct.feedback_vel.pitch;
+    message.pitch = -gimbal_direct.feedback_pos.pitch;
+    message.pitch_vel = -gimbal_direct.feedback_vel.pitch;
     
+    message.roll = gimbal_direct.feedback_pos.roll;
     message.bullet_speed = mtoc_mesasge.bullet_speed; 
     message.bullet_count = mtoc_mesasge.bullet_count; 
 
     message.tail[0] = 'E';
     message.tail[1] = 'N';
     
-    HAL_UART_Transmit_DMA(&huart1, (uint8_t*)&message, sizeof(message));
+    HAL_UART_Transmit(&huart6, (uint8_t*)&message, sizeof(message),5);
 }
 
 

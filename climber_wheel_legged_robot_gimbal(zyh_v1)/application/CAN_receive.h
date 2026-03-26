@@ -92,7 +92,8 @@ typedef struct __MTOC_message
   uint8_t mouse_press_r;
 	fp32 chassis_yaw_speed;
 	uint8_t receive_chassis_thing;
-
+  uint8_t fric_flag;
+	uint8_t trigger_flag;
 }MTOC_message_t;
 typedef enum __DmMotorType{
     DM_M1_ID = 0x51,
@@ -120,7 +121,7 @@ void CanCmdDjiMotor(uint8_t can, uint16_t std_id, int16_t curr_1, int16_t curr_2
 void SendData(uint8_t can,uint16_t std_id,uint8_t *data);
 void DmMitCtrl(Motor_s * motor, float kp, float kd);
 
-void CToM_sendControl(uint8_t can, uint16_t std_id, int16_t yaw);
+void CToM_sendControl(uint8_t can, uint16_t std_id, int16_t yaw,uint8_t motor_offline);
 
 void DmEnable(Motor_s * motor);
 

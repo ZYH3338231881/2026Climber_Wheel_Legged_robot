@@ -16,6 +16,7 @@ extern DjiMotorMeasure_t CAN2_DJI_MEASURE[5];
 void C_communication_M(CTOM_message_t *ctom_mesasge,uint8_t *rx_data)
 {
    ctom_mesasge->gimbal_yaw_6020 = (int16_t)(rx_data[0] << 8 | rx_data[1]) / 1000.0f;
+	 ctom_mesasge->gimbal_motor_offline=rx_data[2];
 }
 
 

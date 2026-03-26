@@ -260,17 +260,19 @@ void M_communication_c_556(MTOC_message_t *mtoc_mesasge,uint8_t *rx_data)
 
 void M_communication_c_557(MTOC_message_t *mtoc_mesasge,uint8_t *rx_data)
 {
-	mtoc_mesasge->mouse_press_l=rx_data[0];
-	mtoc_mesasge->mouse_press_r=rx_data[1];
+	  mtoc_mesasge->mouse_press_l=rx_data[0];
+	  mtoc_mesasge->mouse_press_r=rx_data[1];
 	
-	mtoc_mesasge->chassis_yaw_speed=(int16_t)(rx_data[2] << 8 | rx_data[3]) / 1000.0f;
+	  mtoc_mesasge->chassis_yaw_speed=(int16_t)(rx_data[2] << 8 | rx_data[3]) / 1000.0f;
 	
+    mtoc_mesasge->fric_flag=rx_data[4];
+	  mtoc_mesasge->trigger_flag=rx_data[5];
 
 	
 }
 
 
-//gimbal--can1--fifo1  云台接收控制主要有3  两个6020  一个拨盘电机发射
+//gimbal--can1--fifo1  云台接收控制主要有3  两个6020  一个拨盘电机发射 
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
     CAN_RxHeaderTypeDef rx_header;
@@ -518,7 +520,7 @@ void DmMitCtrl(Motor_s * motor, float kp, float kd)
 
 
 //C板发送给妙板 can的板件通讯
-void CToM_sendControl(uint8_t can, uint16_t std_id, int16_t yaw)
+void CToM_sendControl(uint8_t can, uint16_t std_id, int16_t yaw,uint8_t motor_offline)
 {
 	 
     hcan_t * hcan = NULL;
@@ -533,7 +535,7 @@ void CToM_sendControl(uint8_t can, uint16_t std_id, int16_t yaw)
     CAN_CTRL_DATA.tx_header.StdId = std_id;
     CAN_CTRL_DATA.tx_data[0] = yaw>>8;
     CAN_CTRL_DATA.tx_data[1] = yaw;
-    CAN_CTRL_DATA.tx_data[2] = 0;
+    CAN_CTRL_DATA.tx_data[2] = motor_offline;//电机离线标志位
     CAN_CTRL_DATA.tx_data[3] = 0;
     CAN_CTRL_DATA.tx_data[4] = 0;
     CAN_CTRL_DATA.tx_data[5] = 0;

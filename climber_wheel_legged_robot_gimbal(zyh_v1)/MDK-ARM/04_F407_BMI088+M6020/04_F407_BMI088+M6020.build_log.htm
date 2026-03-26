@@ -21,26 +21,28 @@ Target DLL:      CMSIS_AGDI.dll V1.33.16.0
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-D:\Desktop\2026RM\A_climber_code\climber_wheel_legged_robot_gimbal(zyh_v1)\MDK-ARM\04_F407_BMI088+M6020.uvprojx
-Project File Date:  03/16/2026
+D:\Desktop\2026RM\A_climber_code（v2）\climber_wheel_legged_robot_gimbal(zyh_v1)\MDK-ARM\04_F407_BMI088+M6020.uvprojx
+Project File Date:  03/18/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target '04_F407_BMI088+M6020'
-compiling gimbal_behaviour.c...
+compiling shoot_task.c...
+compiling shoot_fric_trigger.c...
+compiling gimbal_task.c...
 ../components/algorithm/sign_gengerator.h(31): warning:  #1-D: last line of file ends without a newline
           /************************ END OF FILE ************************/
-../components/controller/slidingmodec.h(41): warning:  #1-D: last line of file ends without a newline
-  #endif // SLIDING_MODE_C_H
-..\application\gimbal_behaviour.c(122): warning:  #188-D: enumerated type mixed with another type
-  	gimbal_direct.mode = mtoc_mesasge.mode;
-..\application\gimbal_behaviour.c(124): warning:  #188-D: enumerated type mixed with another type
-  	gimbal_direct.last_mode = current_mode;
-..\application\gimbal_behaviour.c(266): warning:  #1295-D: Deprecated declaration C_communication_M - give arg types
-  void C_communication_M();//C板传输给妙板的数据
-..\application\gimbal_behaviour.c: 5 warnings, 0 errors
+../components/algorithm/kalman_filter.h(113): warning:  #1-D: last line of file ends without a newline
+  #endif //__KALMAN_FILTER_H
+..\application\IMU_solve.h(64): warning:  #1-D: last line of file ends without a newline
+  /*------------------------------ End of File ------------------------------*/
+..\application\gimbal_task.c(23): warning:  #1295-D: Deprecated declaration send_nuc - give arg types
+  extern void send_nuc();
+..\application\gimbal_task.c(25): warning:  #1295-D: Deprecated declaration vofa_watch - give arg types
+  extern void vofa_watch();
+..\application\gimbal_task.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=90692 RO-data=856 RW-data=1560 ZI-data=53776  
+Program Size: Code=91124 RO-data=880 RW-data=1588 ZI-data=54180  
 FromELF: creating hex file...
 "04_F407_BMI088+M6020\04_F407_BMI088+M6020.axf" - 0 Error(s), 5 Warning(s).
 
@@ -64,7 +66,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE@5.6.0
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

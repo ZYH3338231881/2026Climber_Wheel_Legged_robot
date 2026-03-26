@@ -69,17 +69,17 @@
 
 
 // 云台跟随用的单环  
-#define KP_CHASSIS_FOLLOW_GIMBAL       (5)
+#define KP_CHASSIS_FOLLOW_GIMBAL       (7)
 #define KI_CHASSIS_FOLLOW_GIMBAL       (0)
-#define KD_CHASSIS_FOLLOW_GIMBAL       (50)
+#define KD_CHASSIS_FOLLOW_GIMBAL       (10)
 #define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
-#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (9)
+#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (10)
 
-#define KP_CHASSIS_YAW_VELOCITY        (1.1f)
+#define KP_CHASSIS_YAW_VELOCITY        (1.5f)
 #define KI_CHASSIS_YAW_VELOCITY        (0.0f)
 #define KD_CHASSIS_YAW_VELOCITY        (5.0f)
 #define MAX_IOUT_CHASSIS_YAW_VELOCITY  (0.0f)
-#define MAX_OUT_CHASSIS_YAW_VELOCITY   (2.0f)
+#define MAX_OUT_CHASSIS_YAW_VELOCITY   (5.0f)
 
 #define KP_CHASSIS_VEL_ADD        (0) //0.1
 #define KI_CHASSIS_VEL_ADD        (0)//0.005
@@ -174,7 +174,7 @@
 #define Leg_Stretch_stop_time 300 // ms  伸腿停止时间
 #define Leg_Stretch_stop_velocity 0.05f
 
-#define Leg_back_velocity 1.0f          // (rad/s) 起立向后摔腿速度
+#define Leg_back_velocity 3.0f          // (rad/s) 起立向后摔腿速度
 #define Leg_back_stop_time 300 // ms   起立向后摔腿停止时间
 #define Leg_back_stop_velocity 0.05f
 
@@ -189,10 +189,10 @@
 #define ZERO_FORCE_VEL_KP (0)  // 无力MIT速度控制KP
 
 
-#define J0_ANGLE_OFFSET     (-0.0964508057+M_PI) // (rad)关节0角度偏移量(电机0点到水平线的夹角)
-#define J1_ANGLE_OFFSET     (0.0507124329)         // (rad)关节1角度偏移量(电机0点到水平线的夹角)
-#define J2_ANGLE_OFFSET     (-0.0857124329+ M_PI)  // (rad)关节2角度偏移量(电机0点到水平线的夹角)
-#define J3_ANGLE_OFFSET     (-0.0500469208 )        // (rad)关节3角度偏移量(电机0点到水平线的夹角)
+#define J0_ANGLE_OFFSET     (-0.0826444626+M_PI) // (rad)关节0角度偏移量(电机0点到水平线的夹角)
+#define J1_ANGLE_OFFSET     (0.0385427475)         // (rad)关节1角度偏移量(电机0点到水平线的夹角)
+#define J2_ANGLE_OFFSET     (-0.0270366669+ M_PI)  // (rad)关节2角度偏移量(电机0点到水平线的夹角)
+#define J3_ANGLE_OFFSET     (2.49064732)        // (rad)关节3角度偏移量(电机0点到水平线的夹角)
 
 
 #define WHEEL_DEADZONE (0.001f)  // (m/s)轮子速度死区       //待考量
@@ -235,16 +235,16 @@
 
 #define RC_TO_ONE 0.0015151515151515f   // (1/660)遥控器通道值归一化系数
 #define MAX_SPEED_VECTOR_VX  (2.5f)
-#define MAX_SPEED_VECTOR_WZ  (8.0f)
+#define MAX_SPEED_VECTOR_WZ  (20.0f)
 
 #define PITCH_VEL_LIMIT_FACTOR  (0.1f)    // pitch角速度抑制比例系数
 #define FF_RATIO                (0.25f)   // 前馈比例系数
-#define max_joint_tor_move      (25.0f)   // (Nm)运动时关节最大扭矩
+#define max_joint_tor_move      (27.0f)   // (Nm)运动时关节最大扭矩
 #define max_joint_tor_stand     (30.0f)  // 	起立时候的关节最大扭矩
 #define min_joint_tor_move      (-max_joint_tor_move)  // 
 #define min_joint_tor_stand     (-max_joint_tor_stand)  // 
 
-#define GIMBAL_DIRECT_YAW_MID (1.6637702)    //云台初始化正对齐的时候使用的yaw轴正中心量
+#define GIMBAL_DIRECT_YAW_MID (-2.77304602)    //云台初始化正对齐的时候使用的yaw轴正中心量
 
 #define X_ADD_RATIO 1   //位移设定缩放系数
 typedef struct __Imu
@@ -456,6 +456,7 @@ typedef enum {
     CHASSIS_SAFE=1,       // 底盘无力，所有控制量置0
 		CHASSIS_STAND_UP=2,   // 底盘起立，从倒地状态到站立状态的中间过程
     CHASSIS_FREE=3,       // 底盘随云台，以云台为坐标系移动
+		CHASSIS_selfon=4,
 } ChassisMode_e;
 typedef struct Cmd
 {
@@ -515,6 +516,9 @@ typedef struct
 typedef struct __CTOM_message
 {
   fp32 gimbal_yaw_6020;
+	fp32 gimbal_imu_yaw;
+	fp32 gimbal_imu_pitch;
+	uint8_t gimbal_motor_offline;
 	
 }CTOM_message_t;
 

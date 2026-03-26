@@ -845,6 +845,11 @@
           <GroupName>application</GroupName>
           <Files>
             <File>
+              <FileName>gimbal_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\application\gimbal_task.c</FilePath>
+            </File>
+            <File>
               <FileName>struct_typedef.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\application\struct_typedef.h</FilePath>
@@ -858,11 +863,6 @@
               <FileName>gimbal_behaviour.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\application\gimbal_behaviour.h</FilePath>
-            </File>
-            <File>
-              <FileName>gimbal_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\gimbal_task.c</FilePath>
             </File>
             <File>
               <FileName>gimbal_task.h</FileName>

@@ -21,24 +21,38 @@ Target DLL:      CMSIS_AGDI.dll V1.33.16.0
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-D:\Desktop\2026RM\A_climber_code\climber_wheel_legged_robot_chassis(zyh_v1)\MDK-ARM\climber_wheel_legged_robot_chassis.uvprojx
-Project File Date:  03/12/2026
+D:\Desktop\2026RM\A_climber_code£¨v2£©\climber_wheel_legged_robot_chassis(zyh_v1)\MDK-ARM\climber_wheel_legged_robot_chassis.uvprojx
+Project File Date:  03/17/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
 Build target 'climber_wheel_legged_robot_chassis'
-compiling chassis_power_control.c...
-..\Chassis\chassis_power_control.h(21): warning:  #1-D: last line of file ends without a newline
-  #endif
+compiling chassis_task.c...
 ..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
   #endif
-..\Chassis\chassis_power_control.c(270): warning:  #1-D: last line of file ends without a newline
-  }
-..\Chassis\chassis_power_control.c: 3 warnings, 0 errors
+..\Chassis\chassis_power_control.h(21): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\chassis_task.c(636): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+       target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*6.5-keyboard_data.Remote_Mouse_RL*0.028;
+..\Chassis\chassis_task.c(587): warning:  #177-D: variable "rc_wz"  was declared but never referenced
+   	  int16_t rc_x = 0, rc_wz = 0;
+..\Chassis\chassis_task.c(588): warning:  #177-D: variable "rc_angle"  was declared but never referenced
+      int16_t rc_length = 0, rc_angle = 0,rc_follow_gimbal=0;
+..\Chassis\chassis_task.c(589): warning:  #177-D: variable "rc_pitch"  was declared but never referenced
+      float rc_pitch = 0;
+..\Chassis\chassis_task.c(901): warning:  #177-D: variable "T_Tp"  was declared but never referenced
+      float T_Tp[2];
+..\Chassis\chassis_task.c(252): warning:  #177-D: function "UpdateCalibrateStatus"  was declared but never referenced
+  static void UpdateCalibrateStatus(void);//Ð£×¼×´Ì¬
+..\Chassis\chassis_task.c(804): warning:  #177-D: function "Consoleselfstart"  was declared but never referenced
+   static void Consoleselfstart(void)
+..\Chassis\chassis_task.c(855): warning:  #177-D: function "ConsoleCalibrate"  was declared but never referenced
+  static void ConsoleCalibrate(void)
+..\Chassis\chassis_task.c: 10 warnings, 0 errors
 linking...
-Program Size: Code=75920 RO-data=5028 RW-data=3060 ZI-data=24756  
+Program Size: Code=76772 RO-data=5024 RW-data=3084 ZI-data=23812  
 FromELF: creating hex file...
-"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 3 Warning(s).
+"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 10 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -72,41 +86,41 @@ Package Vendor: Keil
       Include file:  CMSIS/Core/Include/tz_context.h
 
    * Component: ARM::CMSIS:DSP&Source@1.15.0
-      Include file:  Include/arm_common_tables_f16.h
-      Source file:   Source/CommonTables/CommonTables.c
-      Include file:  Include/arm_math_f16.h
-      Include file:  Include/arm_common_tables.h
-      Include file:  Include/arm_math.h
       Include file:  Include/arm_const_structs.h
+      Source file:   Source/ComplexMathFunctions/ComplexMathFunctionsF16.c
       Include file:  Include/arm_const_structs_f16.h
-      Source file:   Source/BasicMathFunctions/BasicMathFunctions.c
       Source file:   Source/BayesFunctions/BayesFunctions.c
-      Source file:   Source/QuaternionMathFunctions/QuaternionMathFunctions.c
       Source file:   Source/FilteringFunctions/FilteringFunctionsF16.c
-      Source file:   Source/CommonTables/CommonTablesF16.c
+      Include file:  Include/arm_math.h
+      Include file:  Include/arm_common_tables_f16.h
       Source file:   Source/FastMathFunctions/FastMathFunctions.c
-      Source file:   Source/TransformFunctions/TransformFunctionsF16.c
-      Source file:   Source/InterpolationFunctions/InterpolationFunctionsF16.c
-      Source file:   Source/SupportFunctions/SupportFunctions.c
-      Source file:   Source/TransformFunctions/TransformFunctions.c
-      Source file:   Source/ControllerFunctions/ControllerFunctions.c
-      Source file:   Source/MatrixFunctions/MatrixFunctions.c
       Source file:   Source/StatisticsFunctions/StatisticsFunctions.c
+      Source file:   Source/TransformFunctions/TransformFunctions.c
       Source file:   Source/InterpolationFunctions/InterpolationFunctions.c
-      Source file:   Source/SupportFunctions/SupportFunctionsF16.c
-      Source file:   Source/StatisticsFunctions/StatisticsFunctionsF16.c
-      Source file:   Source/FastMathFunctions/FastMathFunctionsF16.c
-      Source file:   Source/DistanceFunctions/DistanceFunctionsF16.c
-      Source file:   Source/DistanceFunctions/DistanceFunctions.c
-      Source file:   Source/BayesFunctions/BayesFunctionsF16.c
-      Source file:   Source/SVMFunctions/SVMFunctionsF16.c
-      Source file:   Source/MatrixFunctions/MatrixFunctionsF16.c
+      Include file:  Include/arm_common_tables.h
+      Source file:   Source/CommonTables/CommonTables.c
       Source file:   Source/ComplexMathFunctions/ComplexMathFunctions.c
+      Source file:   Source/BasicMathFunctions/BasicMathFunctionsF16.c
+      Source file:   Source/SupportFunctions/SupportFunctions.c
+      Source file:   Source/QuaternionMathFunctions/QuaternionMathFunctions.c
       Source file:   Source/SVMFunctions/SVMFunctions.c
       Source file:   Source/FilteringFunctions/FilteringFunctions.c
-      Source file:   Source/ComplexMathFunctions/ComplexMathFunctionsF16.c
-      Source file:   Source/BasicMathFunctions/BasicMathFunctionsF16.c
-Build Time Elapsed:  00:00:01
+      Include file:  Include/arm_math_f16.h
+      Source file:   Source/ControllerFunctions/ControllerFunctions.c
+      Source file:   Source/BasicMathFunctions/BasicMathFunctions.c
+      Source file:   Source/DistanceFunctions/DistanceFunctions.c
+      Source file:   Source/MatrixFunctions/MatrixFunctions.c
+      Source file:   Source/CommonTables/CommonTablesF16.c
+      Source file:   Source/TransformFunctions/TransformFunctionsF16.c
+      Source file:   Source/MatrixFunctions/MatrixFunctionsF16.c
+      Source file:   Source/InterpolationFunctions/InterpolationFunctionsF16.c
+      Source file:   Source/DistanceFunctions/DistanceFunctionsF16.c
+      Source file:   Source/FastMathFunctions/FastMathFunctionsF16.c
+      Source file:   Source/SVMFunctions/SVMFunctionsF16.c
+      Source file:   Source/StatisticsFunctions/StatisticsFunctionsF16.c
+      Source file:   Source/BayesFunctions/BayesFunctionsF16.c
+      Source file:   Source/SupportFunctions/SupportFunctionsF16.c
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

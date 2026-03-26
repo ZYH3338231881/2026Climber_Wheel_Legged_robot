@@ -65,6 +65,4 @@ climber_wheel_legged_robot_chassis\computer_rec.o: ../Drivers/STM32H7xx_HAL_Driv
 climber_wheel_legged_robot_chassis\computer_rec.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h
 climber_wheel_legged_robot_chassis\computer_rec.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 climber_wheel_legged_robot_chassis\computer_rec.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdarg.h
-climber_wheel_legged_robot_chassis\computer_rec.o: ../Judge/ui_interface.h
-climber_wheel_legged_robot_chassis\computer_rec.o: ../Judge/ui_types.h
 climber_wheel_legged_robot_chassis\computer_rec.o: ../Judge/crc_check.h

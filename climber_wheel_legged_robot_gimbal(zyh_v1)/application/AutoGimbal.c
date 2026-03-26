@@ -1,7 +1,7 @@
 #include "AutoGimbal.h"
 #include "gimbal_behaviour.h"
-extern UART_HandleTypeDef huart1;
-extern DMA_HandleTypeDef hdma_usart1_rx;
+extern UART_HandleTypeDef huart6;
+extern DMA_HandleTypeDef hdma_usart6_rx;
 visionDataStu_t visionDataStu;
 uint8_t data_length;
 uint8_t sbus_rx_buffer[BUFLENGTH];
@@ -20,8 +20,8 @@ typedef struct __attribute__((packed)) VisionToGimbal
 } VisionToGimbal_t;
 void AUTO_control_init(void)
 {
-	__HAL_UART_ENABLE_IT(&huart1,UART_IT_IDLE);   //使能串口空闲中断  两次消息间隔会触发
-	HAL_UART_Receive_DMA(&huart1,sbus_rx_buffer,BUFLENGTH);  //打开串口DMA接收  声明缓存数组  缓存数组长度
+	__HAL_UART_ENABLE_IT(&huart6,UART_IT_IDLE);   //使能串口空闲中断  两次消息间隔会触发
+	HAL_UART_Receive_DMA(&huart6,sbus_rx_buffer,BUFLENGTH);  //打开串口DMA接收  声明缓存数组  缓存数组长度
 }
 
 //利用串口接收不定长数据
@@ -29,8 +29,8 @@ void AUTO_control_init(void)
 //修改串口接收解析函数
 void Usart6Receive_IDLE(void)
 {
-    HAL_UART_DMAStop(&huart1);//要停止DMA的接收来处理数据
-    data_length = BUFLENGTH - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
+    HAL_UART_DMAStop(&huart6);//要停止DMA的接收来处理数据
+    data_length = BUFLENGTH - __HAL_DMA_GET_COUNTER(&hdma_usart6_rx);
     
     // 检查数据长度是否符合VisionToGimbal协议（至少需要头部+必要字段+尾部）
     if(data_length >= sizeof(VisionToGimbal_t))
@@ -59,17 +59,17 @@ void Usart6Receive_IDLE(void)
     }
 
     memset(sbus_rx_buffer, 0, BUFLENGTH);
-    HAL_UART_Receive_DMA(&huart1, sbus_rx_buffer, BUFLENGTH);
+    HAL_UART_Receive_DMA(&huart6, sbus_rx_buffer, BUFLENGTH);
 }
 
 
-void USART1_IRQHandler(void)
+void USART6_IRQHandler(void)
 {
-	if(RESET!=__HAL_UART_GET_FLAG(&huart1,UART_FLAG_IDLE))
+	if(RESET!=__HAL_UART_GET_FLAG(&huart6,UART_FLAG_IDLE))
 	{
-		__HAL_UART_CLEAR_IDLEFLAG(&huart1);
+		__HAL_UART_CLEAR_IDLEFLAG(&huart6);
 		Usart6Receive_IDLE();
 	}
-	HAL_UART_IRQHandler(&huart1);
+	HAL_UART_IRQHandler(&huart6);
 }	
 

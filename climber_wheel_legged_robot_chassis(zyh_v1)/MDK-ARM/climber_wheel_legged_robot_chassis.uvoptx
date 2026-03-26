@@ -200,6 +200,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>p_full_total</ItemText>
         </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>max_power</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow4>
         <Mm>
@@ -1502,96 +1507,48 @@
     <File>
       <GroupNumber>11</GroupNumber>
       <FileNumber>97</FileNumber>
-      <FileType>5</FileType>
+      <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Judge\ui.h</PathWithFileName>
-      <FilenameWithoutPath>ui.h</FilenameWithoutPath>
+      <PathWithFileName>..\Judge\judge_send_app.c</PathWithFileName>
+      <FilenameWithoutPath>judge_send_app.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
       <FileNumber>98</FileNumber>
-      <FileType>1</FileType>
+      <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Judge\ui_default.c</PathWithFileName>
-      <FilenameWithoutPath>ui_default.c</FilenameWithoutPath>
+      <PathWithFileName>..\Judge\judge_send_app.h</PathWithFileName>
+      <FilenameWithoutPath>judge_send_app.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
       <FileNumber>99</FileNumber>
-      <FileType>5</FileType>
+      <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Judge\ui_default.h</PathWithFileName>
-      <FilenameWithoutPath>ui_default.h</FilenameWithoutPath>
+      <PathWithFileName>..\Judge\crc_check.c</PathWithFileName>
+      <FilenameWithoutPath>crc_check.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>11</GroupNumber>
       <FileNumber>100</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\Judge\ui_frame1.c</PathWithFileName>
-      <FilenameWithoutPath>ui_frame1.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>101</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Judge\ui_frame1.h</PathWithFileName>
-      <FilenameWithoutPath>ui_frame1.h</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>102</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\Judge\ui_interface.c</PathWithFileName>
-      <FilenameWithoutPath>ui_interface.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>103</FileNumber>
-      <FileType>5</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\Judge\ui_interface.h</PathWithFileName>
-      <FilenameWithoutPath>ui_interface.h</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>11</GroupNumber>
-      <FileNumber>104</FileNumber>
-      <FileType>5</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\Judge\ui_types.h</PathWithFileName>
-      <FilenameWithoutPath>ui_types.h</FilenameWithoutPath>
+      <PathWithFileName>..\Judge\crc_check.h</PathWithFileName>
+      <FilenameWithoutPath>crc_check.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

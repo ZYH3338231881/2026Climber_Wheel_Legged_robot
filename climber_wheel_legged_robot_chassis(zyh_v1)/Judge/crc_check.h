@@ -1,6 +1,10 @@
 #ifndef CRC_CHECK_H
 #define CRC_CHECK_H
-#include "struct_typedef.h"
+
+
+#include "stm32h7xx.h"
+
+
 
 unsigned char Get_CRC8_Check_Sum(unsigned char *pchMessage,unsigned int dwLength,unsigned char ucCRC8);
 unsigned int Verify_CRC8_Check_Sum(unsigned char *pchMessage, unsigned int dwLength);

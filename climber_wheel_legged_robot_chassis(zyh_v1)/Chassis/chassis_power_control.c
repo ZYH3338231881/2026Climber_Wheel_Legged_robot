@@ -87,7 +87,7 @@ static float Predict_Motor_Power(float I_cmd, float speed_rpm)
  */
 // 静态变量用于保存上一帧的 Scale，实现输出滤波
 static float last_I_mov_scale = 1.0f;
-
+float max_power = 90;
 void Chassis_Power_Limit_Calc(float I_bal_L, float I_mov_L, 
                               float I_bal_R, float I_mov_R,
                               float speed_L_rpm, float speed_R_rpm,
@@ -120,11 +120,11 @@ void Chassis_Power_Limit_Calc(float I_bal_L, float I_mov_L,
     // ------------------------------------------------------------
     // 1. 获取裁判系统限制 & 缓冲能量
     // ------------------------------------------------------------
-    float max_power = 90;
+     max_power = 300;
     float buffer_energy = JudgementData.power_heat_data_t.buffer_energy;
     
-    // 掉线保护：如果裁判系统没数据，默认限制 40W (步兵标准)
-    if (max_power == 0) max_power = 150.0f;
+    // 掉线保护：如果裁判系统没数据，默认限制 90W (步兵标准)
+    if (max_power == 0) max_power = 90.0f;
 
     // ------------------------------------------------------------
     // 2. 动态缓冲能量策略 (线性插值)

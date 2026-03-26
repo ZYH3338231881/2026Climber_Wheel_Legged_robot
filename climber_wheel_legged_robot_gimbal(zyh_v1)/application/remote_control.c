@@ -196,19 +196,66 @@ static int16_t RC_abs(int16_t value)
 void Keyboard_DataProcess(Keyboard_Data *keyboard,RC_ctrl_t *rc_ctrl)
 {
 	
-	keyboard->Remote_KeyLast_Q=keyboard->Remote_Key_Q;
-	keyboard->Remote_KeyLast_G=keyboard->Remote_Key_G;
-	keyboard->Remote_KeyLast_Z=keyboard->Remote_Key_Z;
-	keyboard->Remote_KeyLast_B=keyboard->Remote_Key_B;
-	keyboard->Remote_KeyLast_Ctrl=keyboard->Remote_Key_Ctrl;
 
-	keyboard->Remote_Key_W=rc_ctrl->key.v&0x0001;//前进
-	keyboard->Remote_Key_S=(rc_ctrl->key.v>>1)&0x0001;//后退
-	keyboard->Remote_Mouse_KeyL=rc_ctrl->mouse.press_l&0x0001;//手动射击
-	keyboard->Remote_Mouse_KeyR=rc_ctrl->mouse.press_r&0x0001;//自瞄射击开火
+	// 核心解析函数：将遥控器数据解析为键鼠结构体
+    // -------------------------- 1. 基础按键赋值 --------------------------
+    // 方向键
+    keyboard->Remote_Key_W = (rc_ctrl->key.v & 0x0001) ? 1 : 0;    // W (0x0001)
+    keyboard->Remote_Key_S = (rc_ctrl->key.v & 0x0002) ? 1 : 0;    // S (0x0002)
+    keyboard->Remote_Key_A = (rc_ctrl->key.v & 0x0004) ? 1 : 0;    // A (0x0004)
+    keyboard->Remote_Key_D = (rc_ctrl->key.v & 0x0008) ? 1 : 0;    // D (0x0008)
     
-	keyboard->Remote_Mouse_RL=rc_ctrl->mouse.x;//鼠标左右
-	keyboard->Remote_Mouse_DU=-rc_ctrl->mouse.y;//鼠标上下
+    // 功能键
+    keyboard->Remote_Key_Shift = (rc_ctrl->key.v & 0x0010) ? 1 : 0;// Shift (0x0010) 加速
+    keyboard->Remote_Key_Ctrl = (rc_ctrl->key.v & 0x0020) ? 1 : 0; // Ctrl (0x0020)
+    keyboard->Remote_Key_Q = (rc_ctrl->key.v & 0x0040) ? 1 : 0;    // Q (0x0040)
+    keyboard->Remote_Key_E = (rc_ctrl->key.v & 0x0080) ? 1 : 0;    // E (0x0080)
+    keyboard->Remote_Key_R = (rc_ctrl->key.v & 0x0100) ? 1 : 0;    // R (0x0100)
+    keyboard->Remote_Key_F = (rc_ctrl->key.v & 0x0200) ? 1 : 0;    // F (0x0200)
+    keyboard->Remote_Key_G = (rc_ctrl->key.v & 0x0400) ? 1 : 0;    // G (0x0400)
+    keyboard->Remote_Key_Z = (rc_ctrl->key.v & 0x0800) ? 1 : 0;    // Z (0x0800)
+    keyboard->Remote_Key_X = (rc_ctrl->key.v & 0x1000) ? 1 : 0;    // X (0x1000)
+    keyboard->Remote_Key_C = (rc_ctrl->key.v & 0x2000) ? 1 : 0;    // C (0x2000)
+    keyboard->Remote_Key_V = (rc_ctrl->key.v & 0x4000) ? 1 : 0;    // V (0x4000)
+    keyboard->Remote_Key_B = (rc_ctrl->key.v & 0x8000) ? 1 : 0;    // B (0x8000) 跳跃
+    
+    // -------------------------- 2. 鼠标数据赋值 --------------------------
+    keyboard->Remote_Mouse_RL = rc_ctrl->mouse.x;          // 鼠标左右（右正左负）
+    keyboard->Remote_Mouse_DU = -rc_ctrl->mouse.y;         // 鼠标上下（后正前负，取反匹配定义）
+    keyboard->Remote_Mouse_Wheel = rc_ctrl->mouse.z;       // 鼠标滚轮（前正后负）
+    keyboard->Remote_Mouse_KeyL = rc_ctrl->mouse.press_l;  // 鼠标左键（按下为1）
+    keyboard->Remote_Mouse_KeyR = rc_ctrl->mouse.press_r;  // 鼠标右键（按下为1）
+    
+    // -------------------------- 3. 按键状态记录与触发 --------------------------
+    // 1) 保存上一次按键状态
+    keyboard->Remote_KeyLast_Q = keyboard->Remote_Key_Q;
+    keyboard->Remote_KeyLast_G = keyboard->Remote_Key_G;
+    keyboard->Remote_KeyLast_Z = keyboard->Remote_Key_Z;
+    keyboard->Remote_KeyLast_B = keyboard->Remote_Key_B;
+    keyboard->Remote_KeyLast_Ctrl = keyboard->Remote_Key_Ctrl;
+    
+    // 2) 检测按键"按下触发"（仅在按键从0→1时切换状态）
+    // Q键触发：上一次未按，当前按下 → 切换状态
+    if (keyboard->Remote_KeyLast_Q == 0 && keyboard->Remote_Key_Q == 1) {
+        keyboard->Remote_KeyPush_Q = !keyboard->Remote_KeyPush_Q;
+    }
+    // G键触发
+    if (keyboard->Remote_KeyLast_G == 0 && keyboard->Remote_Key_G == 1) {
+        keyboard->Remote_KeyPush_G = !keyboard->Remote_KeyPush_G;
+    }
+    // Z键触发
+    if (keyboard->Remote_KeyLast_Z == 0 && keyboard->Remote_Key_Z == 1) {
+        keyboard->Remote_KeyPush_Z = !keyboard->Remote_KeyPush_Z;
+    }
+    // B键触发
+    if (keyboard->Remote_KeyLast_B == 0 && keyboard->Remote_Key_B == 1) {
+        keyboard->Remote_KeyPush_B = !keyboard->Remote_KeyPush_B;
+    }
+    // Ctrl键触发
+    if (keyboard->Remote_KeyLast_Ctrl == 0 && keyboard->Remote_Key_Ctrl == 1) {
+        keyboard->Remote_KeyPush_Ctrl = !keyboard->Remote_KeyPush_Ctrl;
+    }
+
 
 	
 }

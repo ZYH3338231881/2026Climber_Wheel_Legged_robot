@@ -11,32 +11,46 @@
 #define GIMBAL_LOWER_LIMIT_PITCH (-0.4f)
 
 //YAW ANGLE
-#define KP_GIMBAL_YAW_ANGLE (8)//150
-#define KI_GIMBAL_YAW_ANGLE (0.05)
+#define KP_GIMBAL_YAW_ANGLE (40)//150
+#define KI_GIMBAL_YAW_ANGLE (0)
 #define KD_GIMBAL_YAW_ANGLE (1)//70
-#define MAX_IOUT_GIMBAL_YAW_ANGLE (0.8)
-#define MAX_OUT_GIMBAL_YAW_ANGLE (5)
+#define MAX_IOUT_GIMBAL_YAW_ANGLE (0)
+#define MAX_OUT_GIMBAL_YAW_ANGLE (3)
 //VELOCITY:角速度
 #define KP_GIMBAL_YAW_VELOCITY (2)//1200
 #define KI_GIMBAL_YAW_VELOCITY (0)
 #define KD_GIMBAL_YAW_VELOCITY (1)
 #define MAX_IOUT_GIMBAL_YAW_VELOCITY (0)
-#define MAX_OUT_GIMBAL_YAW_VELOCITY (5)
+#define MAX_OUT_GIMBAL_YAW_VELOCITY (3)
+
+
+//YAW ANGLE
+#define KP_GIMBAL_YAW_ANGLE_4310 (5)//150
+#define KI_GIMBAL_YAW_ANGLE_4310 (0)
+#define KD_GIMBAL_YAW_ANGLE_4310 (0.1)//70
+#define MAX_IOUT_GIMBAL_YAW_ANGLE_4310 (0)
+#define MAX_OUT_GIMBAL_YAW_ANGLE_4310 (3)
+//VELOCITY:角速度
+#define KP_GIMBAL_YAW_VELOCITY_4310 (2)//1200
+#define KI_GIMBAL_YAW_VELOCITY_4310 (0)
+#define KD_GIMBAL_YAW_VELOCITY_4310 (1)
+#define MAX_IOUT_GIMBAL_YAW_VELOCITY_4310 (0)
+#define MAX_OUT_GIMBAL_YAW_VELOCITY_4310 (2)
 
 
 //先单环后串级
 //PITCH ANGLE
-#define KP_GIMBAL_PITCH_ANGLE (20)     //保证位置响应较快
+#define KP_GIMBAL_PITCH_ANGLE (30)     //保证位置响应较快
 #define KI_GIMBAL_PITCH_ANGLE (0.1)        
-#define KD_GIMBAL_PITCH_ANGLE (1)       //位置稳态，过多可能冲过头
+#define KD_GIMBAL_PITCH_ANGLE (0.5)       //位置稳态，过多可能冲过头
 #define MAX_IOUT_GIMBAL_PITCH_ANGLE (2)
 #define MAX_OUT_GIMBAL_PITCH_ANGLE (5)  //在速度单环pid下实际可能出现的最大转速
 //VELOCITY:角速度
 #define KP_GIMBAL_PITCH_VELOCITY (1)         //保证速度响应较快800
 #define KI_GIMBAL_PITCH_VELOCITY (0)           
-#define KD_GIMBAL_PITCH_VELOCITY (1)          
+#define KD_GIMBAL_PITCH_VELOCITY (0.1)          
 #define MAX_IOUT_GIMBAL_PITCH_VELOCITY (0)   //修正速度静差
-#define MAX_OUT_GIMBAL_PITCH_VELOCITY (7)  
+#define MAX_OUT_GIMBAL_PITCH_VELOCITY (4)  
 
 //电机id
 #define GIMBAL_DIRECT_YAW_ID ((uint8_t)0x01)
@@ -69,7 +83,7 @@
 #define GIMBAL_DIRECT_PITCH_MODE (0)
 
 //电机角度中值设置
-#define GIMBAL_DIRECT_YAW_MID (1.6637702)    //云台初始化正对齐的时候使用的yaw轴正中心量
+#define GIMBAL_DIRECT_YAW_MID (-2.77304602)    //云台初始化正对齐的时候使用的yaw轴正中心量
 
 //gimbal_init-------------------------------
 #define GIMBAL_INIT_TIME (uint32_t)1000
@@ -89,6 +103,7 @@ typedef struct
 {
     float pitch;
     float yaw;
+	  float yaw_4310;
 	  float roll;
 } Values_t;
 typedef struct

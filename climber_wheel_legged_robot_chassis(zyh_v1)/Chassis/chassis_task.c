@@ -57,7 +57,7 @@ int8_t TRANSITION_MATRIX[10] = {0};
  void ChassisHandleException(void);
 
  void ChassisSetMode(void);
- void ChassisObserver(void);
+void ChassisObserver(void);
  void ChassisReference(void);
  void ChassisConsole(void);
  void ChassisSendCmd(void);
@@ -82,7 +82,6 @@ void chassis_task(void const * pvParamewwters)
         ChassisConsole();
         // 发送控制量
         ChassisSendCmd();
-//			osDelay(1);
 			  
     }
 }
@@ -198,6 +197,10 @@ void chassis_task(void const * pvParamewwters)
 		else if (switch_is_up(CHASSIS.rc->sw2)&&switch_is_down(CHASSIS.rc->sw1)) 
 		{
         CHASSIS.mode =CHASSIS_FREE;       //左上右下   底盘自由移动  
+		}
+		else if (switch_is_down(CHASSIS.rc->sw2)&&switch_is_mid(CHASSIS.rc->sw1)) 
+		{
+        CHASSIS.mode =CHASSIS_selfon;       //左上右下   底盘自由移动  
 		}
     else 
     {
@@ -537,11 +540,10 @@ void BodyMotionObserve(void)
 #define StateTransfer()    \
     CHASSIS.step_time = 0; \
     CHASSIS.step = TRANSITION_MATRIX[CHASSIS.step];
-//&&(tof_data.distance<70)&&(tof_data.distance>60)
 static void UpdateStepStatus(void)
 {	
 if (CHASSIS.mode == CHASSIS_FREE) {
-        if (keyboard_data.Remote_Key_B==1||(CHASSIS.rc->ch2<=-200)){  // 电脑键盘按下B键  跳跃
+        if (keyboard_data.Remote_Key_B==1||(CHASSIS.rc->ch2<=-200)||keyboard_data.Remote_Key_C==1){  // 电脑键盘按下C键  跳跃
             CHASSIS.step_time = 0;
             CHASSIS.step = JUMP_STEP_SQUST;
         } else if (CHASSIS.step == JUMP_STEP_SQUST) {  // 跳跃——蹲下蓄力状态
@@ -556,7 +558,7 @@ if (CHASSIS.mode == CHASSIS_FREE) {
                 StateTransfer();
             }
         } else if (CHASSIS.step == JUMP_STEP_RECOVERY) {  // 跳跃——收腿状态
-            if (CHASSIS.step_time > 300) {               // 500ms后切换状态
+            if (CHASSIS.step_time > 300) {               // 300ms后切换状态
                 StateTransfer();
             }
         } else if (CHASSIS.step != NORMAL_STEP && CHASSIS.step_time > MAX_STEP_TIME) {
@@ -572,223 +574,39 @@ if (CHASSIS.mode == CHASSIS_FREE) {
 
 #undef StateTransfer
 
-//----------------------无功率控制---------------------------------------------------------------------------------
-//  float length = 0.135;//正常腿长
-//  ChassisSpeedVector_t target_v_set = {0.0f, 0.0f, 0.0f};
-// float vx_ramp_rate = 2.5f; // 每秒增加6.5m/s
-// float current_vx = 0.0f;//当前设置的速度
-// // 角速度斜坡函数
-// float current_wz = 0.0f;
-// float wz_ramp_rate = 15.5f; // 每秒增加10rad/s
-//  void ChassisReference(void)
-//  {
-// 	  int16_t rc_x = 0, rc_wz = 0;
-//     int16_t rc_length = 0, rc_angle = 0,rc_follow_gimbal=0;
-//     float rc_pitch = 0;
-//     rc_deadband_limit(CHASSIS.rc->ch1, rc_x, CHASSIS_RC_DEADLINE);    //右竖直拨杆控制前进后退
-// //    rc_deadband_limit(CHASSIS.rc->ch0, rc_wz, CHASSIS_RC_DEADLINE);   //右水平拨杆控制旋转
-//     rc_deadband_limit(CHASSIS.rc->ch4, rc_length, CHASSIS_RC_DEADLINE);
-// 	  rc_deadband_limit(CHASSIS.rc->ch0, rc_follow_gimbal,CHASSIS_RC_DEADLINE);
-// float rc_follow_gimbal_input=-rc_follow_gimbal*RC_TO_ONE;//前馈云台跟随
-//	 
-// //--------------------------------------小陀螺处理---------------------------------------------------------------------------------
-// // 计算目标角速度
-// float target_wz;
-// float rc_wz_input = -rc_wz*RC_TO_ONE*MAX_SPEED_VECTOR_WZ;
-// //// 小陀螺模式标志
-
-
-// //// 判断是否进入小陀螺模式
-// if (fabs(rc_wz_input) > 0.001f || keyboard_data.Remote_Key_Ctrl == 1||(CHASSIS.rc->ch3==-660)) {
-//     CHASSIS.fdb.tell_gimbal_thing = 1; 
-// } 
-// // 小陀螺模式处理无功率控制  
-// if (CHASSIS.fdb.tell_gimbal_thing) {
-//     target_wz = rc_wz_input + keyboard_data.Remote_Key_Ctrl * 12+(CHASSIS.rc->ch3==-660)*12;
-//    
-//     // 使用斜坡函数逐渐增加到目标角速度
-//     if (target_wz > current_wz) {
-//         current_wz += wz_ramp_rate * CHASSIS.duration * MS_TO_S;
-//         if (current_wz > target_wz) {
-//             current_wz = target_wz;
-//         }
-//     } else if (target_wz < current_wz) {
-//         current_wz -= wz_ramp_rate * CHASSIS.duration * MS_TO_S;
-//         if (current_wz < target_wz) {
-//             current_wz = target_wz;
-//         }
-//     }
-//     target_v_set.wz = current_wz;
-//     // 当小陀螺速度降到3m/s时停止小陀螺模式
-//     if (fabs(current_wz) < 0.3f) {
-//         CHASSIS.fdb.tell_gimbal_thing = 0;
-//     }
-// } 
-// else {
-//     // 云台跟随模式
-//     float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
-// 	yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.4,M_PI*0.4);
-//    
-//     // 死区处理
-//     if(fabs(yaw_angle_diff) > 0.08f)
-//     {
-//         float corrected_yaw_target = CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
-//         target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*15.5-keyboard_data.Remote_Mouse_RL*0.02;
-//     }
-//     else
-//     {
-//         // 误差小于等于0.08，认为底盘已经跟上，不输出控制量
-//         target_wz = 0.0f;
-//     }
-
-//    target_v_set.wz = target_wz;
-// }
-// //---------------------------------------------------------------------------------------------------------------------------- 
-
-
-
-
-
-// //---------------------------------纵向控制----------------------------------------------------------------------------------
-//	 
-//     // 计算速度向量
-// if (CHASSIS.fdb.tell_gimbal_thing==0) {
-// // 简单键鼠，遥控器控制无功率控制
-// 				target_v_set.vx = rc_x * RC_TO_ONE * MAX_SPEED_VECTOR_VX;
-//			
-// 			// 云台误差死区判断
-// 			float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
-// 			if(fabs(yaw_angle_diff) < 0.2f) // 误差在死区内才能前进
-// 			{
-// 				if(keyboard_data.Remote_Key_Shift==0)
-// 				{
-// 					target_v_set.vx +=keyboard_data.Remote_Key_W*1.2;
-// 					target_v_set.vx -=keyboard_data.Remote_Key_S*1.2;
-// 				}
-// 				if(keyboard_data.Remote_Key_Shift==1)
-// 				{
-// 					target_v_set.vx +=keyboard_data.Remote_Key_W*1.7;
-// 					target_v_set.vx -=keyboard_data.Remote_Key_S*1.7;
-// 				}
-// 			}
-// 			else
-// 			{
-// 				// 误差超过死区，禁止前进后退
-// 				if(keyboard_data.Remote_Key_W || keyboard_data.Remote_Key_S)
-// 				{
-// 					target_v_set.vx = 0.0f;
-// 				}
-// 			}
-//			
-// 			if (target_v_set.vx > current_vx) {
-// 			current_vx += vx_ramp_rate * CHASSIS.duration * MS_TO_S;
-// 			if (current_vx > target_v_set.vx) {
-// 					current_vx = target_v_set.vx;
-// 			}
-// 	} else if (target_v_set.vx < current_vx) {
-// 			current_vx -= vx_ramp_rate * CHASSIS.duration * MS_TO_S;
-// 			if (current_vx < target_v_set.vx) {
-// 					current_vx = target_v_set.vx;
-// 			}
-// 	}
-
-// }
-// else
-// {
-// 	current_vx=0;
-// }
-
-// //----------------------------------------------------------------------------------------------------------------------------
-
-
-
-// 		switch (CHASSIS.mode) {
-//         case CHASSIS_FREE: {  // 底盘自由模式下，控制量为底盘坐标系下的速度
-//             CHASSIS.ref.speed_vector.vx = current_vx;	
-//             CHASSIS.ref.speed_vector.vy = 0;
-//             CHASSIS.ref.speed_vector.wz = target_v_set.wz;
-//             break;
-//         }
-//         default:
-//             CHASSIS.ref.speed_vector.vx = 0;
-//             CHASSIS.ref.speed_vector.vy = 0;
-//             CHASSIS.ref.speed_vector.wz = 0;
-//             break;
-//     }
-//		
-// 		// 计算期望状态
-//     for (uint8_t i = 0; i < 2; i++) {
-//         CHASSIS.ref.leg_state[i].theta     =  0;
-//         CHASSIS.ref.leg_state[i].theta_dot =  0;
-//         CHASSIS.ref.leg_state[i].x         =  0;
-//         CHASSIS.ref.leg_state[i].x_dot     =  CHASSIS.ref.speed_vector.vx;
-//         CHASSIS.ref.leg_state[i].phi       =  0;
-//         CHASSIS.ref.leg_state[i].phi_dot   =  0;
-//     }
-// 		 // 腿部控制
-//     switch (CHASSIS.mode) {
-//         case CHASSIS_FREE: {
-// 				     length=length-rc_length*RC_TO_ONE*0.001f;
-// 					  if (CHASSIS.step == JUMP_STEP_SQUST) 
-//             {
-//               length = MIN_LEG_LENGTH;
-//             } 
-//             else if (CHASSIS.step == JUMP_STEP_JUMP) 
-//             {
-//               length = MAX_LEG_LENGTH;
-//             } 
-//             else if (CHASSIS.step == JUMP_STEP_RECOVERY) 
-//             {
-//               length = MIN_LEG_LENGTH ;
-//             }
-//         } break;
-//         default: {
-//             length = 0.14f;
-//         }
-//     }
-// length=fp32_constrain(length,MIN_LEG_LENGTH,MAX_LEG_LENGTH);
-
-// 						 CHASSIS.ref.rod_L0[0] = length;
-// 						 CHASSIS.ref.rod_L0[1] = length;
-//  }
-
-
-
-
 
 //----------------------有功率控制---------------------------------------------------------------------------------
   float length = 0.135;//正常腿长
   ChassisSpeedVector_t target_v_set = {0.0f, 0.0f, 0.0f};
- float vx_ramp_rate = 2.5f; // 每秒增加6.5m/s
+ float vx_ramp_rate = 0.05f; // 每秒增加6.5m/s
  float current_vx = 0.0f;//当前设置的速度
- // 角速度斜坡函数
- float current_wz = 0.0f;
- float wz_ramp_rate = 15.5f; // 每秒增加10rad/s
+ // 目标角速度 当前角速度 角速度增加加速度
+ float target_wz=0.0f,current_wz = 0.0f,wz_ramp_rate = 15.5f;
   void ChassisReference(void)
   {
  	  int16_t rc_x = 0, rc_wz = 0;
-     int16_t rc_length = 0, rc_angle = 0,rc_follow_gimbal=0;
-     float rc_pitch = 0;
-     rc_deadband_limit(CHASSIS.rc->ch1, rc_x, CHASSIS_RC_DEADLINE);    //右竖直拨杆控制前进后退
- //    rc_deadband_limit(CHASSIS.rc->ch0, rc_wz, CHASSIS_RC_DEADLINE);   //右水平拨杆控制旋转
-     rc_deadband_limit(CHASSIS.rc->ch4, rc_length, CHASSIS_RC_DEADLINE);
- 	  rc_deadband_limit(CHASSIS.rc->ch0, rc_follow_gimbal,CHASSIS_RC_DEADLINE);
- float rc_follow_gimbal_input=-rc_follow_gimbal*RC_TO_ONE;//前馈云台跟随
+    int16_t rc_length = 0, rc_angle = 0,rc_follow_gimbal=0;
+    float rc_pitch = 0;
+    rc_deadband_limit(CHASSIS.rc->ch1, rc_x, CHASSIS_RC_DEADLINE);    //右竖直拨杆控制前进后退
+ // rc_deadband_limit(CHASSIS.rc->ch0, rc_wz, CHASSIS_RC_DEADLINE);   //右水平拨杆控制旋转
+    rc_deadband_limit(CHASSIS.rc->ch4, rc_length, CHASSIS_RC_DEADLINE);
+		rc_deadband_limit(CHASSIS.rc->ch0, rc_follow_gimbal,CHASSIS_RC_DEADLINE);
+		float rc_follow_gimbal_input=-rc_follow_gimbal*RC_TO_ONE;//前馈云台跟随
 	 
  //--------------------------------------小陀螺处理---------------------------------------------------------------------------------
- // 计算目标角速度
- float target_wz;
- float rc_wz_input = -rc_wz*RC_TO_ONE*MAX_SPEED_VECTOR_WZ;
- //// 小陀螺模式标志
 
-
- //// 判断是否进入小陀螺模式
- if (fabs(rc_wz_input) > 0.001f || keyboard_data.Remote_Key_Ctrl == 1||(CHASSIS.rc->ch3==-660)) {
+ //// 判断是否进入小陀螺模式  按下ctrl键，左边y拨杆拨到竖直
+ if ( keyboard_data.Remote_Key_Ctrl == 1
+			||(CHASSIS.rc->ch3==-660)) 
+ {
+		 //小陀螺标志位置为1
      CHASSIS.fdb.tell_gimbal_thing = 1; 
  } 
- // 小陀螺模式处理无功率控制  
- if (CHASSIS.fdb.tell_gimbal_thing) {
-     target_wz = rc_wz_input + keyboard_data.Remote_Key_Ctrl * 12+(CHASSIS.rc->ch3==-660)*12;
+ 
+ // 检测到开启小陀螺  
+ if (CHASSIS.fdb.tell_gimbal_thing==1) 
+{
+     target_wz =keyboard_data.Remote_Key_Ctrl * 15+(CHASSIS.rc->ch3==-660)*26;
     
      // 使用斜坡函数逐渐增加到目标角速度
      if (target_wz > current_wz) {
@@ -802,48 +620,27 @@ if (CHASSIS.mode == CHASSIS_FREE) {
              current_wz = target_wz;
          }
      }
+		 
+		 //直接赋值旋转速度
      target_v_set.wz = current_wz;
      // 当小陀螺速度降到3m/s时停止小陀螺模式
      if (fabs(current_wz) < 0.3f) {
          CHASSIS.fdb.tell_gimbal_thing = 0;
      }
- } 
- else {
-     // 云台跟随模式
-     float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
- 	yaw_angle_diff=fp32_constrain(yaw_angle_diff,-M_PI*0.4,M_PI*0.4);
-    
-     // 死区处理
-     if(fabs(yaw_angle_diff) > 0.08f)
-     {
-         float corrected_yaw_target = CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
-         target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*15.5-keyboard_data.Remote_Mouse_RL*0.02;
-     }
-     else
-     {
-         // 误差小于等于0.08，认为底盘已经跟上，不输出控制量
-         target_wz = 0.0f;
-     }
-
-    target_v_set.wz = target_wz;
  }
- //---------------------------------------------------------------------------------------------------------------------------- 
-
-
-
-
-
+//未开启小陀螺为 云台跟随模式
+ else 
+	 {
+     float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
+     float corrected_yaw_target = CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
+     target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*6.5-keyboard_data.Remote_Mouse_RL*0.028;
+		 //直接赋值旋转速度
+		 target_v_set.wz = target_wz;
+   }
  //---------------------------------纵向控制----------------------------------------------------------------------------------
-	 
-     // 计算速度向量
- if (CHASSIS.fdb.tell_gimbal_thing==0) {
- // 简单键鼠，遥控器控制无功率控制
+ if (CHASSIS.fdb.tell_gimbal_thing==0) 
+{
  				target_v_set.vx = rc_x * RC_TO_ONE * MAX_SPEED_VECTOR_VX;
-			
- 			// 云台误差死区判断
- 			float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
- 			if(fabs(yaw_angle_diff) < 0.2f) // 误差在死区内才能前进
- 			{
  				if(keyboard_data.Remote_Key_Shift==0)
  				{
  					target_v_set.vx +=keyboard_data.Remote_Key_W*1.2;
@@ -853,17 +650,7 @@ if (CHASSIS.mode == CHASSIS_FREE) {
  				{
  					target_v_set.vx +=keyboard_data.Remote_Key_W*1.7;
  					target_v_set.vx -=keyboard_data.Remote_Key_S*1.7;
- 				}
- 			}
- 			else
- 			{
- 				// 误差超过死区，禁止前进后退
- 				if(keyboard_data.Remote_Key_W || keyboard_data.Remote_Key_S)
- 				{
- 					target_v_set.vx = 0.0f;
- 				}
- 			}
-			
+ 				}		
  			if (target_v_set.vx > current_vx) {
  			current_vx += vx_ramp_rate * CHASSIS.duration * MS_TO_S;
  			if (current_vx > target_v_set.vx) {
@@ -875,12 +662,8 @@ if (CHASSIS.mode == CHASSIS_FREE) {
  					current_vx = target_v_set.vx;
  			}
  	}
+}
 
- }
- else
- {
- 	current_vx=0;
- }
 
 
 
@@ -923,7 +706,6 @@ if (CHASSIS.mode == CHASSIS_FREE) {
             else current_vx = target_v_set.vx ;
         }
     }
-
     // 3. 旋转 (Wz) 斜坡处理：
     if (target_v_set.wz > current_wz + current_wz_step) current_wz += current_wz_step;
     else if (target_v_set.wz < current_wz - current_wz_step) current_wz -= current_wz_step;
@@ -933,11 +715,7 @@ if (CHASSIS.mode == CHASSIS_FREE) {
     current_vx = current_vx;   
     target_v_set.wz = current_wz;
 
-
-
  //----------------------------------------------------------------------------------------------------------------------------
-
-
 
  		switch (CHASSIS.mode) {
          case CHASSIS_FREE: {  // 底盘自由模式下，控制量为底盘坐标系下的速度
@@ -954,7 +732,8 @@ if (CHASSIS.mode == CHASSIS_FREE) {
      }
 		
  		// 计算期望状态
-     for (uint8_t i = 0; i < 2; i++) {
+     for (uint8_t i
+			 = 0; i < 2; i++) {
          CHASSIS.ref.leg_state[i].theta     =  0;
          CHASSIS.ref.leg_state[i].theta_dot =  0;
          CHASSIS.ref.leg_state[i].x         =  0;
@@ -965,7 +744,7 @@ if (CHASSIS.mode == CHASSIS_FREE) {
  		 // 腿部控制
      switch (CHASSIS.mode) {
          case CHASSIS_FREE: {
- 				     length=length-rc_length*RC_TO_ONE*0.001f;
+ 				     length=length-rc_length*RC_TO_ONE*0.003f;
  					  if (CHASSIS.step == JUMP_STEP_SQUST) 
              {
                length = MIN_LEG_LENGTH;
@@ -997,6 +776,7 @@ if (CHASSIS.mode == CHASSIS_FREE) {
 
 static void ConsoleZeroForce(void);//零力控制
 static void ConsoleNormal(void);//正常控制
+static void Consoleselfstart(void);//翻倒自启
 static void ConsoleCalibrate(void);//校准控制
 static void LocomotionController(void);
 static void LegTorqueController(void);
@@ -1007,7 +787,7 @@ static void LegTorqueController(void);
  switch (CHASSIS.mode) {
 	      case CHASSIS_FREE:
         {
-          ConsoleNormal();//正常控制
+						ConsoleNormal();//正常控制
         }break;
 	      case CHASSIS_STAND_UP:
 				{
@@ -1019,6 +799,15 @@ static void LegTorqueController(void);
         }
  }
  } 
+ 
+ 
+ static void Consoleselfstart(void)
+ //翻倒自启
+{
+		
+	  CHASSIS.wheel_motor[0].set.tor = 0;
+    CHASSIS.wheel_motor[1].set.tor = 0;
+}
 static void ConsoleNormal(void)
 {
     LocomotionController();
@@ -1128,30 +917,27 @@ static void LocomotionController(void)
         x[5] = x5_OFFSET + (CHASSIS.fdb.leg_state[i].phi_dot   - CHASSIS.ref.leg_state[i].phi_dot);
 
         CalcLQR(k, x, T_Tp_dummy);
-			   T_total[i] = T_Tp_dummy[0]; // 轮子力矩
+			  T_total[i]=T_Tp_dummy[0]; 
 			  
-//				CHASSIS.cmd.leg[i].wheel.T = T_Tp[0];
         CHASSIS.cmd.leg[i].rod.Tp = T_Tp_dummy[1];
 			
-			        // 2. 分离移动力矩
-
+			   // 2. 分离移动力矩
         T_vel[i] = k[0][3] * x[3]; 
 
         // 3. 计算平衡力矩
         T_bal[i] = T_total[i] - T_vel[i];
 			}
-					// 4. 计算旋转力矩 (Yaw)
+			// 4. 计算旋转力矩 (Yaw)
 			PID_calc(&CHASSIS.pid.yaw_velocity, CHASSIS.fdb.body.yaw_dot, CHASSIS.ref.speed_vector.wz);
-		  CHASSIS.cmd.leg[0].wheel.T -= CHASSIS.pid.yaw_velocity.out;
-      CHASSIS.cmd.leg[1].wheel.T += CHASSIS.pid.yaw_velocity.out;
+		  CHASSIS.cmd.leg[0].wheel.T-=CHASSIS.pid.yaw_velocity.out;
+      CHASSIS.cmd.leg[1].wheel.T+=CHASSIS.pid.yaw_velocity.out;
 
-        float T_yaw = 0.0f;
-	
-				 T_yaw = CHASSIS.pid.yaw_velocity.out; 
+      float T_yaw = 0.0f;
+			T_yaw = CHASSIS.pid.yaw_velocity.out; 
 				 
-				 // 5. 功率控制数据
-    float I_bal_L = T_bal[0] / current_to_torque;
-    float I_bal_R = T_bal[1] / current_to_torque;
+				// 5.功率控制数据
+			float I_bal_L = T_bal[0] / current_to_torque;
+			float I_bal_R = T_bal[1] / current_to_torque;
 		
 		// 移动分量 = LQR速度分量 + Yaw分量
     // 左轮：LQR速度 - Yaw
@@ -1178,18 +964,6 @@ static void LocomotionController(void)
     CHASSIS.cmd.leg[0].wheel.T = T_bal[0] + move_scale * T_mov_L_Nm;
     CHASSIS.cmd.leg[1].wheel.T = T_bal[1] + move_scale * T_mov_R_Nm;
     
-
-//转向控制================================================
-//#ifdef OPEN_CHASSIS_FOLLOW_GIMBAL
-//		
-//		  float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID,CHASSIS.fdb.gimbal.gimbal_yaw_6020);
-//		  float corrected_yaw_target =  CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
-//		  PID_calc(&CHASSIS.pid.chassis_follow_gimbal,CHASSIS.fdb.gimbal.gimbal_yaw_6020,corrected_yaw_target);
-//			CHASSIS.cmd.leg[0].wheel.T += CHASSIS.pid.chassis_follow_gimbal.out;
-//      CHASSIS.cmd.leg[1].wheel.T -= CHASSIS.pid.chassis_follow_gimbal.out;
-//#endif
-
-
 
       for (uint8_t i = 0; i < 2; i++) 
 				{
@@ -1219,7 +993,7 @@ static void LegTorqueController(void)
 							if (CHASSIS.step == JUMP_STEP_JUMP) 
 							{
 							// 直接给一个超大力F起飞
-							CHASSIS.cmd.leg[i].rod.F = 140;
+							CHASSIS.cmd.leg[i].rod.F = 150;
 							}
 				  		else if(CHASSIS.step==JUMP_STEP_RECOVERY)
 							{
@@ -1247,6 +1021,7 @@ static void LegTorqueController(void)
 					CHASSIS.cmd.leg[0].rod.F-=CHASSIS.pid.pitch_angle.out;
 					CHASSIS.cmd.leg[1].rod.F+=CHASSIS.pid.pitch_angle.out;
 					//防劈叉  TP
+					CHASSIS.fdb.two_leg_err=CHASSIS.fdb.leg[0].rod.Theta-CHASSIS.fdb.leg[1].rod.Theta;
 					PID_calc(&CHASSIS.pid.leg_chase_L_to_R,CHASSIS.fdb.leg[0].rod.Theta,CHASSIS.fdb.leg[1].rod.Theta);
           CHASSIS.cmd.leg[0].rod.Tp-=CHASSIS.pid.leg_chase_L_to_R.out;
           PID_calc(&CHASSIS.pid.leg_chase_R_to_L,CHASSIS.fdb.leg[1].rod.Theta,CHASSIS.fdb.leg[0].rod.Theta);
@@ -1298,13 +1073,54 @@ void SendWheelMotorCmd(void);
         case CHASSIS_STAND_UP: 
 				case CHASSIS_FREE:  //底盘自由模式
 				{
-					DmMitCtrlTorque(&CHASSIS.joint_motor[0]);
-					osDelay(1);
-          DmMitCtrlTorque(&CHASSIS.joint_motor[1]);
-					osDelay(1);
-          DmMitCtrlTorque(&CHASSIS.joint_motor[2]);
-					osDelay(1);
-          DmMitCtrlTorque(&CHASSIS.joint_motor[3]);
+
+						DmMitCtrlTorque(&CHASSIS.joint_motor[0]);
+						osDelay(1);
+						DmMitCtrlTorque(&CHASSIS.joint_motor[1]);
+						osDelay(1);
+						DmMitCtrlTorque(&CHASSIS.joint_motor[2]);
+						osDelay(1);
+						DmMitCtrlTorque(&CHASSIS.joint_motor[3]);
+				}break;
+				case CHASSIS_selfon:  //
+				{
+				if(leg_loss_control[0].state==LOSS_CONTROL_OVERTURN&&leg_loss_control[1].state==LOSS_CONTROL_OVERTURN)
+					{
+						
+						CHASSIS.joint_motor[0].set.vel=-Leg_back_velocity;
+						CHASSIS.joint_motor[1].set.vel=-Leg_back_velocity;
+						CHASSIS.joint_motor[2].set.vel=Leg_back_velocity;
+						CHASSIS.joint_motor[3].set.vel=Leg_back_velocity;
+						CHASSIS.wheel_motor[0].set.tor = 0;
+						CHASSIS.wheel_motor[1].set.tor = 0;
+						
+						DmMitCtrlVelocity(&CHASSIS.joint_motor[0],STAND_UP_VEL_KD);
+						osDelay(1);
+						DmMitCtrlVelocity(&CHASSIS.joint_motor[1],STAND_UP_VEL_KD);
+						osDelay(1);
+						DmMitCtrlVelocity(&CHASSIS.joint_motor[2],STAND_UP_VEL_KD);
+						osDelay(1);
+						DmMitCtrlVelocity(&CHASSIS.joint_motor[3],STAND_UP_VEL_KD);
+					}
+					  if(leg_loss_control[0].state==LOSS_CONTROL_CONFIRMED&&leg_loss_control[1].state==LOSS_CONTROL_CONFIRMED)
+					{
+						
+						CHASSIS.joint_motor[0].set.vel=-3;
+						CHASSIS.joint_motor[1].set.vel=-3;
+						CHASSIS.joint_motor[2].set.vel= 3;
+						CHASSIS.joint_motor[3].set.vel= 3;
+						CHASSIS.wheel_motor[0].set.tor= 0;
+						CHASSIS.wheel_motor[1].set.tor= 0;
+					  //确认失控					
+						DmMitCtrlVelocity(&CHASSIS.joint_motor[0],1.5);
+						osDelay(1);
+						DmMitCtrlVelocity(&CHASSIS.joint_motor[1],1.5);
+						osDelay(1);
+						DmMitCtrlVelocity(&CHASSIS.joint_motor[2],1.5);
+						osDelay(1);
+						DmMitCtrlVelocity(&CHASSIS.joint_motor[3],1.5);
+					}
+
 				}break;
 				default:    //底盘其他模式
 				{
@@ -1348,7 +1164,7 @@ void SendWheelMotorCmd(void);
 	 
 void ChassisHandleException()
 {
-  if(CHASSIS.joint_motor[0].fdb.state==0||CHASSIS.joint_motor[1].fdb.state==0||CHASSIS.joint_motor[2].fdb.state==0||CHASSIS.joint_motor[3].fdb.state==0)
+  if(CHASSIS.joint_motor[0].fdb.state==0||CHASSIS.joint_motor[1].fdb.state==0||CHASSIS.joint_motor[2].fdb.state==0||CHASSIS.joint_motor[3].fdb.state==0||keyboard_data.Remote_Key_V==1)
 	{
     DmEnable(&CHASSIS.joint_motor[0]);
     osDelay(1);
@@ -1357,6 +1173,7 @@ void ChassisHandleException()
     DmEnable(&CHASSIS.joint_motor[2]);
     osDelay(1);
     DmEnable(&CHASSIS.joint_motor[3]);
+		osDelay(1);
 	} 
 	//当切换到底盘控制模式/按键按下R/底盘起立模式
   if ((CHASSIS.mode==CHASSIS_FREE&&CHASSIS.last_mode!=CHASSIS_FREE)||keyboard_data.Remote_Key_R||(CHASSIS.mode==CHASSIS_STAND_UP&&CHASSIS.last_mode!=CHASSIS_STAND_UP))
