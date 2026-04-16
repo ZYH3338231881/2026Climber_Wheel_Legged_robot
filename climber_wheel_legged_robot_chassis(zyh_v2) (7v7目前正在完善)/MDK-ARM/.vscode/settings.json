@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "chassis_task.h": "c",
+        "gimbal_task.h": "c",
+        "can_receive.h": "c",
+        "struct_typedef.h": "c",
+        "fdcan.h": "c",
+        "chassis_balance_extra.h": "c"
+    }
+}
