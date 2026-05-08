@@ -69,17 +69,17 @@
 
 
 // 云台跟随用的单环  
-#define KP_CHASSIS_FOLLOW_GIMBAL       (4)
+#define KP_CHASSIS_FOLLOW_GIMBAL       (6) 
 #define KI_CHASSIS_FOLLOW_GIMBAL       (0)
 #define KD_CHASSIS_FOLLOW_GIMBAL       (10)
 #define MAX_IOUT_CHASSIS_FOLLOW_GIMBAL (0)
-#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (10)
+#define MAX_OUT_CHASSIS_FOLLOW_GIMBAL  (6)
 
-#define KP_CHASSIS_YAW_VELOCITY        (1.5f)
+#define KP_CHASSIS_YAW_VELOCITY        (2.0f)
 #define KI_CHASSIS_YAW_VELOCITY        (0.0f)
-#define KD_CHASSIS_YAW_VELOCITY        (5.0f)
+#define KD_CHASSIS_YAW_VELOCITY        (10.0f)
 #define MAX_IOUT_CHASSIS_YAW_VELOCITY  (0.0f)
-#define MAX_OUT_CHASSIS_YAW_VELOCITY   (3.0f)
+#define MAX_OUT_CHASSIS_YAW_VELOCITY   (3.50f)
 
 #define KP_CHASSIS_VEL_ADD        (0) //0.1
 #define KI_CHASSIS_VEL_ADD        (0)//0.005
@@ -90,14 +90,14 @@
 /*========== Start of locomotion control pid ==========*/
 
 //ROLL轴跟踪角度环PID参数
-#define KP_CHASSIS_PITCH_ANGLE        (1700)
+#define KP_CHASSIS_PITCH_ANGLE        (2000)
 #define KI_CHASSIS_PITCH_ANGLE        (0)
-#define KD_CHASSIS_PITCH_ANGLE        (4500)   
+#define KD_CHASSIS_PITCH_ANGLE        (9000)   
 #define MAX_IOUT_CHASSIS_PITCH_ANGLE  (0)
 #define MAX_OUT_CHASSIS_PITCH_ANGLE   (150) 
  
 // 腿长跟踪长度环PID参数
-#define KP_CHASSIS_LEG_LENGTH_LENGTH        (1200.0f)
+#define KP_CHASSIS_LEG_LENGTH_LENGTH        (2000.0f)
 #define KI_CHASSIS_LEG_LENGTH_LENGTH        (0.0f)
 #define KD_CHASSIS_LEG_LENGTH_LENGTH        (15000.0f)
 #define MAX_IOUT_CHASSIS_LEG_LENGTH_LENGTH  (0.0f)
@@ -137,17 +137,17 @@
   
 //追腿部PID 参数
 //左腿追右腿
-#define KP_CHASSIS_CAHSE_LEG_L_to_R        (170)
+#define KP_CHASSIS_CAHSE_LEG_L_to_R        (150)
 #define KI_CHASSIS_CAHSE_LEG_L_to_R        (0)
-#define KD_CHASSIS_CAHSE_LEG_L_to_R        (1200)
+#define KD_CHASSIS_CAHSE_LEG_L_to_R        (1000)
 #define MAX_IOUT_CHASSIS_CAHSE_LEG_L_to_R  (0)
-#define MAX_OUT_CHASSIS_CAHSE_LEG_L_to_R   (10)
+#define MAX_OUT_CHASSIS_CAHSE_LEG_L_to_R   (8)
 //右腿追左腿
-#define KP_CHASSIS_CAHSE_LEG_R_to_L        (170)
+#define KP_CHASSIS_CAHSE_LEG_R_to_L        (150)
 #define KI_CHASSIS_CAHSE_LEG_R_to_L        (0)
-#define KD_CHASSIS_CAHSE_LEG_R_to_L        (1200)
+#define KD_CHASSIS_CAHSE_LEG_R_to_L        (1000)
 #define MAX_IOUT_CHASSIS_CAHSE_LEG_R_to_L  (0)
-#define MAX_OUT_CHASSIS_CAHSE_LEG_R_to_L   (10)
+#define MAX_OUT_CHASSIS_CAHSE_LEG_R_to_L   (8)
 
 
 
@@ -209,6 +209,9 @@
 #define TOUCH_TOGGLE_THRESHOLD (30)
 #define MIN_LEG_LENGTH       ( 0.14f)         //最短腿长  
 #define MAX_LEG_LENGTH       (0.38f)          //最大腿长  
+
+#define move_mid_length      (0.22)           //运动过程中的中等腿长->下台阶
+#define move_max_length      (0.38)           //运动过程中的最大腿长->用于磕台阶
 #define MAX_DELTA_ROD_ANGLE (0.25f) // (rad)腿摆角最大变化量  待考量
 #define MIN_LEG_ANGLE        (M_PI_2 - MAX_DELTA_ROD_ANGLE) //最小角度  待考量
 #define MAX_LEG_ANGLE        (M_PI_2 + MAX_DELTA_ROD_ANGLE)  //最大角度  待考量
@@ -244,7 +247,7 @@
 #define min_joint_tor_move      (-max_joint_tor_move)  // 
 #define min_joint_tor_stand     (-max_joint_tor_stand)  // 
 
-#define GIMBAL_DIRECT_YAW_MID (-2.77304602)    //云台初始化正对齐的时候使用的yaw轴正中心量
+#define GIMBAL_DIRECT_YAW_MID (2.76978588)    //云台初始化正对齐的时候使用的yaw轴正中心量
 
 #define X_ADD_RATIO 1   //位移设定缩放系数
 typedef struct __Imu
@@ -389,11 +392,7 @@ typedef struct
 typedef struct
 {
     pid_type_def yaw_velocity;
-
     pid_type_def pitch_angle;
-    
-
-
     pid_type_def leg_length_length[2];
     pid_type_def leg_length_speed[2];
     pid_type_def chassis_follow_gimbal;
@@ -412,6 +411,7 @@ typedef struct LPF
     LowPassFilter_t support_force_filter[2];
 	  LowPassFilter_t VX_filter;//键鼠信号阶跃滤波
     LowPassFilter_t x_acc_lpf;//位移加速度低通滤波
+	  LowPassFilter_t dtheta;//腿部运动滤波
 
 } LPF_t;
 
@@ -519,6 +519,7 @@ typedef struct __CTOM_message
 	fp32 gimbal_imu_yaw;
 	fp32 gimbal_imu_pitch;
 	uint8_t gimbal_motor_offline;
+	uint8_t self_aim_flag;  //1 自瞄开启  0  无自瞄模式
 	
 }CTOM_message_t;
 

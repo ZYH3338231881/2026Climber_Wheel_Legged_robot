@@ -153,7 +153,7 @@ void judge_painting_init(void)
     
     pack_figs.data_cmd_id = 0x0104; pack_figs.sender_id = sender; pack_figs.receiver_id = receiver;
     referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs));
-    vTaskDelay(30); 
+    vTaskDelay(10); 
 
     /* --- 第 2 包：标尺与外框、罗盘参照线、腿部辅助线 --- */
     memset(&pack_figs, 0, sizeof(pack_figs));
@@ -161,73 +161,76 @@ void judge_painting_init(void)
 //    make_line(&pack_figs, 1, bg_scale_2,    4, 2, 0, 935, 360, 985, 360, 1, 1);
 //    make_line(&pack_figs, 2, bg_scale_3,    4, 2, 0, 920, 300, 1000,300, 1, 1);
     
-    make_line(&pack_figs, 3, bg_compass_gim,2, 4, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y + COMPASS_R + 10, 1, 1); 
-    make_line(&pack_figs, 4, bg_status_box, 1, 2, 1, 50, 620, 400, 880, 1, 1); 
-    make_line(&pack_figs, 5, bg_cap_box,    8, 2, 1, 1740,300, 1780,700, 1, 1);
-    make_line(&pack_figs, 6, bg_leg_l_line, 6, 2, 0, BODY_X - 120, BODY_Y - 160, BODY_X - 40,  BODY_Y - 160, 1, 1);
+    // make_line(&pack_figs, 3, bg_compass_gim,2, 4, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y + COMPASS_R + 10, 1, 1); 
+    // make_line(&pack_figs, 4, bg_status_box, 1, 2, 1, 50, 620, 400, 880, 1, 1); 
+    // make_line(&pack_figs, 5, bg_cap_box,    8, 2, 1, 1740,300, 1780,700, 1, 1);
+//    make_line(&pack_figs, 6, bg_leg_l_line, 6, 2, 0, BODY_X - 120, BODY_Y - 160, BODY_X - 40,  BODY_Y - 160, 1, 1);
     
     pack_figs.data_cmd_id = 0x0104; pack_figs.sender_id = sender; pack_figs.receiver_id = receiver;
     referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs));
-    vTaskDelay(30); 
+    vTaskDelay(10); 
 
     /* --- 第 3 包：【巨型紫色大框】与右腿辅助线 --- */
     memset(&pack_figs, 0, sizeof(pack_figs));
-    make_line(&pack_figs, 0, bg_leg_r_line, 1, 2, 0, BODY_X + 30,  BODY_Y - 160, BODY_X + 110, BODY_Y - 160, 1, 1);
-    make_line(&pack_figs, 1, bg_body_l,     6, 8, 0, 480, 0, 730, 300, 1, 1); 
-    make_line(&pack_figs, 2, bg_body_r,     6, 8, 0, 1440, 0, 1190, 300, 1, 1); 
-    make_line(&pack_figs, 3, bg_main_box,   2, 3, 1, 960-500, 480-150, 960+500, 480+300, 1, 1);
+//    make_line(&pack_figs, 0, bg_leg_r_line, 1, 2, 0, BODY_X + 30,  BODY_Y - 160, BODY_X + 110, BODY_Y - 160, 1, 1);
+    // make_line(&pack_figs, 1, bg_body_l,     6, 8, 0, 480, 0, 730, 300, 1, 1); 
+    // make_line(&pack_figs, 2, bg_body_r,     6, 8, 0, 1440, 0, 1190, 300, 1, 1); 
+    // make_line(&pack_figs, 3, bg_main_box,   2, 3, 1, 960-500, 480-150, 960+500, 480+300, 1, 1);
     
     pack_figs.interaction_figure_t[4].operate_tpye = 0;
     pack_figs.interaction_figure_t[5].operate_tpye = 0;
     pack_figs.interaction_figure_t[6].operate_tpye = 0;
     pack_figs.data_cmd_id = 0x0104; pack_figs.sender_id = sender; pack_figs.receiver_id = receiver;
     referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs));
-    vTaskDelay(30); 
-
-    /* --- 第 4 包：侧视图机甲 + 战机姿态仪占位 --- */
-    memset(&pack_figs, 0, sizeof(pack_figs));
+    vTaskDelay(10); 
+		
+		
+    /* --- 第 4 包：侧视动态腿部变化展示 水平车体roll变化展示*/
+    // 底盘中心线
     make_line(&pack_figs, 0, dyn_chassis, 8, 8, 0, BODY_X - BODY_LEN, BODY_Y, BODY_X + BODY_LEN, BODY_Y, 1, 2); 
+    // 左腿模型
     make_line(&pack_figs, 1, dyn_thigh_L, 6, 6, 0, BODY_X, BODY_Y, BODY_X, BODY_Y-100, 1, 2); 
     make_line(&pack_figs, 2, dyn_calf_L,  6, 4, 0, BODY_X, BODY_Y-100, BODY_X, BODY_Y-250, 1, 2); 
+    // 右腿模型
     make_line(&pack_figs, 3, dyn_thigh_R, 1, 6, 0, BODY_X, BODY_Y, BODY_X, BODY_Y-100, 1, 2); 
     make_line(&pack_figs, 4, dyn_calf_R,  1, 4, 0, BODY_X, BODY_Y-100, BODY_X, BODY_Y-250, 1, 2); 
-    
+    // 水平辅助线
     make_line(&pack_figs, 5, dyn_horiz_L, 2, 3, 0, 960-200, 540, 960-80, 540, 1, 2); 
     make_line(&pack_figs, 6, dyn_horiz_R, 2, 3, 0, 960+80,  540, 960+200, 540, 1, 2); 
     
     pack_figs.data_cmd_id = 0x0104; pack_figs.sender_id = sender; pack_figs.receiver_id = receiver;
     referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs));
-    vTaskDelay(30); 
+    vTaskDelay(10); 
 
     /* --- 第 5 包：旋转底盘占位 --- */
     memset(&pack_figs, 0, sizeof(pack_figs));
-    make_line(&pack_figs, 0, dyn_chas_l1,   6, 3, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
-    make_line(&pack_figs, 1, dyn_chas_l2,   6, 2, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
-    make_line(&pack_figs, 2, dyn_chas_l3,   6, 2, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
-    make_line(&pack_figs, 3, dyn_chas_l4,   6, 2, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
-    make_line(&pack_figs, 4, dyn_chas_dir,  6, 4, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
+    // make_line(&pack_figs, 0, dyn_chas_l1,   6, 3, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
+    // make_line(&pack_figs, 1, dyn_chas_l2,   6, 2, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
+    // make_line(&pack_figs, 2, dyn_chas_l3,   6, 2, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
+    // make_line(&pack_figs, 3, dyn_chas_l4,   6, 2, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
+    // make_line(&pack_figs, 4, dyn_chas_dir,  6, 4, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y, 1, 2);
     pack_figs.interaction_figure_t[5].operate_tpye = 0; 
     pack_figs.interaction_figure_t[6].operate_tpye = 0; 
     pack_figs.data_cmd_id = 0x0104; pack_figs.sender_id = sender; pack_figs.receiver_id = receiver;
     referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs));
-    vTaskDelay(30); 
+    vTaskDelay(10); 
 
     /* --- 第 6 包：指示灯与剩余占位 --- */
     memset(&pack_figs, 0, sizeof(pack_figs));
-    make_line(&pack_figs, 0, lit_mode,        8, 15, 0, 100, 820, 100, 835, 1, 2);
-    make_line(&pack_figs, 1, lit_aim,         8, 15, 0, 100, 750, 100, 765, 1, 2);
-    make_line(&pack_figs, 2, lit_fric,        8, 15, 0, 100, 680, 100, 695, 1, 2);
+    // make_line(&pack_figs, 0, lit_mode,        8, 15, 0, 100, 820, 100, 835, 1, 2);
+    // make_line(&pack_figs, 1, lit_aim,         8, 15, 0, 100, 750, 100, 765, 1, 2);
+    // make_line(&pack_figs, 2, lit_fric,        8, 15, 0, 100, 680, 100, 695, 1, 2);
     
     // 【修复】：初始化时，把打滑提示框直接塞进原点 (0,0) 完美隐藏
-    make_line(&pack_figs, 3, dyn_slip_box,    3, 0,  1, 0, 0, 0, 0, 1, 2);  
+    // make_line(&pack_figs, 3, dyn_slip_box,    3, 0,  1, 0, 0, 0, 0, 1, 2);  
     
-    make_line(&pack_figs, 4, dyn_cap_fill,    2, 36, 0, 1760, 302, 1760, 698, 1, 2); 
-    make_line(&pack_figs, 5, dyn_compass,     3, 6, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y+COMPASS_R, 1, 2);
-    make_cir (&pack_figs, 6, dyn_compass_tip, 3, 1, 2, 1, 10, COMPASS_X, COMPASS_Y+COMPASS_R, 0, 360, 6, 0, 0);
+    // make_line(&pack_figs, 4, dyn_cap_fill,    2, 36, 0, 1760, 302, 1760, 698, 1, 2); 
+    // make_line(&pack_figs, 5, dyn_compass,     3, 6, 0, COMPASS_X, COMPASS_Y, COMPASS_X, COMPASS_Y+COMPASS_R, 1, 2);
+    // make_cir (&pack_figs, 6, dyn_compass_tip, 3, 1, 2, 1, 10, COMPASS_X, COMPASS_Y+COMPASS_R, 0, 360, 6, 0, 0);
     
     pack_figs.data_cmd_id = 0x0104; pack_figs.sender_id = sender; pack_figs.receiver_id = receiver;
     referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs));
-    vTaskDelay(30); 
+    vTaskDelay(10); 
 
     /* --- 第 7 包文字：静态发送主UI描述 --- */
     memset(&pack_word, 0, sizeof(pack_word));
@@ -245,15 +248,15 @@ void judge_painting_init(void)
     pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
     referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));  vTaskDelay(80);
 
-    memset(&pack_word, 0, sizeof(pack_word));
-    make_word(&pack_word, txt_leg_L_leg, 0, 6, 16, 2, BODY_X - 120, BODY_Y - 180, "L(CYAN)", 7, 1, 1); 
-    pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-    referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));  vTaskDelay(80);
+//    memset(&pack_word, 0, sizeof(pack_word));
+//    make_word(&pack_word, txt_leg_L_leg, 0, 6, 16, 2, BODY_X - 120, BODY_Y - 180, "L(CYAN)", 7, 1, 1); 
+//    pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//    referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));  vTaskDelay(80);
 
-    memset(&pack_word, 0, sizeof(pack_word));
-    make_word(&pack_word, txt_leg_R_leg, 0, 1, 16, 2, BODY_X + 30, BODY_Y - 180, "R(YELLOW)", 7, 1, 1); 
-    pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-    referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));  vTaskDelay(80);
+//    memset(&pack_word, 0, sizeof(pack_word));
+//    make_word(&pack_word, txt_leg_R_leg, 0, 1, 16, 2, BODY_X + 30, BODY_Y - 180, "R(YELLOW)", 7, 1, 1); 
+//    pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//    referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));  vTaskDelay(80);
 
     memset(&pack_word, 0, sizeof(pack_word));
     make_word(&pack_word, txt_gim_f, 0, 2, 14, 2, COMPASS_X-30, COMPASS_Y+COMPASS_R+28, "GIM_FWD", 7, 1, 1);
@@ -306,80 +309,80 @@ void judge_painting_update(void)
     // --------------------------------------------------------
     // 【模块 1】：文字防丢包连发更新
     // --------------------------------------------------------
-    if (CHASSIS.mode != last_ui_mode) {
-        last_ui_mode = CHASSIS.mode;
-        send_cnt_mode = 3; 
-    }
-    if (send_cnt_mode > 0) {
-        uint8_t color; char str[15];
-        if (last_ui_mode == CHASSIS_FREE)        { color = 2; strcpy(str, "MD: FREE"); }
-        else if (last_ui_mode == CHASSIS_SAFE)   { color = 8; strcpy(str, "MD: SAFE"); }
+//    if (CHASSIS.mode != last_ui_mode) {
+//        last_ui_mode = CHASSIS.mode;
+//        send_cnt_mode = 3; 
+//    }
+//    if (send_cnt_mode > 0) {
+//        uint8_t color; char str[15];
+//        if (last_ui_mode == CHASSIS_FREE)        { color = 2; strcpy(str, "MD: FREE"); }
+//        else if (last_ui_mode == CHASSIS_SAFE)   { color = 8; strcpy(str, "MD: SAFE"); }
 //        else if (last_ui_mode == CHASSIS_OFF_HOOK) { color = 3; strcpy(str, "MD: HOOK"); }
 //        else if (last_ui_mode == CHASSIS_CUSTOM) { color = 2; strcpy(str, "MD: CLIMB"); }
-        else                                     { color = 8; strcpy(str, "MD: OTHER"); }
-        
-        memset(&pack_word, 0, sizeof(pack_word));
-        make_word(&pack_word, txt_mode, 0, color, 24, 3, 140, 820, str, 7, 2, 2); 
-        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
-        vTaskDelay(5); 
-        send_cnt_mode--; 
-    }
+//        else                                     { color = 8; strcpy(str, "MD: OTHER"); }
+//        
+//        memset(&pack_word, 0, sizeof(pack_word));
+//        make_word(&pack_word, txt_mode, 0, color, 24, 3, 140, 820, str, 7, 2, 2); 
+//        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
+//        vTaskDelay(5); 
+//        send_cnt_mode--; 
+//    }
 
 //    if (ctom_message.auto_aim_active != last_ui_aim) {
 //        last_ui_aim = ctom_message.auto_aim_active;
 //        send_cnt_aim = 3;
 //    }
-    if (send_cnt_aim > 0) {
-        uint8_t color = last_ui_aim ? 3 : 8; 
-        char *str = last_ui_aim ? "AIM: ON " : "AIM: OFF";
-        memset(&pack_word, 0, sizeof(pack_word));
-        make_word(&pack_word, txt_aim, 0, color, 24, 3, 140, 750, str, 7, 2, 2);
-        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
-        vTaskDelay(5);
-        send_cnt_aim--;
-    }
+//    if (send_cnt_aim > 0) {
+//        uint8_t color = last_ui_aim ? 3 : 8; 
+//        char *str = last_ui_aim ? "AIM: ON " : "AIM: OFF";
+//        memset(&pack_word, 0, sizeof(pack_word));
+//        make_word(&pack_word, txt_aim, 0, color, 24, 3, 140, 750, str, 7, 2, 2);
+//        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
+//        vTaskDelay(5);
+//        send_cnt_aim--;
+//    }
 
 //    if (ctom_message.fric_bool != last_ui_fric) {
 //        last_ui_fric = ctom_message.fric_bool;
 //        send_cnt_fric = 3;
 //    }
-    if (send_cnt_fric > 0) {
-        uint8_t color = last_ui_fric ? 2 : 8; 
-        char *str = last_ui_fric ? "FRIC: ON " : "FRIC: OFF";
-        memset(&pack_word, 0, sizeof(pack_word));
-        make_word(&pack_word, txt_fric, 0, color, 24, 3, 140, 680, str, 7, 2, 2);
-        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
-        vTaskDelay(5);
-        send_cnt_fric--;
-    }
+//    if (send_cnt_fric > 0) {
+//        uint8_t color = last_ui_fric ? 2 : 8; 
+//        char *str = last_ui_fric ? "FRIC: ON " : "FRIC: OFF";
+//        memset(&pack_word, 0, sizeof(pack_word));
+//        make_word(&pack_word, txt_fric, 0, color, 24, 3, 140, 680, str, 7, 2, 2);
+//        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
+//        vTaskDelay(5);
+//        send_cnt_fric--;
+//    }
 
 
-    uint8_t is_motor_offline=0;
-    if(ctom_message.gimbal_motor_offline
-        ||CHASSIS.joint_motor[0].fdb.state==0
-        ||CHASSIS.joint_motor[1].fdb.state==0
-        ||CHASSIS.joint_motor[2].fdb.state==0
-        ||CHASSIS.joint_motor[3].fdb.state==0)
-    {
-        is_motor_offline=1;        
-    }
+//    uint8_t is_motor_offline=0;
+//    if(ctom_message.gimbal_motor_offline
+//        ||CHASSIS.joint_motor[0].fdb.state==0
+//        ||CHASSIS.joint_motor[1].fdb.state==0
+//        ||CHASSIS.joint_motor[2].fdb.state==0
+//        ||CHASSIS.joint_motor[3].fdb.state==0)
+//    {
+//        is_motor_offline=1;        
+//    }
 
-    if (is_motor_offline != last_ui_motor_offline) {
-        last_ui_motor_offline = is_motor_offline;
-        send_cnt_motor_offline = 3;
-    }
-    if(send_cnt_motor_offline>0)
-    {
-        uint8_t color = last_ui_motor_offline ? 3 : 8; 
-        char *str = last_ui_motor_offline ? " MTOR_OFFLINE! " : "              "; 
-         memset(&pack_word, 0, sizeof(pack_word));
-        make_word(&pack_word, txt_slip, 0, color, 28, 4, 820, 700, str, 7, 2, 3);
-        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
-    }
+//    if (is_motor_offline != last_ui_motor_offline) {
+//        last_ui_motor_offline = is_motor_offline;
+//        send_cnt_motor_offline = 3;
+//    }
+//    if(send_cnt_motor_offline>0)
+//    {
+//        uint8_t color = last_ui_motor_offline ? 3 : 8; 
+//        char *str = last_ui_motor_offline ? " MTOR_OFFLINE! " : "              "; 
+//         memset(&pack_word, 0, sizeof(pack_word));
+//        make_word(&pack_word, txt_slip, 0, color, 28, 4, 820, 700, str, 7, 2, 3);
+//        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
+//    }
 
 //    // --------------------------------------------------------
 //    // 【模块 4】：Gyro Reminder
@@ -409,33 +412,33 @@ void judge_painting_update(void)
     // --------------------------------------------------------
     // 【模块 2】：动态数据包图元 8.5 (Yaw/Pitch)
     // --------------------------------------------------------
-    int16_t current_yaw   = (int16_t)ctom_message.gimbal_imu_yaw; 
-    int16_t current_pitch = (int16_t)ctom_message.gimbal_imu_pitch; 
-    
-    if (current_yaw != last_ui_yaw) {
-        last_ui_yaw = current_yaw;
-        char str[15];
-        sprintf(str, "YAW: %d", current_yaw);
-        memset(&pack_word, 0, sizeof(pack_word));
-        make_word(&pack_word, txt_gim_yaw, 0, 1, 20, 2, 1140, 560, str, 7, 2, 2); 
-        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
-        vTaskDelay(5);
-    }
-    
-    if (current_pitch != last_ui_pitch) {
-        last_ui_pitch = current_pitch;
-        char str[15];
-        sprintf(str, "PIT: %d", current_pitch);
-        memset(&pack_word, 0, sizeof(pack_word));
-        make_word(&pack_word, txt_gim_pitch, 0, 1, 20, 2, 1140, 520, str, 7, 2, 2); 
-        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
-        vTaskDelay(5);
-    }
+//    int16_t current_yaw   = (int16_t)ctom_message.gimbal_imu_yaw; 
+//    int16_t current_pitch = (int16_t)ctom_message.gimbal_imu_pitch; 
+//    
+//    if (current_yaw != last_ui_yaw) {
+//        last_ui_yaw = current_yaw;
+//        char str[15];
+//        sprintf(str, "YAW: %d", current_yaw);
+//        memset(&pack_word, 0, sizeof(pack_word));
+//        make_word(&pack_word, txt_gim_yaw, 0, 1, 20, 2, 1140, 560, str, 7, 2, 2); 
+//        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
+//        vTaskDelay(5);
+//    }
+//    
+//    if (current_pitch != last_ui_pitch) {
+//        last_ui_pitch = current_pitch;
+//        char str[15];
+//        sprintf(str, "PIT: %d", current_pitch);
+//        memset(&pack_word, 0, sizeof(pack_word));
+//        make_word(&pack_word, txt_gim_pitch, 0, 1, 20, 2, 1140, 520, str, 7, 2, 2); 
+//        pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//        referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
+//        vTaskDelay(10);
+//    }
 
     // --------------------------------------------------------
-    // 【模块 3】：侧视图机甲 + 战机姿态仪同步
+    // 【模块 3】：腿部运动姿态  动态展示
     // --------------------------------------------------------
     memset(&pack_figs, 0, sizeof(pack_figs));
     pack_figs.data_cmd_id = 0x0104; 
@@ -443,11 +446,18 @@ void judge_painting_update(void)
     pack_figs.receiver_id = receiver;
 
     float roll = CHASSIS.fdb.body.pitch; 
+		float pitch= CHASSIS.fdb.body.roll;
+		
     int16_t body_dx = (int16_t)(BODY_LEN * cosf(roll));
     int16_t body_dy = (int16_t)(BODY_LEN * sinf(roll)); 
-    uint8_t pitch_color = (fabsf(roll) > 0.35f) ? 3 : 8; 
-    make_line(&pack_figs, 0, dyn_chassis, pitch_color, 8, 0, 
-              BODY_X - body_dx, BODY_Y - body_dy, BODY_X + body_dx, BODY_Y + body_dy, 2, 2);
+		
+		int16_t chassis_dx = (int16_t)(BODY_LEN * cosf(pitch));
+    int16_t chassis_dy = (int16_t)(BODY_LEN * sinf(pitch)); 
+		
+    uint8_t pitch_color = (fabsf(pitch) > 0.15f) ? 3 : 8; 
+	  uint8_t roll_color = (fabsf(roll) > 0.15f) ? 3 : 8; 
+
+    make_line(&pack_figs, 0, dyn_chassis, pitch_color, 8, 0, BODY_X - chassis_dx, BODY_Y - chassis_dy, BODY_X + chassis_dx, BODY_Y + chassis_dy, 2, 2);
 
     for (int i = 0; i < 2; i++) {
         float L0 = CHASSIS.fdb.leg[i].rod.L0;
@@ -474,19 +484,18 @@ void judge_painting_update(void)
         make_line(&pack_figs, 2+i*2, (i==0 ? dyn_calf_L : dyn_calf_R), color, 4, 0, 
                   knee_x, knee_y, foot_x, foot_y, 2, 2);
     }
-    
     float cos_r = cosf(roll);
     float sin_r = sinf(roll);
-    make_line(&pack_figs, 5, dyn_horiz_L, pitch_color, 3, 0, 
+    make_line(&pack_figs, 5, dyn_horiz_L, roll_color, 3, 0, 
               960 - (int16_t)(200*cos_r), 540 + (int16_t)(200*sin_r), 
               960 - (int16_t)(80*cos_r),  540 + (int16_t)(80*sin_r), 2, 2);
               
-    make_line(&pack_figs, 6, dyn_horiz_R, pitch_color, 3, 0, 
+    make_line(&pack_figs, 6, dyn_horiz_R, roll_color, 3, 0, 
               960 + (int16_t)(80*cos_r),  540 - (int16_t)(80*sin_r), 
               960 + (int16_t)(200*cos_r), 540 - (int16_t)(200*sin_r), 2, 2);
               
     referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs));
-    vTaskDelay(5); 
+    vTaskDelay(10); 
 
    // --------------------------------------------------------
 		// 【模块 4】：旋转的巨型底盘矩形（已修正）
@@ -538,7 +547,7 @@ void judge_painting_update(void)
 		pack_figs.interaction_figure_t[6].operate_tpye = 0; 
 
 		referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs));
-		vTaskDelay(5); 
+		vTaskDelay(10); 
 
     // --------------------------------------------------------
     // 【模块 5】：指示灯与电容条填充
@@ -548,11 +557,11 @@ void judge_painting_update(void)
     pack_figs.sender_id = sender;
     pack_figs.receiver_id = receiver;
 
-    uint8_t c_free = (CHASSIS.mode == CHASSIS_FREE) ? 2 : 8; 
+//    uint8_t c_free = (CHASSIS.mode == CHASSIS_FREE) ? 2 : 8; 
 //    uint8_t c_aim  = (ctom_message.auto_aim_active) ? 3 : 8; 
 //    uint8_t c_fric = (ctom_message.fric_bool) ? 2 : 8;       
     
-    make_line(&pack_figs, 0, lit_mode, c_free, 15, 0, 100, 820, 100, 835, 2, 2);
+//    make_line(&pack_figs, 0, lit_mode, c_free, 15, 0, 100, 820, 100, 835, 2, 2);
 //    make_line(&pack_figs, 1, lit_aim,  c_aim,  15, 0, 100, 750, 100, 765, 2, 2);
 //    make_line(&pack_figs, 2, lit_fric, c_fric, 15, 0, 100, 680, 100, 695, 2, 2);
 
@@ -565,31 +574,31 @@ void judge_painting_update(void)
 //    }
 
     // 电容条填充：填充高度396像素。
-    float cap_limit = (JudgementData.power_heat_data_t.buffer_energy > 0.0f) ? JudgementData.power_heat_data_t.buffer_energy : 0.0f;
-    cap_limit = (cap_limit > 60.0f) ? 60.0f : cap_limit; 
-    int16_t cap_h = (int16_t)(cap_limit / 60.0f * 396.0f); 
-    uint8_t cap_color = (cap_limit > 40.0f) ? 2 : ((cap_limit > 15.0f) ? 1 : 3); 
+//    float cap_limit = (JudgementData.power_heat_data_t.buffer_energy > 0.0f) ? JudgementData.power_heat_data_t.buffer_energy : 0.0f;
+//    cap_limit = (cap_limit > 60.0f) ? 60.0f : cap_limit; 
+//    int16_t cap_h = (int16_t)(cap_limit / 60.0f * 396.0f); 
+//    uint8_t cap_color = (cap_limit > 40.0f) ? 2 : ((cap_limit > 15.0f) ? 1 : 3); 
 
-    make_line(&pack_figs, 4, dyn_cap_fill, cap_color, 36, 0, 1760, 302, 1760, 302 + cap_h, 2, 2);
-    
-    // 罗盘底层指针
-    int16_t compass_end_x = COMPASS_X + (int16_t)(COMPASS_R * sinf(yaw_rad));
-    int16_t compass_end_y = COMPASS_Y + (int16_t)(COMPASS_R * cosf(yaw_rad)); 
-    make_line(&pack_figs, 5, dyn_compass, chas_color, 6, 0, COMPASS_X, COMPASS_Y, compass_end_x, compass_end_y, 2, 2);
-    make_cir (&pack_figs, 6, dyn_compass_tip, chas_color, 2, 2, 2, 10, compass_end_x, compass_end_y, 0, 360, 6, 0, 0);
+//    make_line(&pack_figs, 4, dyn_cap_fill, cap_color, 36, 0, 1760, 302, 1760, 302 + cap_h, 2, 2);
+//    
+//    // 罗盘底层指针
+//    int16_t compass_end_x = COMPASS_X + (int16_t)(COMPASS_R * sinf(yaw_rad));
+//    int16_t compass_end_y = COMPASS_Y + (int16_t)(COMPASS_R * cosf(yaw_rad)); 
+//    make_line(&pack_figs, 5, dyn_compass, chas_color, 6, 0, COMPASS_X, COMPASS_Y, compass_end_x, compass_end_y, 2, 2);
+//    make_cir (&pack_figs, 6, dyn_compass_tip, chas_color, 2, 2, 2, 10, compass_end_x, compass_end_y, 0, 360, 6, 0, 0);
 
-    referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs)); 
+//    referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_figs, sizeof(pack_figs)); 
     
     // --------------------------------------------------------
     // 【模块 6】：电容动态百分比文字
     // --------------------------------------------------------
-    char str_cap[10];
-    uint8_t cap_per = (uint8_t)(cap_limit / 60.0f * 100.0f);
-    sprintf(str_cap, "%d", cap_per);
-    memset(&pack_word, 0, sizeof(pack_word));
-    make_word(&pack_word, txt_cap_per, 0, cap_color, 36, 4, 1800, 500-20, str_cap, 7, 2, 3);
-    pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
-    referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
+//    char str_cap[10];
+//    uint8_t cap_per = (uint8_t)(cap_limit / 60.0f * 100.0f);
+//    sprintf(str_cap, "%d", cap_per);
+//    memset(&pack_word, 0, sizeof(pack_word));
+//    make_word(&pack_word, txt_cap_per, 0, cap_color, 36, 4, 1800, 500-20, str_cap, 7, 2, 3);
+//    pack_word.data_cmd_id = 0x0110; pack_word.sender_id = sender; pack_word.receiver_id = receiver;
+//    referee_data_pack_handle(0xA5, 0x0301, (uint8_t *)&pack_word, sizeof(pack_word));
 }
 
 // ==========================================
@@ -607,13 +616,13 @@ void UI_Task(void const * argument)
         if (keyboard_data.Remote_Key_V==1)
         {
             judge_painting_init(); 
-            osDelay(5000); 
+            osDelay(1000); 
         }
 
 //        if(CHASSIS.mode != CHASSIS_SAFE && CHASSIS.mode != CHASSIS_OFF) {
             judge_painting_update();
 //        }
         
-        osDelay(30); 
+        osDelay(10); 
     }
 }

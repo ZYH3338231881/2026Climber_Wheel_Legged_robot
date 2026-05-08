@@ -70,6 +70,7 @@ osThreadId IMU_taskHandle;
 osThreadId State_checkHandle;
 osThreadId MY_UI_TaskHandle;
 osThreadId Talk_TaskHandle;
+osThreadId Music_taskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -82,6 +83,7 @@ void imu_task(void const * argument);
 void State_check_task(void const * argument);
 void UI_Task(void const * argument);
 void Talk_Task_start(void const * argument);
+void Music_task_start(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -151,6 +153,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of Talk_Task */
   osThreadDef(Talk_Task, Talk_Task_start, osPriorityNormal, 0, 128);
   Talk_TaskHandle = osThreadCreate(osThread(Talk_Task), NULL);
+
+  /* definition and creation of Music_task */
+  osThreadDef(Music_task, Music_task_start, osPriorityNormal, 0, 128);
+  Music_taskHandle = osThreadCreate(osThread(Music_task), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -324,6 +330,24 @@ __weak void Talk_Task_start(void const * argument)
     osDelay(1);
   }
   /* USER CODE END Talk_Task_start */
+}
+
+/* USER CODE BEGIN Header_Music_task_start */
+/**
+* @brief Function implementing the Music_task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Music_task_start */
+__weak void Music_task_start(void const * argument)
+{
+  /* USER CODE BEGIN Music_task_start */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Music_task_start */
 }
 
 /* Private application code --------------------------------------------------*/

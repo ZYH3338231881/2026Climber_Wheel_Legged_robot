@@ -132,9 +132,6 @@ void make_num(robot_interaction_figure_t *custom_grapic_draw,uint8_t name[3],uin
 }
 
 
-
-
-
 uint8_t seq=0;
 
 void referee_data_pack_handle(uint8_t sof,uint16_t cmd_id, uint8_t *p_data, uint16_t leng)

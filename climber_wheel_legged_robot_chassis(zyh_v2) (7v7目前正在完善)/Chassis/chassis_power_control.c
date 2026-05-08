@@ -120,7 +120,7 @@ void Chassis_Power_Limit_Calc(float I_bal_L, float I_mov_L,
     // ------------------------------------------------------------
     // 1. 获取裁判系统限制 & 缓冲能量
     // ------------------------------------------------------------
-     max_power = 300;
+     max_power = 200;  
     float buffer_energy = JudgementData.power_heat_data_t.buffer_energy;
     
     // 掉线保护：如果裁判系统没数据，默认限制 90W (步兵标准)

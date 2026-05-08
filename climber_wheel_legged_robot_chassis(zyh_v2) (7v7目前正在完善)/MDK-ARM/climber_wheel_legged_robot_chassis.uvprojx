@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_PWR_LDO_SUPPLY,USE_HAL_DRIVER,STM32H723xx,ARM_MATH_CM7,__FPU_PRESENT=1U,__CC_ARM,ARM_MATH_MATRIX_CHECK,ARM_MATH_ROUNDING</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../BSP;../Chassis;../Controller;../IMU;../Device;../DSP/Include;../DSP/Include/dsp;../Message;../Judge</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../BSP;../Chassis;../Controller;../IMU;../Device;../DSP/Include;../DSP/Include/dsp;../Message;../Judge;../Music</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1814,16 +1814,6 @@
               <FilePath>..\Chassis\State_chexk_task.h</FilePath>
             </File>
             <File>
-              <FileName>Keyboard.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Chassis\Keyboard.c</FilePath>
-            </File>
-            <File>
-              <FileName>Keyboard.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Chassis\Keyboard.h</FilePath>
-            </File>
-            <File>
               <FileName>TOF_distance.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Chassis\TOF_distance.c</FilePath>
@@ -2022,6 +2012,21 @@
               <FileName>crc_check.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Judge\crc_check.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Music</GroupName>
+          <Files>
+            <File>
+              <FileName>Music_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Music\Music_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Music_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Music\Music_task.h</FilePath>
             </File>
           </Files>
         </Group>

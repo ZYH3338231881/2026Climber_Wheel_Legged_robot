@@ -32,7 +32,8 @@
                 "DSP/Include",
                 "DSP/Include/dsp",
                 "Message",
-                "Judge"
+                "Judge",
+                "Music"
             ],
             "defines": [
                 "USE_PWR_LDO_SUPPLY",

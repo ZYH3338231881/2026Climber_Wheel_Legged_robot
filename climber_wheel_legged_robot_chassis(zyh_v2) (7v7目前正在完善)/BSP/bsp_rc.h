@@ -40,14 +40,21 @@ typedef struct
 	uint8_t Remote_Key_Ctrl;//键盘Ctrl键,按下为1,未按下为0
 	
 	uint8_t Remote_KeyLast_Q;//上一次键盘Q键
+	uint8_t Remote_KeyLast_E;//上一次键盘E键
+	uint8_t Remote_KeyLast_F;//上一次键盘F键
+	
 	uint8_t Remote_KeyLast_G;//上一次键盘E键
 	uint8_t Remote_KeyLast_Z;//上一次键盘E键
 	uint8_t Remote_KeyLast_B;//上一次键盘E键
 	uint8_t Remote_KeyLast_Ctrl;//上一次键盘Ctrl键
+	
 	uint8_t Remote_KeyPush_Q;//按下键盘Q键,按下时0,1切换
+	uint8_t Remote_KeyPush_E;//按下键盘E键,按下时0,1切换
+	uint8_t Remote_KeyPush_F;//按下键盘F键,按下时0,1切换
 	uint8_t Remote_KeyPush_G;//按下键盘E键,按下时0,1切换
 	uint8_t Remote_KeyPush_Z;//按下键盘E键,按下时0,1切换
 	uint8_t Remote_KeyPush_B;//按下键盘E键,按下时0,1切换
+
 	uint8_t Remote_KeyPush_Ctrl;//按下键盘Ctrl键,按下时0,1切换
 }Keyboard_Data;//键鼠接收结构体
 

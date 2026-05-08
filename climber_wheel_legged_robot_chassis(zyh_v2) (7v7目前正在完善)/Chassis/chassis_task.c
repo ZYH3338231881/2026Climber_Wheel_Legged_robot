@@ -22,7 +22,7 @@
 #include "TOF_distance.h"
 #include "chassis_power_control.h"
 #define CHASSIS_TASK_INIT_TIME 300
-#define CHASSIS_CONTROL_TIME_MS 3  //µ×ÅÌ¿ØÖÆÖÜÆÚ3ms
+#define CHASSIS_CONTROL_TIME_MS 3  //åº•ç›˜æ§åˆ¶å‘¨æœŸ3ms
 #define MS_TO_S 0.001f
 #define rc_deadband_limit(input, output, dealine)          \
     {                                                      \
@@ -35,13 +35,13 @@
 extern  Keyboard_Data keyboard_data;
 extern  JudgementDataTypedef JudgementData;
 extern TOF_data_t tof_data;
-extern LossControlDetector leg_loss_control[2]; // ×óÓÒÍÈÊ§¿Ø¼ì²âÆ÷
+extern LossControlDetector leg_loss_control[2]; // å·¦å³è…¿å¤±æ§æ£€æµ‹å™¨
 CTOM_message_t ctom_message;
-//»úÆ÷ÈË½á¹¹Ìå
+//æœºå™¨äººç»“æ„ä½“
 Chassis_s CHASSIS = {
 	.mode=CHASSIS_SAFE
 };
-fp32 BODY_MASS_FN=(90.0f);      // Ç°À¡µÖÏûÖØÁ¿    N
+fp32 BODY_MASS_FN=(100.0f);      // å‰é¦ˆæŠµæ¶ˆé‡é‡    N
 Observer_t OBSERVER;
 bool is_auto_climbing;
 uint16_t climb_state;
@@ -66,22 +66,22 @@ void ChassisObserver(void);
 static void Auto_ClimbStep(void);
 void chassis_task(void const * pvParamewwters)
 {
-    // ¿ÕÏĞÒ»¶ÎÊ±¼ä
+    // ç©ºé—²ä¸€æ®µæ—¶é—´
     vTaskDelay(CHASSIS_TASK_INIT_TIME);
-    // ³õÊ¼»¯µ×ÅÌ
+    // åˆå§‹åŒ–åº•ç›˜
     ChassisInit();
     while (1) {
-        // ¸üĞÂ×´Ì¬Á¿**************************************************
+        // æ›´æ–°çŠ¶æ€é‡**************************************************
         ChassisObserver(); 
-        // ´¦ÀíÒì³£
+        // å¤„ç†å¼‚å¸¸
         ChassisHandleException();
-        // ÉèÖÃµ×ÅÌÄ£Ê½
+        // è®¾ç½®åº•ç›˜æ¨¡å¼
         ChassisSetMode();
-        // ¸üĞÂÄ¿±êÁ¿
+        // æ›´æ–°ç›®æ ‡é‡
         ChassisReference();
-        // ¼ÆËã¿ØÖÆÁ¿
+        // è®¡ç®—æ§åˆ¶é‡
         ChassisConsole();
-        // ·¢ËÍ¿ØÖÆÁ¿
+        // å‘é€æ§åˆ¶é‡
         ChassisSendCmd();
 //        osDelay(1);
 			  
@@ -91,17 +91,17 @@ void chassis_task(void const * pvParamewwters)
 
  void ChassisInit(void)
  {
-	 	CHASSIS.rc = get_remote_control_point();  //»ñÈ¡Ò£¿ØÆ÷Ö¸Õë 
-	  /*-------------------- ³õÊ¼»¯µ×ÅÌµç»ú --------------------*/
+	 	CHASSIS.rc = get_remote_control_point();  //è·å–é¥æ§å™¨æŒ‡é’ˆ 
+	  /*-------------------- åˆå§‹åŒ–åº•ç›˜ç”µæœº --------------------*/
     MotorInit(&CHASSIS.joint_motor[0], 1, JOINT_CAN, DM_8009, J0_DIRECTION, 1, DM_MODE_MIT);
     MotorInit(&CHASSIS.joint_motor[1], 2, JOINT_CAN, DM_8009, J1_DIRECTION, 1, DM_MODE_MIT);
     MotorInit(&CHASSIS.joint_motor[2], 3, JOINT_CAN, DM_8009, J2_DIRECTION, 1, DM_MODE_MIT);
     MotorInit(&CHASSIS.joint_motor[3], 4, JOINT_CAN, DM_8009, J3_DIRECTION, 1, DM_MODE_MIT);
 	  
-	  MotorInit(&CHASSIS.wheel_motor[0], 1, WHEEL_CAN, DJI_M3508, W0_DIRECTION, 15.76470588235294, 0);//×¢ÒâµçÁ÷¿ØÖÆÒª×ª»»³ÉÅ¤¾Ø¿ØÖÆ
-    MotorInit(&CHASSIS.wheel_motor[1], 2, WHEEL_CAN, DJI_M3508, W1_DIRECTION, 15.76470588235294, 0);//·´À¡Êı¾İÊÇ×ª×ÓµÄ×ªËÙ
+	  MotorInit(&CHASSIS.wheel_motor[0], 1, WHEEL_CAN, DJI_M3508, W0_DIRECTION, 15.76470588235294, 0);//æ³¨æ„ç”µæµæ§åˆ¶è¦è½¬æ¢æˆæ‰­çŸ©æ§åˆ¶
+    MotorInit(&CHASSIS.wheel_motor[1], 2, WHEEL_CAN, DJI_M3508, W1_DIRECTION, 15.76470588235294, 0);//åé¦ˆæ•°æ®æ˜¯è½¬å­çš„è½¬é€Ÿ
 	 
-    // Ê¹ÄÜ´ïÃîµç»ú
+    // ä½¿èƒ½è¾¾å¦™ç”µæœº
     DmEnable(&CHASSIS.joint_motor[0]);
     osDelay(1);
     DmEnable(&CHASSIS.joint_motor[1]);
@@ -110,73 +110,75 @@ void chassis_task(void const * pvParamewwters)
     osDelay(1);
     DmEnable(&CHASSIS.joint_motor[3]);
 
-    /*-------------------- ³õÊ¼»¯×´Ì¬×ªÒÆ¾ØÕó --------------------*/
+    /*-------------------- åˆå§‹åŒ–çŠ¶æ€è½¬ç§»çŸ©é˜µ --------------------*/
     TRANSITION_MATRIX[NORMAL_STEP]=NORMAL_STEP;
     TRANSITION_MATRIX[JUMP_STEP_SQUST]=JUMP_STEP_JUMP;
     TRANSITION_MATRIX[JUMP_STEP_JUMP]=JUMP_STEP_RECOVERY;
     TRANSITION_MATRIX[JUMP_STEP_RECOVERY]=NORMAL_STEP;
-	  /*-------------------- Öµ¹éÁã --------------------*/
+	  /*-------------------- å€¼å½’é›¶ --------------------*/
     memset(&CHASSIS.fdb, 0, sizeof(CHASSIS.fdb));
     memset(&CHASSIS.ref, 0, sizeof(CHASSIS.ref));  
 	 
 	  CHASSIS.fdb.leg[0].is_take_off = false;
     CHASSIS.fdb.leg[1].is_take_off = false;
 
-    /*-------------------- ³õÊ¼»¯µ×ÅÌÄ£Ê½ --------------------*/
-    CHASSIS.mode = CHASSIS_SAFE;//Ä¬ÈÏµç»ú¹Ø±Õ
+    /*-------------------- åˆå§‹åŒ–åº•ç›˜æ¨¡å¼ --------------------*/
+    CHASSIS.mode = CHASSIS_SAFE;//é»˜è®¤ç”µæœºå…³é—­
 		
-		// yawÖáËÙ¶È»·pid  
+		// yawè½´é€Ÿåº¦ç¯pid  
     float yaw_velocity_pid[3] = {KP_CHASSIS_YAW_VELOCITY, KI_CHASSIS_YAW_VELOCITY, KD_CHASSIS_YAW_VELOCITY};
     PID_init(&CHASSIS.pid.yaw_velocity, PID_POSITION, yaw_velocity_pid, MAX_OUT_CHASSIS_YAW_VELOCITY,MAX_IOUT_CHASSIS_YAW_VELOCITY);
   
-    //³õÊ¼»¯ÍÈ²¿·ÀÅü²æpid
+    //åˆå§‹åŒ–è…¿éƒ¨é˜²åŠˆå‰pid
 		float leg_tp_pid[3]={KP_CHASSIS_TP,KI_CHASSIS_TP,KD_CHASSIS_TP};
 		PID_init(&CHASSIS.pid.leg_tp,PID_POSITION,leg_tp_pid,MAX_OUT_CHASSIS_TP,MAX_IOUT_CHASSIS_TP);
     
-    //³õÊ¼»¯ÍÈ²¿×·ÖğPID
-    //×óÍÈ×·ÓÒÍÈ
+    //åˆå§‹åŒ–è…¿éƒ¨è¿½é€PID
+    //å·¦è…¿è¿½å³è…¿
     float leg_chase_pid_L_to_R[3]={KP_CHASSIS_CAHSE_LEG_L_to_R,KI_CHASSIS_CAHSE_LEG_L_to_R,KD_CHASSIS_CAHSE_LEG_L_to_R};
     PID_init(&CHASSIS.pid.leg_chase_L_to_R,PID_POSITION,leg_chase_pid_L_to_R,MAX_OUT_CHASSIS_CAHSE_LEG_L_to_R,MAX_IOUT_CHASSIS_CAHSE_LEG_L_to_R);
-    //ÓÒÍÈ×·×óÍÈ
+    //å³è…¿è¿½å·¦è…¿
     float leg_chase_pid_R_to_L[3]={KP_CHASSIS_CAHSE_LEG_R_to_L,KI_CHASSIS_CAHSE_LEG_R_to_L,KD_CHASSIS_CAHSE_LEG_R_to_L};
     PID_init(&CHASSIS.pid.leg_chase_R_to_L,PID_POSITION,leg_chase_pid_R_to_L,MAX_OUT_CHASSIS_CAHSE_LEG_R_to_L,MAX_IOUT_CHASSIS_CAHSE_LEG_R_to_L);
 
-    //³õÊ¼»¯ÍÈ²¿ÍÈ³¤pid
+    //åˆå§‹åŒ–è…¿éƒ¨è…¿é•¿pid
     float leg_length_length_pid[3] = {KP_CHASSIS_LEG_LENGTH_LENGTH, KI_CHASSIS_LEG_LENGTH_LENGTH, KD_CHASSIS_LEG_LENGTH_LENGTH};
-		PID_init(&CHASSIS.pid.leg_length_length[0], PID_POSITION, leg_length_length_pid,MAX_OUT_CHASSIS_LEG_LENGTH_LENGTH, MAX_IOUT_CHASSIS_LEG_LENGTH_LENGTH);//µ¥¼¶pid¿ØÖÆÍÈ³¤
-		CHASSIS.pid.leg_length_length[0].N = N_LEG_LENGTH_LENGTH;//ÆÕÍ¨×óÍÈ³¤
+		PID_init(&CHASSIS.pid.leg_length_length[0], PID_POSITION, leg_length_length_pid,MAX_OUT_CHASSIS_LEG_LENGTH_LENGTH, MAX_IOUT_CHASSIS_LEG_LENGTH_LENGTH);//å•çº§pidæ§åˆ¶è…¿é•¿
+		CHASSIS.pid.leg_length_length[0].N = N_LEG_LENGTH_LENGTH;//æ™®é€šå·¦è…¿é•¿
 		PID_init(&CHASSIS.pid.leg_length_length[1], PID_POSITION, leg_length_length_pid,MAX_OUT_CHASSIS_LEG_LENGTH_LENGTH, MAX_IOUT_CHASSIS_LEG_LENGTH_LENGTH);
-    CHASSIS.pid.leg_length_length[1].N = N_LEG_LENGTH_LENGTH;//ÆÕÍ¨ÓÒÍÈ³¤
+    CHASSIS.pid.leg_length_length[1].N = N_LEG_LENGTH_LENGTH;//æ™®é€šå³è…¿é•¿
 		
-    //Õ¾Á¢pid->Õ¾Á¢ÊÕÍÈpid
+    //ç«™ç«‹pid->ç«™ç«‹æ”¶è…¿pid
     float stand_up_pid[3] = {KP_CHASSIS_STAND_UP, KI_CHASSIS_STAND_UP, KD_CHASSIS_STAND_UP};
     PID_init(&CHASSIS.pid.stand_up, PID_POSITION, stand_up_pid, MAX_OUT_CHASSIS_STAND_UP,MAX_IOUT_CHASSIS_STAND_UP);
 		
-		//PITCHÖáPID
+		//PITCHè½´PID
     float pitch_pid[3] = {KP_CHASSIS_PITCH_ANGLE,KI_CHASSIS_PITCH_ANGLE ,KD_CHASSIS_PITCH_ANGLE };
     PID_init(&CHASSIS.pid.pitch_angle, PID_POSITION, pitch_pid, MAX_OUT_CHASSIS_PITCH_ANGLE,MAX_IOUT_CHASSIS_PITCH_ANGLE);
 
-		//µ×ÅÌ¸úËæÔÆÌ¨PID
+		//åº•ç›˜è·Ÿéšäº‘å°PID
     float chassis_folllow_gimbal[3] = {KP_CHASSIS_FOLLOW_GIMBAL,KI_CHASSIS_FOLLOW_GIMBAL,KD_CHASSIS_FOLLOW_GIMBAL};
     PID_init(&CHASSIS.pid.chassis_follow_gimbal, PID_POSITION, chassis_folllow_gimbal, MAX_OUT_CHASSIS_FOLLOW_GIMBAL,MAX_IOUT_CHASSIS_FOLLOW_GIMBAL);
 		
-    // ³õÊ¼»¯µÍÍ¨ÂË²¨Æ÷
-    LowPassFilterInit(&CHASSIS.lpf.support_force_filter[0], LEG_SUPPORT_FORCE_LPF_ALPHA);//Ö§³ÖÁ¦ÂË²¨
+    // åˆå§‹åŒ–ä½é€šæ»¤æ³¢å™¨
+    LowPassFilterInit(&CHASSIS.lpf.support_force_filter[0], LEG_SUPPORT_FORCE_LPF_ALPHA);//æ”¯æŒåŠ›æ»¤æ³¢
     LowPassFilterInit(&CHASSIS.lpf.support_force_filter[1], LEG_SUPPORT_FORCE_LPF_ALPHA);
-	  LowPassFilterInit(&CHASSIS.lpf.VX_filter, 0.9);//¼üÊóËÙ¶ÈÂË²¨
-    // ³õÊ¼»¯¼ÓËÙ¶ÈµÍÍ¨ÂË²¨Æ÷
-    LowPassFilterInit(&CHASSIS.lpf.x_acc_lpf, 0.9);//¿É¸ù¾İĞèÒªµ÷ÕûalphaÖµ
-    // ³õÊ¼»¯»úÌåËÙ¶È¹Û²âÆ÷
+	  LowPassFilterInit(&CHASSIS.lpf.VX_filter, 0.9);//é”®é¼ é€Ÿåº¦æ»¤æ³¢
+    // åˆå§‹åŒ–åŠ é€Ÿåº¦ä½é€šæ»¤æ³¢å™¨
+    LowPassFilterInit(&CHASSIS.lpf.x_acc_lpf, 0.9);//å¯æ ¹æ®éœ€è¦è°ƒæ•´alphaå€¼
+		
+		LowPassFilterInit(&CHASSIS.lpf.dtheta,0.4);
+    // åˆå§‹åŒ–æœºä½“é€Ÿåº¦è§‚æµ‹å™¨
 		Kalman_Filter_Init(&OBSERVER.body.v_kf, 2, 0, 2);
-		float F[4] = {1, 0.005, 0, 1}; // ×´Ì¬×ªÒÆ¾ØÕó²»±ä£¨²ÉÑùÊ±¼ä0.005s£©
-		// 1. ¼õĞ¡¹ı³ÌÔëÉù£º¸üĞÅÈÎÄ£ĞÍÔ¤²â£¬½µµÍ²¨¶¯
-		float Q[4] = {0.01f, 0, 0, 0.005f}; // ´Ó0.05/0.02¡ú0.01/0.005£¬´ó·ù½µµÍÄ£ĞÍÔëÉùÈ¨ÖØ
-		// 2. Ôö´ó¹Û²âÔëÉù£º¹ıÂË´«¸ĞÆ÷¼â·åÔëÉù£¬¸ü²»ĞÅÈÎ´«¸ĞÆ÷Òì³£¶ÁÊı
-		float R[4] = {8.0f, 0, 0, 3.0f};   // ´Ó1.0/0.0¡ú8.0/3.0£¬Ìá¸ßËÙ¶È¹Û²âÔëÉù³Í·££¬³¹µ×¹ıÂË¼â·å
-		// 3. ¹Û²â¾ØÕó²»±ä£º½ö¹Û²âËÙ¶È
+		float F[4] = {1, 0.005, 0, 1}; // çŠ¶æ€è½¬ç§»çŸ©é˜µä¸å˜ï¼ˆé‡‡æ ·æ—¶é—´0.005sï¼‰
+		// 1. å‡å°è¿‡ç¨‹å™ªå£°ï¼šæ›´ä¿¡ä»»æ¨¡å‹é¢„æµ‹ï¼Œé™ä½æ³¢åŠ¨
+		float Q[4] = {0.01f, 0, 0, 0.005f}; // ä»0.05/0.02â†’0.01/0.005ï¼Œå¤§å¹…é™ä½æ¨¡å‹å™ªå£°æƒé‡
+		// 2. å¢å¤§è§‚æµ‹å™ªå£°ï¼šè¿‡æ»¤ä¼ æ„Ÿå™¨å°–å³°å™ªå£°ï¼Œæ›´ä¸ä¿¡ä»»ä¼ æ„Ÿå™¨å¼‚å¸¸è¯»æ•°
+		float R[4] = {8.0f, 0, 0, 3.0f};   // ä»1.0/0.0â†’8.0/3.0ï¼Œæé«˜é€Ÿåº¦è§‚æµ‹å™ªå£°æƒ©ç½šï¼Œå½»åº•è¿‡æ»¤å°–å³°
+		// 3. è§‚æµ‹çŸ©é˜µä¸å˜ï¼šä»…è§‚æµ‹é€Ÿåº¦
 		float H[4] = {1, 0, 0, 0};         
-		// 4. ¼õĞ¡³õÊ¼Ğ­·½²î£ºÈÃÂË²¨¿ìËÙÊÕÁ²£¬±ÜÃâ³õÊ¼²¨¶¯
-		float P[4] = {10.0f, 0, 0, 10.0f};  // ´Ó100000¡ú10£¬³õÊ¼½×¶Î¸üĞÅÈÎÄ£ĞÍ
+		// 4. å‡å°åˆå§‹åæ–¹å·®ï¼šè®©æ»¤æ³¢å¿«é€Ÿæ”¶æ•›ï¼Œé¿å…åˆå§‹æ³¢åŠ¨
+		float P[4] = {10.0f, 0, 0, 10.0f};  // ä»100000â†’10ï¼Œåˆå§‹é˜¶æ®µæ›´ä¿¡ä»»æ¨¡å‹
     memcpy(OBSERVER.body.v_kf.F_data, F, sizeof(F));
     memcpy(OBSERVER.body.v_kf.P_data, P, sizeof(P));
     memcpy(OBSERVER.body.v_kf.Q_data, Q, sizeof(Q));
@@ -185,44 +187,49 @@ void chassis_task(void const * pvParamewwters)
 		
  }
 
- //´ó½®Ò£¿ØÆ÷ÉèÖÃÄ£Ê½
+ //å¤§ç–†é¥æ§å™¨è®¾ç½®æ¨¡å¼
  void ChassisSetMode(void)
  {
 	  if(switch_is_down(CHASSIS.rc->sw2)&&switch_is_down(CHASSIS.rc->sw1))
 		{
-        CHASSIS.mode = CHASSIS_SAFE; //Ë«ÏÂÎŞÁ¦°²È«Ä£Ê½
+        CHASSIS.mode = CHASSIS_SAFE; //åŒä¸‹æ— åŠ›å®‰å…¨æ¨¡å¼
     } 
 	  else if ((switch_is_mid(CHASSIS.rc->sw2)&&switch_is_down(CHASSIS.rc->sw1))||keyboard_data.Remote_Key_R==1) 
 		{
-        CHASSIS.mode = CHASSIS_STAND_UP;  // ×óÖĞÓÒÏÂ£¬µ×ÅÌÆğÁ¢£¬´Óµ¹µØ×´Ì¬µ½Õ¾Á¢×´Ì¬µÄÖĞ¼ä¹ı³Ì×óÖĞÓÒÏÂ
+        CHASSIS.mode = CHASSIS_STAND_UP;  // å·¦ä¸­å³ä¸‹ï¼Œåº•ç›˜èµ·ç«‹ï¼Œä»å€’åœ°çŠ¶æ€åˆ°ç«™ç«‹çŠ¶æ€çš„ä¸­é—´è¿‡ç¨‹å·¦ä¸­å³ä¸‹
     }
 		else if (switch_is_up(CHASSIS.rc->sw2)&&switch_is_down(CHASSIS.rc->sw1)) 
 		{
-        CHASSIS.mode =CHASSIS_FREE;       //×óÉÏÓÒÏÂ   µ×ÅÌ×ÔÓÉÒÆ¶¯  
+        CHASSIS.mode =CHASSIS_FREE;       //å·¦ä¸Šå³ä¸‹   åº•ç›˜è‡ªç”±ç§»åŠ¨  
 		}
 		else if (switch_is_down(CHASSIS.rc->sw2)&&switch_is_mid(CHASSIS.rc->sw1)) 
 		{
-        CHASSIS.mode =CHASSIS_selfon;       //×óÉÏÓÒÏÂ   µ×ÅÌ×ÔÓÉÒÆ¶¯  
+        CHASSIS.mode =CHASSIS_selfon;       //å·¦ä¸Šå³ä¸‹   åº•ç›˜è‡ªç”±ç§»åŠ¨  
 		}
     else 
     {
-        CHASSIS.mode = CHASSIS_SAFE; // Ä¬ÈÏÎª°²È«Ä£Ê½
+        CHASSIS.mode = CHASSIS_SAFE; // é»˜è®¤ä¸ºå®‰å…¨æ¨¡å¼
     }	
 
 #if TAKE_OFF_DETECT
-    // ÀëµØ×´Ì¬ÇĞ»»
+    // ç¦»åœ°çŠ¶æ€åˆ‡æ¢
 //		if(CHASSIS.rc->ch3==-660)
 //		{
 			    for (uint8_t i = 0; i < 2; i++) {
         if (CHASSIS.fdb.leg[i].is_take_off &&CHASSIS.fdb.leg[i].touch_time > TOUCH_TOGGLE_THRESHOLD) 
 					{
             CHASSIS.fdb.leg[i].is_take_off = false;
+			      CHASSIS.pid.leg_length_length[0].max_out=180;
+						CHASSIS.pid.leg_length_length[1].max_out=180;
+
           } 
 						else if (!CHASSIS.fdb.leg[i].is_take_off &&CHASSIS.fdb.leg[i].take_off_time > TOUCH_TOGGLE_THRESHOLD) 
 					{
             CHASSIS.fdb.leg[i].is_take_off = true;
+						CHASSIS.pid.leg_length_length[0].max_out=120;
+						CHASSIS.pid.leg_length_length[1].max_out=120;
           }
-          }
+          } 
 //		}
 //		else
 //		{ 
@@ -239,10 +246,10 @@ void chassis_task(void const * pvParamewwters)
 /* Observe                                                        */
 /*----------------------------------------------------------------*/
 /* main function:      ChassisObserver                            */
-/* auxiliary function: UpdateBodyStatus      »úÌå×´Ì¬                     */
-/*                     UpdateLegStatus       ÍÈ²¿×´Ì¬                   */
-/*                     UpdateMotorStatus     µç»ú×´Ì¬                     */
-/*                     BodyMotionObserve     ÒÆ¶¯¹Û²â                     */
+/* auxiliary function: UpdateBodyStatus      æœºä½“çŠ¶æ€                     */
+/*                     UpdateLegStatus       è…¿éƒ¨çŠ¶æ€                   */
+/*                     UpdateMotorStatus     ç”µæœºçŠ¶æ€                     */
+/*                     BodyMotionObserve     ç§»åŠ¨è§‚æµ‹                     */
 /******************************************************************/
 #define ZERO_POS_THRESHOLD 0.001f
 static void UpdateBodyStatus(void);
@@ -250,8 +257,8 @@ static void UpdateLegStatus(void);
 static void UpdateMotorStatus(void);
 static void BodyMotionObserve(void);
  static void UpdateStepStatus(void);
-static void UpdateGimbalStatus(void);//¸üĞÂÔÆÌ¨×´Ì¬
-static void UpdateCalibrateStatus(void);//Ğ£×¼×´Ì¬
+static void UpdateGimbalStatus(void);//æ›´æ–°äº‘å°çŠ¶æ€
+static void UpdateCalibrateStatus(void);//æ ¡å‡†çŠ¶æ€
 extern void DmFdbData(DmMeasure_s * dm_measure, uint8_t * rx_data);
 extern void GetDmFdbData(Motor_s *motor,DmMeasure_s *dm_measure);
 extern void GetMotorMeasure(Motor_s * p_motor);
@@ -259,16 +266,16 @@ extern void GetMotorMeasure(Motor_s * p_motor);
  {
 	 CHASSIS.duration = xTaskGetTickCount() - CHASSIS.last_time;
 	 
-   CHASSIS.last_time = xTaskGetTickCount();                   //¼ÆËã¿ØÖÆÖÜÆÚ
+   CHASSIS.last_time = xTaskGetTickCount();                   //è®¡ç®—æ§åˆ¶å‘¨æœŸ
 	 CHASSIS.step_time++;
 	 
-	 UpdateMotorStatus(); // ¸üĞÂµç»ú×´Ì¬
-   UpdateBodyStatus (); // ¸üĞÂ»úÌå×´Ì¬
-	 UpdateLegStatus  ();  // ¸üĞÂÍÈ²¿×´Ì¬
-	 UpdateStepStatus();   // ×´Ì¬×ªÒÆ¸üĞÂ
-	 BodyMotionObserve();  // »úÌåÔË¶¯×´Ì¬¹Û²âÆ÷
+	 UpdateMotorStatus(); // æ›´æ–°ç”µæœºçŠ¶æ€
+   UpdateBodyStatus (); // æ›´æ–°æœºä½“çŠ¶æ€
+	 UpdateLegStatus  ();  // æ›´æ–°è…¿éƒ¨çŠ¶æ€
+	 UpdateStepStatus();   // çŠ¶æ€è½¬ç§»æ›´æ–°
+	 BodyMotionObserve();  // æœºä½“è¿åŠ¨çŠ¶æ€è§‚æµ‹å™¨
 	 
-	 UpdateGimbalStatus(); //¸üĞÂÔÆÌ¨×´Ì¬
+	 UpdateGimbalStatus(); //æ›´æ–°äº‘å°çŠ¶æ€
 }
 
  static void UpdateGimbalStatus(void)
@@ -278,13 +285,13 @@ extern void GetMotorMeasure(Motor_s * p_motor);
  
 void UpdateBodyStatus()
 {
- //¼ÇµÃ¼ì²âÊÇ·ñºÍÄ£ĞÍÒ»ÖÂ
- //ÍÓÂİÒÇÊı¾İ-->>»úÌåÊı¾İ
-  //»úÌåµÄroll¾ÍÊÇµç³ØÕı·½Ïò  imu¶ÔÓ¦°²×°Ò²ÊÇroll½Ç¶È
+ //è®°å¾—æ£€æµ‹æ˜¯å¦å’Œæ¨¡å‹ä¸€è‡´
+ //é™€èºä»ªæ•°æ®-->>æœºä½“æ•°æ®
+  //æœºä½“çš„rollå°±æ˜¯ç”µæ± æ­£æ–¹å‘  imuå¯¹åº”å®‰è£…ä¹Ÿæ˜¯rollè§’åº¦
 	CHASSIS.fdb.body.roll=CHASSIS.imu->angle[0];
 	CHASSIS.fdb.body.roll_dot=CHASSIS.imu->gyro[0];
 	
-  //»úÌåÏµpitch¾ÍÊÇ×óÓÒÇãĞ±µÄ½Ç
+  //æœºä½“ç³»pitchå°±æ˜¯å·¦å³å€¾æ–œçš„è§’
 	CHASSIS.fdb.body.pitch = CHASSIS.imu->angle[1];
 	CHASSIS.fdb.body.pitch_dot=CHASSIS.imu->gyro[1];
 	
@@ -292,72 +299,72 @@ void UpdateBodyStatus()
 	CHASSIS.fdb.body.yaw_dot=CHASSIS.imu->gyro[2];
 	
 	
-	 // ¸üĞÂ¼ÓËÙ¶È·´À¡Êı¾İ£¬¼ÇÂ¼ÏÂÀ´·½±ãÊ¹ÓÃ
+	 // æ›´æ–°åŠ é€Ÿåº¦åé¦ˆæ•°æ®ï¼Œè®°å½•ä¸‹æ¥æ–¹ä¾¿ä½¿ç”¨
     float ax = CHASSIS.imu->accel[0];
     float ay = CHASSIS.imu->accel[1];
     float az = CHASSIS.imu->accel[2];
 	
-	    // ¼ÆËã¼¸¸ö³£ÓÃµÄÈı½Çº¯ÊıÖµ£¬¼õÉÙÖØ¸´¼ÆËã
+	    // è®¡ç®—å‡ ä¸ªå¸¸ç”¨çš„ä¸‰è§’å‡½æ•°å€¼ï¼Œå‡å°‘é‡å¤è®¡ç®—
     float cos_roll = cosf(CHASSIS.fdb.body.roll);
     float sin_roll = sinf(CHASSIS.fdb.body.roll);
     float cos_pitch = cosf(CHASSIS.fdb.body.pitch);
     float sin_pitch = sinf(CHASSIS.fdb.body.pitch);
     float cos_yaw = cosf(CHASSIS.fdb.body.yaw);
     float sin_yaw = sinf(CHASSIS.fdb.body.yaw);
-		/**´ïÃîBMI088Ğı×ªºóµÃ³öµÄ×ø±êÏµÊÇ×óÊÖÏµ
-		Rz(¦×) = [ cos¦×  sin¦×  0 ]
-						[-sin¦×  cos¦×  0 ]
+		/**è¾¾å¦™BMI088æ—‹è½¬åå¾—å‡ºçš„åæ ‡ç³»æ˜¯å·¦æ‰‹ç³»
+		Rz(Ïˆ) = [ cosÏˆ  sinÏˆ  0 ]
+						[-sinÏˆ  cosÏˆ  0 ]
 						[  0     0    1 ]
-		Ry(¦È) = [ cos¦È  0  -sin¦È ]
+		Ry(Î¸) = [ cosÎ¸  0  -sinÎ¸ ]
 						[  0    1    0   ]
-						[ sin¦È  0   cos¦È ]
-		Rx(¦Õ) = [ 1    0     0   ]
-            [ 0   cos¦Õ  sin¦Õ ]
-            [ 0  -sin¦Õ  cos¦Õ ]
-		´ÓÊÀ½çÏµµ½»úÌåÏµµÄĞı×ª¾ØÕó£º	
-		R = Rx(¦Õ) * Ry(¦È) * Rz(¦×)
-		¼ÆËãÖØÁ¦ÔÚ»úÌåÏµÖĞµÄ·ÖÁ¿
+						[ sinÎ¸  0   cosÎ¸ ]
+		Rx(Ï†) = [ 1    0     0   ]
+            [ 0   cosÏ†  sinÏ† ]
+            [ 0  -sinÏ†  cosÏ† ]
+		ä»ä¸–ç•Œç³»åˆ°æœºä½“ç³»çš„æ—‹è½¬çŸ©é˜µï¼š	
+		R = Rx(Ï†) * Ry(Î¸) * Rz(Ïˆ)
+		è®¡ç®—é‡åŠ›åœ¨æœºä½“ç³»ä¸­çš„åˆ†é‡
 		g_world = [0, 0, GRAVITY]^T
-		gx = 1*(-GRAVITY*sin¦È) + 0*0 + 0*(GRAVITY*cos¦È) = -GRAVITY*sin¦È
-		gy = 0*(-GRAVITY*sin¦È) + cos¦Õ*0 + sin¦Õ*(GRAVITY*cos¦È) = GRAVITY*sin¦Õ*cos¦È
-		gz = 0*(-GRAVITY*sin¦È) - sin¦Õ*0 + cos¦Õ*(GRAVITY*cos¦È) = GRAVITY*cos¦Õ*cos¦È
+		gx = 1*(-GRAVITY*sinÎ¸) + 0*0 + 0*(GRAVITY*cosÎ¸) = -GRAVITY*sinÎ¸
+		gy = 0*(-GRAVITY*sinÎ¸) + cosÏ†*0 + sinÏ†*(GRAVITY*cosÎ¸) = GRAVITY*sinÏ†*cosÎ¸
+		gz = 0*(-GRAVITY*sinÎ¸) - sinÏ†*0 + cosÏ†*(GRAVITY*cosÎ¸) = GRAVITY*cosÏ†*cosÎ¸
     **/
 		
-		// ¼ÆËãÖØÁ¦¼ÓËÙ¶ÈÔÚ¸÷¸öÖáÉÏµÄ·ÖÁ¿
+		// è®¡ç®—é‡åŠ›åŠ é€Ÿåº¦åœ¨å„ä¸ªè½´ä¸Šçš„åˆ†é‡
     CHASSIS.fdb.body.gx = -GRAVITY * sin_pitch;
     CHASSIS.fdb.body.gy = GRAVITY * sin_roll * cos_pitch;
     CHASSIS.fdb.body.gz = GRAVITY * cos_roll * cos_pitch;
 		
     
-    // Ïû³ıÖØÁ¦¼ÓËÙ¶ÈµÄÓ°Ïì£¬»ñÈ¡»úÌå×ø±êÏµÏÂµÄ¼ÓËÙ¶È
+    // æ¶ˆé™¤é‡åŠ›åŠ é€Ÿåº¦çš„å½±å“ï¼Œè·å–æœºä½“åæ ‡ç³»ä¸‹çš„åŠ é€Ÿåº¦
     CHASSIS.fdb.body.x_accel = ax - CHASSIS.fdb.body.gx;
     CHASSIS.fdb.body.y_accel = ay - CHASSIS.fdb.body.gy;
     CHASSIS.fdb.body.z_accel = az - CHASSIS.fdb.body.gz;
 		
 		
-		// ¼ÆËã´Ó»úÌå×ø±êÏµµ½´óµØ×ø±êÏµµÄĞı×ª¾ØÕó  R_{body->world}
+		// è®¡ç®—ä»æœºä½“åæ ‡ç³»åˆ°å¤§åœ°åæ ‡ç³»çš„æ—‹è½¬çŸ©é˜µ  R_{body->world}
     float R[3][3] = {
         {cos_pitch * cos_yaw, sin_roll * sin_pitch * cos_yaw - cos_roll * sin_yaw, cos_roll * sin_pitch * cos_yaw + sin_roll * sin_yaw},
         {cos_pitch * sin_yaw, sin_roll * sin_pitch * sin_yaw + cos_roll * cos_yaw, cos_roll * sin_pitch * sin_yaw - sin_roll * cos_yaw},
         {-sin_pitch         , sin_roll * cos_pitch                               , cos_roll * cos_pitch                               }
     };
 
-    // ¸üĞÂ´óµØ×ø±êÏµÏÂµÄ¼ÓËÙ¶È
+    // æ›´æ–°å¤§åœ°åæ ‡ç³»ä¸‹çš„åŠ é€Ÿåº¦
     CHASSIS.fdb.world.x_accel = R[0][0] * ax + R[0][1] * ay + R[0][2] * az;
     CHASSIS.fdb.world.y_accel = R[1][0] * ax + R[1][1] * ay + R[1][2] * az;
     CHASSIS.fdb.world.z_accel = R[2][0] * ax + R[2][1] * ay + R[2][2] * az - GRAVITY;
 
-    //»úÌåµÄphi¡¢phi_dot
-    CHASSIS.fdb.body.phi = -CHASSIS.fdb.body.roll;//»úÌåpitch
+    //æœºä½“çš„phiã€phi_dot
+    CHASSIS.fdb.body.phi = -CHASSIS.fdb.body.roll;//æœºä½“pitch
     CHASSIS.fdb.body.phi_dot = -CHASSIS.fdb.body.roll_dot;
     
-    //»úÌåÎ»ÒÆ¼ÓËÙ¶È
+    //æœºä½“ä½ç§»åŠ é€Ÿåº¦
     CHASSIS.fdb.body.x_acc = CHASSIS.fdb.body.y_accel;
 }
 
 
  /**
- * @brief  ¸üĞÂµ×ÅÌµç»úÊı¾İ
+ * @brief  æ›´æ–°åº•ç›˜ç”µæœºæ•°æ®
  * @param  none
  */
 
@@ -366,16 +373,16 @@ void UpdateMotorStatus(void)
 {
     for (uint8_t i = 0; i < 4; i++) 
 	  {
-     GetMotorMeasure(&CHASSIS.joint_motor[i]);//»ñÈ¡¹Ø½Úµç»úÊı¾İ
+     GetMotorMeasure(&CHASSIS.joint_motor[i]);//è·å–å…³èŠ‚ç”µæœºæ•°æ®
     }
     for (uint8_t i = 0; i < 2; i++) 
 		{
-		GetMotorMeasure(&CHASSIS.wheel_motor[i]);	//»ñÈ¡3508Êı¾İÔÚ  ×ªËÙÊÇrad/s
+		GetMotorMeasure(&CHASSIS.wheel_motor[i]);	//è·å–3508æ•°æ®åœ¨  è½¬é€Ÿæ˜¯rad/s
     }
 }
 
 /**
- * @brief  ¸üĞÂÍÈ²¿×´Ì¬¡¤
+ * @brief  æ›´æ–°è…¿éƒ¨çŠ¶æ€Â·
  * @param  none
  */
 
@@ -391,14 +398,14 @@ float ddot_z_w = 0;
 void UpdateLegStatus(void)
 {
 	  uint8_t i = 0;
-  //ÕıÊÓ
-	//×óÍÈ   ÒÔ¹Ø½ÚÖĞĞÄ½¨Á¢×ø±êÏµ ×ó¹Ø½Ú(phi1) Ë®Æ½ ÉÏ×ª -pi   ->  0    ÓÒ¹Ø½Ú(phi4) Ë®Æ½ÉÏ×ª  0  ->  -pi        
-  //                                      Ë®Æ½ ÏÂ×ª  pi ->  0                  Ë®Æ½ÏÂ×ª   0  ->  pi
+  //æ­£è§†
+	//å·¦è…¿   ä»¥å…³èŠ‚ä¸­å¿ƒå»ºç«‹åæ ‡ç³» å·¦å…³èŠ‚(phi1) æ°´å¹³ ä¸Šè½¬ -pi   ->  0    å³å…³èŠ‚(phi4) æ°´å¹³ä¸Šè½¬  0  ->  -pi        
+  //                                      æ°´å¹³ ä¸‹è½¬  pi ->  0                  æ°´å¹³ä¸‹è½¬   0  ->  pi
 	CHASSIS.fdb.leg[0].joint.Phi1=theta_transform(CHASSIS.joint_motor[0].fdb.pos,J0_ANGLE_OFFSET,J0_DIRECTION,1);
 	CHASSIS.fdb.leg[0].joint.Phi4 =theta_transform(CHASSIS.joint_motor[1].fdb.pos,J1_ANGLE_OFFSET,J1_DIRECTION, 1);
-	//ÕıÊÓ
-  //ÓÒÍÈ   ÒÔ¹Ø½ÚÖĞĞÄ½¨Á¢×ø±êÏµ ×ó¹Ø½Ú(phi4) Ë®Æ½ ÉÏ×ª 0  ->  -pi    ÓÒ¹Ø½Ú(phi1) Ë®Æ½ÉÏ×ª  -pi  ->  0        
-  //                                      Ë®Æ½ ÏÂ×ª 0 ->    pi                 Ë®Æ½ÏÂ×ª   pi  ->  0
+	//æ­£è§†
+  //å³è…¿   ä»¥å…³èŠ‚ä¸­å¿ƒå»ºç«‹åæ ‡ç³» å·¦å…³èŠ‚(phi4) æ°´å¹³ ä¸Šè½¬ 0  ->  -pi    å³å…³èŠ‚(phi1) æ°´å¹³ä¸Šè½¬  -pi  ->  0        
+  //                                      æ°´å¹³ ä¸‹è½¬ 0 ->    pi                 æ°´å¹³ä¸‹è½¬   pi  ->  0
 	CHASSIS.fdb.leg[1].joint.Phi1 =theta_transform(CHASSIS.joint_motor[2].fdb.pos, J2_ANGLE_OFFSET, J2_DIRECTION, 1);
   CHASSIS.fdb.leg[1].joint.Phi4 =theta_transform(CHASSIS.joint_motor[3].fdb.pos, J3_ANGLE_OFFSET, J3_DIRECTION, 1);
 	
@@ -407,17 +414,17 @@ void UpdateLegStatus(void)
   CHASSIS.fdb.leg[1].joint.dPhi1 = CHASSIS.joint_motor[2].fdb.vel * (J2_DIRECTION);
   CHASSIS.fdb.leg[1].joint.dPhi4 = CHASSIS.joint_motor[3].fdb.vel * (J3_DIRECTION);
 
-  // =====¸üĞÂ¹Ø½Úµç»úÁ¦¾Ø=====
+  // =====æ›´æ–°å…³èŠ‚ç”µæœºåŠ›çŸ©=====
   CHASSIS.fdb.leg[0].joint.T1 = CHASSIS.joint_motor[0].fdb.tor * (J0_DIRECTION);
   CHASSIS.fdb.leg[0].joint.T2 = CHASSIS.joint_motor[1].fdb.tor * (J1_DIRECTION);
   CHASSIS.fdb.leg[1].joint.T1 = CHASSIS.joint_motor[2].fdb.tor * (J2_DIRECTION);
   CHASSIS.fdb.leg[1].joint.T2 = CHASSIS.joint_motor[3].fdb.tor * (J3_DIRECTION);
 	
 	
-	// =====¸üĞÂÇı¶¯ÂÖ½ÇËÙ¶È===== ·´À¡×ª×ÓËÙ¶È³ıÒÔ¼õËÙ±È
+	// =====æ›´æ–°é©±åŠ¨è½®è§’é€Ÿåº¦===== åé¦ˆè½¬å­é€Ÿåº¦é™¤ä»¥å‡é€Ÿæ¯”
 	CHASSIS.fdb.leg[0].wheel.Velocity = CHASSIS.wheel_motor[0].fdb.vel * (W0_DIRECTION)/CHASSIS.wheel_motor[0].reduction_ratio;//rad/s
   CHASSIS.fdb.leg[1].wheel.Velocity = CHASSIS.wheel_motor[1].fdb.vel * (W1_DIRECTION)/CHASSIS.wheel_motor[1].reduction_ratio;//rad/s
-	// =====¸üĞÂ°Ú¸Ë×ËÌ¬=====
+	// =====æ›´æ–°æ‘†æ†å§¿æ€=====
   float L0_Phi0[2];
   float dL0_dPhi0[2];
 
@@ -426,30 +433,30 @@ void UpdateLegStatus(void)
         float last_dPhi0 = CHASSIS.fdb.leg[i].rod.dPhi0;
         float last_dTheta = CHASSIS.fdb.leg[i].rod.dTheta;
         
-		    // ¸üĞÂÍÈ³¤ºÍ°Ú½ÇÎ»ÖÃĞÅÏ¢  Í¨¹ı¹Ø½Úµç»ú½Ç¶ÈÕı½âµ½L0ºÍphi0
+		    // æ›´æ–°è…¿é•¿å’Œæ‘†è§’ä½ç½®ä¿¡æ¯  é€šè¿‡å…³èŠ‚ç”µæœºè§’åº¦æ­£è§£åˆ°L0å’Œphi0
 		    GetL0AndPhi0(CHASSIS.fdb.leg[i].joint.Phi1, CHASSIS.fdb.leg[i].joint.Phi4, L0_Phi0);
-		    //Èç¹û²»¿¼ÂÇ¹Ø½Úµç»úµÄphi1ºÍphi4 ÄÇÃ´L0 ºÍ  phi0µÄ¹ØÏµ¾ÍÊÇ
-        //Æ¨¹ÉÍùÇ°¿´               phi0¶¼ÊÇ  0-->>pi/2-->>pi
+		    //å¦‚æœä¸è€ƒè™‘å…³èŠ‚ç”µæœºçš„phi1å’Œphi4 é‚£ä¹ˆL0 å’Œ  phi0çš„å…³ç³»å°±æ˜¯
+        //å±è‚¡å¾€å‰çœ‹               phi0éƒ½æ˜¯  0-->>pi/2-->>pi
         CHASSIS.fdb.leg[i].rod.L0 = L0_Phi0[0]  ;
         CHASSIS.fdb.leg[i].rod.Phi0 = L0_Phi0[1];
 		
 		    CHASSIS.fdb.leg[i].rod.Theta = M_PI_2 - CHASSIS.fdb.leg[i].rod.Phi0 - CHASSIS.fdb.body.phi;
 				
-				 // ¼ÆËãÑÅ¿É±È¾ØÕó  ¸ù¾İphi1ºÍphi4¼ÆËã³öÄ©¶ËµÄÑÅ¿É±È¾ØÕóJ
+				 // è®¡ç®—é›…å¯æ¯”çŸ©é˜µ  æ ¹æ®phi1å’Œphi4è®¡ç®—å‡ºæœ«ç«¯çš„é›…å¯æ¯”çŸ©é˜µJ
         CalcJacobian(CHASSIS.fdb.leg[i].joint.Phi1, CHASSIS.fdb.leg[i].joint.Phi4, CHASSIS.fdb.leg[i].J);
 		    
-		     // Ò»½×Î¢·Ö   Í¨¹ıÑÅ¿É±È¾ØÕóÇó½â³öl0µÄÎ¢·ÖºÍphi0µÄÎ¢·Ö Í¬Ê±Çó½â³öthetaµÄÎ¢·Ö
+		     // ä¸€é˜¶å¾®åˆ†   é€šè¿‡é›…å¯æ¯”çŸ©é˜µæ±‚è§£å‡ºl0çš„å¾®åˆ†å’Œphi0çš„å¾®åˆ† åŒæ—¶æ±‚è§£å‡ºthetaçš„å¾®åˆ†
         GetdL0AnddPhi0(CHASSIS.fdb.leg[i].J, CHASSIS.fdb.leg[i].joint.dPhi1, CHASSIS.fdb.leg[i].joint.dPhi4,dL0_dPhi0);
         
-		    //¼ÆËãµÃµ½µ¯»ÉÇ°À¡²¹³¥Á¦ 
-		    CHASSIS.fdb.leg[i].rod.F_spring=LegController_CalcSpringForce(CHASSIS.fdb.leg[0].rod.L0);
+		    //è®¡ç®—å¾—åˆ°å¼¹ç°§å‰é¦ˆè¡¥å¿åŠ› 
+		    CHASSIS.fdb.leg[i].rod.F_spring=LegController_CalcSpringForce(CHASSIS.fdb.leg[i].rod.L0);
 		
         CHASSIS.fdb.leg[i].rod.dL0 = dL0_dPhi0[0];
         CHASSIS.fdb.leg[i].rod.dPhi0 = dL0_dPhi0[1];
         CHASSIS.fdb.leg[i].rod.dTheta = -CHASSIS.fdb.leg[i].rod.dPhi0 - CHASSIS.fdb.body.phi_dot;
-				CHASSIS.fdb.leg[i].rod.dTheta = CHASSIS.fdb.leg[i].rod.dTheta;
+				CHASSIS.fdb.leg[i].rod.dTheta = LowPassFilterCalc(&CHASSIS.lpf.dtheta, CHASSIS.fdb.leg[i].rod.dTheta);
 		
-        // ¸üĞÂ¼ÓËÙ¶ÈĞÅÏ¢  Ò»½×Î¢·Ö--->>¶ş½×Î¢·Ö  
+        // æ›´æ–°åŠ é€Ÿåº¦ä¿¡æ¯  ä¸€é˜¶å¾®åˆ†--->>äºŒé˜¶å¾®åˆ†  
         float accel = (CHASSIS.fdb.leg[i].rod.dL0 - last_dL0) / (CHASSIS.duration * MS_TO_S);
         CHASSIS.fdb.leg[i].rod.ddL0 = accel;
 
@@ -461,7 +468,7 @@ void UpdateLegStatus(void)
 
 
         
-		    // ¼ÆËãÖ§³ÅÁ¦ ¸ù¾İ·´À¡µÄÁ½¸ö¹Ø½Úµç»úµÄÁ¦¾Ø  ÒÔ¼°¼ÆËãµÃ³öµÄÑÅ¿É±È¾ØÕó  ¿ÉÒÔµÃµ½µÈĞ§°Ú¸ËµØÃæµÄÖ§³ÖÁ¦ ÒÔ¼°×ª¶¯Á¦
+		    // è®¡ç®—æ”¯æ’‘åŠ› æ ¹æ®åé¦ˆçš„ä¸¤ä¸ªå…³èŠ‚ç”µæœºçš„åŠ›çŸ©  ä»¥åŠè®¡ç®—å¾—å‡ºçš„é›…å¯æ¯”çŸ©é˜µ  å¯ä»¥å¾—åˆ°ç­‰æ•ˆæ‘†æ†åœ°é¢çš„æ”¯æŒåŠ› ä»¥åŠè½¬åŠ¨åŠ›
         float F[2];//F   T
         GetLegForce(CHASSIS.fdb.leg[i].J, CHASSIS.fdb.leg[i].joint.T1, CHASSIS.fdb.leg[i].joint.T2, F);
 				
@@ -479,14 +486,15 @@ void UpdateLegStatus(void)
         if (CHASSIS.fdb.leg[i].Fn< TAKE_OFF_FN_THRESHOLD) {
             CHASSIS.fdb.leg[i].touch_time = 0;
             CHASSIS.fdb.leg[i].take_off_time += CHASSIS.duration;
-        } else {
+        } 
+				else {
             CHASSIS.fdb.leg[i].touch_time += CHASSIS.duration;
             CHASSIS.fdb.leg[i].take_off_time = 0;
         }
     }
 }
 /**
- * @brief  »úÌåÔË¶¯×´Ì¬¹Û²âÆ÷
+ * @brief  æœºä½“è¿åŠ¨çŠ¶æ€è§‚æµ‹å™¨
  * @param  none
  */
 void BodyMotionObserve(void)
@@ -501,20 +509,20 @@ void BodyMotionObserve(void)
 			
 		 float speed=(left_leg_wheelspeed+right_leg_wheelspeed)/2.0f;
 
-			CHASSIS.fdb.body.x_dot= speed;//Ô­Ê¼ËÙ¶È
+			CHASSIS.fdb.body.x_dot= speed;//åŸå§‹é€Ÿåº¦
 
-      // ¶Ô¼ÓËÙ¶È½øĞĞµÍÍ¨ÂË²¨
+      // å¯¹åŠ é€Ÿåº¦è¿›è¡Œä½é€šæ»¤æ³¢
       float filtered_acc = LowPassFilterCalc(&CHASSIS.lpf.x_acc_lpf, CHASSIS.fdb.body.x_acc);
 
 		 
-		 // Ê¹ÓÃkfÍ¬Ê±¹À¼Æ¼ÓËÙ¶ÈºÍËÙ¶È,ÂË²¨¸üĞÂ
-				OBSERVER.body.v_kf.MeasuredVector[0] = speed;                   // ÊäÈëÂÖËÙ
-				OBSERVER.body.v_kf.MeasuredVector[1] = CHASSIS.lpf.x_acc_lpf.out;  // ÊäÈë¼ÓËÙ¶È
-				OBSERVER.body.v_kf.F_data[1] = CHASSIS.duration * MS_TO_S;      // ¸üĞÂ²ÉÑùÊ±¼ä
+		 // ä½¿ç”¨kfåŒæ—¶ä¼°è®¡åŠ é€Ÿåº¦å’Œé€Ÿåº¦,æ»¤æ³¢æ›´æ–°
+				OBSERVER.body.v_kf.MeasuredVector[0] = speed;                   // è¾“å…¥è½®é€Ÿ
+				OBSERVER.body.v_kf.MeasuredVector[1] = CHASSIS.lpf.x_acc_lpf.out;  // è¾“å…¥åŠ é€Ÿåº¦
+				OBSERVER.body.v_kf.F_data[1] = CHASSIS.duration * MS_TO_S;      // æ›´æ–°é‡‡æ ·æ—¶é—´
 				Kalman_Filter_Update(&OBSERVER.body.v_kf);
 //		 
-		  	CHASSIS.fdb.body.x_dot_obv = OBSERVER.body.v_kf.xhat_data[0];//ÂË²¨ºóµÄËÙ¶È
-			  CHASSIS.fdb.body.x_acc_obv= OBSERVER.body.v_kf.xhat_data[1];//ÂË²¨ºóµÄ¡¤¼ÓËÙ¶È
+		  	CHASSIS.fdb.body.x_dot_obv = OBSERVER.body.v_kf.xhat_data[0];//æ»¤æ³¢åçš„é€Ÿåº¦
+			  CHASSIS.fdb.body.x_acc_obv= OBSERVER.body.v_kf.xhat_data[1];//æ»¤æ³¢åçš„Â·åŠ é€Ÿåº¦
 			  
 				// CHASSIS.fdb.body.x_dot_obv = speed;
 				// CHASSIS.fdb.body.x_acc_obv = CHASSIS.fdb.body.x_acc;
@@ -523,12 +531,12 @@ void BodyMotionObserve(void)
 		{
         CHASSIS.fdb.body.x += CHASSIS.fdb.body.x_dot_obv * CHASSIS.duration * MS_TO_S;
     }
-		else //ÓĞËÙ¶ÈÊ±ºò°Ñ·´À¡ËÙ¶ÈÉèÖÃÎª0
+		else //æœ‰é€Ÿåº¦æ—¶å€™æŠŠåé¦ˆé€Ÿåº¦è®¾ç½®ä¸º0
 		{
         CHASSIS.fdb.body.x = 0;
     }
 		
-		 // ¸üĞÂ2ÌõÍÈµÄ×´Ì¬ÏòÁ¿
+		 // æ›´æ–°2æ¡è…¿çš„çŠ¶æ€å‘é‡
      uint8_t i = 0;
      for (i = 0; i < 2; i++) {
         CHASSIS.fdb.leg_state[i].theta     =  M_PI_2 - CHASSIS.fdb.leg[i].rod.Phi0 - CHASSIS.fdb.body.phi;
@@ -546,38 +554,38 @@ static void UpdateStepStatus(void)
 {	
 if (CHASSIS.mode == CHASSIS_FREE) {
     
-//    / 1. »ñÈ¡Ë«ÍÈÆ½¾ù°Ú½ÇºÍ½ÇËÙ¶È
+//    / 1. è·å–åŒè…¿å¹³å‡æ‘†è§’å’Œè§’é€Ÿåº¦
         float avg_theta = (CHASSIS.fdb.leg_state[0].theta + CHASSIS.fdb.leg_state[1].theta) / 2.0f;
         float avg_theta_dot = (CHASSIS.fdb.leg_state[0].theta_dot + CHASSIS.fdb.leg_state[1].theta_dot) / 2.0f;
-        // 2. »ñÈ¡»úÌå X Öá´óµØ¼ÓËÙ¶È
+        // 2. è·å–æœºä½“ X è½´å¤§åœ°åŠ é€Ÿåº¦
 //        float ax = CHASSIS.fdb.world.x_accel; 
 
 
-        if (!is_auto_climbing && CHASSIS.ref.speed_vector.vx > 0.2f) 
+        if (!is_auto_climbing) 
         {
-				if (avg_theta > 0.30f && avg_theta_dot > 0.15f&&CHASSIS.rc->ch2>=100) {
+				if ((avg_theta > 0.32f && avg_theta_dot > 0.17f)&&((CHASSIS.rc->ch2>=100)||(keyboard_data.Remote_Key_Shift==1))) {
                 is_auto_climbing = true; // 
         }
-        if (keyboard_data.Remote_Key_B==1||(CHASSIS.rc->ch2<=-200)||keyboard_data.Remote_Key_C==1){  // µçÄÔ¼üÅÌ°´ÏÂC¼ü  É¾ÌøÔ¾//(CHASSIS.rc->ch2<=-200)
+        if (keyboard_data.Remote_KeyPush_B==1||(CHASSIS.rc->ch2<=-200)){  // ç”µè„‘é”®ç›˜æŒ‰ä¸‹Bé”®  åˆ è·³è·ƒ//(CHASSIS.rc->ch2<=-200)
             CHASSIS.step_time = 0;
             CHASSIS.step = JUMP_STEP_SQUST;
-        } else if (CHASSIS.step == JUMP_STEP_SQUST) {  // ÌøÔ¾¡ª¡ª¶×ÏÂĞîÁ¦×´Ì¬
+        } else if (CHASSIS.step == JUMP_STEP_SQUST) {  // è·³è·ƒâ€”â€”è¹²ä¸‹è“„åŠ›çŠ¶æ€
             if (CHASSIS.fdb.leg[0].rod.L0 < MIN_LEG_LENGTH + 0.02f &&
                 CHASSIS.fdb.leg[1].rod.L0 < MIN_LEG_LENGTH + 0.02f) {
                 StateTransfer();
             }
-        } else if (CHASSIS.step == JUMP_STEP_JUMP) {  // ÌøÔ¾¡ª¡ªÆğÌø×´Ì¬
+        } else if (CHASSIS.step == JUMP_STEP_JUMP) {  // è·³è·ƒâ€”â€”èµ·è·³çŠ¶æ€
 					
             if (CHASSIS.fdb.leg[0].rod.L0 > MAX_LEG_LENGTH-0.03  &&
                 CHASSIS.fdb.leg[1].rod.L0 > MAX_LEG_LENGTH-0.03 ) {
                 StateTransfer();
             }
-        } else if (CHASSIS.step == JUMP_STEP_RECOVERY) {  // ÌøÔ¾¡ª¡ªÊÕÍÈ×´Ì¬
-            if (CHASSIS.step_time > 300) {               // 300msºóÇĞ»»×´Ì¬
+        } else if (CHASSIS.step == JUMP_STEP_RECOVERY) {  // è·³è·ƒâ€”â€”æ”¶è…¿çŠ¶æ€
+            if (CHASSIS.step_time > 300) {               // 300msååˆ‡æ¢çŠ¶æ€
                 StateTransfer();
             }
         } else if (CHASSIS.step != NORMAL_STEP && CHASSIS.step_time > MAX_STEP_TIME) {
-            // ×´Ì¬³ÖĞøÊ±¼ä³¬¹ı MAX_STEP_TIME £¬×Ô¶¯ÇĞ»»µ½NORMAL×´Ì¬
+            // çŠ¶æ€æŒç»­æ—¶é—´è¶…è¿‡ MAX_STEP_TIME ï¼Œè‡ªåŠ¨åˆ‡æ¢åˆ°NORMALçŠ¶æ€
             CHASSIS.step_time = 0;
             CHASSIS.step = NORMAL_STEP;
         }
@@ -590,12 +598,11 @@ if (CHASSIS.mode == CHASSIS_FREE) {
 
 
 #undef StateTransfer
-//----------------------ÓĞ¹¦ÂÊ¿ØÖÆ---------------------------------------------------------------------------------
-  float length = 0.135;//Õı³£ÍÈ³¤
+//----------------------æœ‰åŠŸç‡æ§åˆ¶---------------------------------------------------------------------------------
+  float length = 0.135;//æ­£å¸¸è…¿é•¿
   ChassisSpeedVector_t target_v_set = {0.0f, 0.0f, 0.0f};
- float vx_ramp_rate = 0.05f; // Ã¿ÃëÔö¼Ó6.5m/s
- float current_vx = 0.0f;//µ±Ç°ÉèÖÃµÄËÙ¶È
- // Ä¿±ê½ÇËÙ¶È µ±Ç°½ÇËÙ¶È ½ÇËÙ¶ÈÔö¼Ó¼ÓËÙ¶È
+ float vx_ramp_rate = 0.05f; 
+ float current_vx = 0.0f;
  float target_wz=0.0f,current_wz = 0.0f,wz_ramp_rate = 15.5f;
 static void Auto_ClimbStep(void)
 {
@@ -605,7 +612,7 @@ static void Auto_ClimbStep(void)
     static float current_target_L0[2] = {0.145f, 0.145f}; 
     static float initial_Phi0[2] = {0.9f, 0.9f}; 
 
-    // ¡¾ºËĞÄĞŞ¸Ä¡¿£ºÍ¨¹ı±êÖ¾Î»µÄ±ßÑØ´¥·¢³õÊ¼»¯£¬¶ø²»ÊÇ mode
+    // ã€æ ¸å¿ƒä¿®æ”¹ã€‘ï¼šé€šè¿‡æ ‡å¿—ä½çš„è¾¹æ²¿è§¦å‘åˆå§‹åŒ–ï¼Œè€Œä¸æ˜¯ mode
     static bool last_is_auto_climbing = false;
     float dt = CHASSIS.duration * 0.001f; 
 
@@ -613,11 +620,11 @@ static void Auto_ClimbStep(void)
 			climb_state = 1;
 			climb_timer = 0;
 
-			// ¼ÇÂ¼Ô­Ê¼ÎïmÀí°Ú½Ç
+			// è®°å½•åŸå§‹ç‰©mç†æ‘†è§’
 			initial_Phi0[0] = CHASSIS.fdb.leg[0].rod.Phi0;
 			initial_Phi0[1] = CHASSIS.fdb.leg[1].rod.Phi0;
 
-			// Ğ±ÆÂÆğµã¶ÔÆë
+			// æ–œå¡èµ·ç‚¹å¯¹é½
 			current_target_Phi0[0] = initial_Phi0[0];
 			current_target_Phi0[1] = initial_Phi0[1];
 
@@ -627,8 +634,8 @@ static void Auto_ClimbStep(void)
 
     climb_timer += CHASSIS.duration;
 
-    float swing_speed = 4.0f;   // °Ú½ÇËÙ¶È
-    float retract_speed = 0.8f; // ËõÍÈËÙ¶È
+    float swing_speed = 4.0f;   // æ‘†è§’é€Ÿåº¦
+    float retract_speed = 0.8f; // ç¼©è…¿é€Ÿåº¦
     float step_phi = swing_speed * dt;
     float step_L0 = retract_speed * dt;
 
@@ -636,7 +643,7 @@ static void Auto_ClimbStep(void)
     CHASSIS.wheel_motor[1].set.tor = 0;
 
     switch (climb_state) {
-        // --- ½×¶Î 1£ºÏòºó°ÚÍÈ ---
+        // --- é˜¶æ®µ 1ï¼šå‘åæ‘†è…¿ ---
         case 1: 
         {
             float final_target_Phi0 = 0.8f; 
@@ -657,7 +664,7 @@ static void Auto_ClimbStep(void)
             CHASSIS.wheel_motor[1].set.tor = -1.0f * W1_DIRECTION;
         } break;
 
-        // --- ½×¶Î 2£ºËõÍÈµ½×î¶Ì ---
+        // --- é˜¶æ®µ 2ï¼šç¼©è…¿åˆ°æœ€çŸ­ ---
         case 2: 
         {
             float final_target_L0 = MIN_LEG_LENGTH; 
@@ -671,21 +678,21 @@ static void Auto_ClimbStep(void)
                     current_target_L0[i] = final_target_L0;
                 }
             }
-            if (is_L0_reached || climb_timer > 2000) {
+            if (is_L0_reached || climb_timer > 500) {
                 climb_state = 3; climb_timer = 0;
             }
             CHASSIS.wheel_motor[0].set.tor = -1.0f * W0_DIRECTION;
             CHASSIS.wheel_motor[1].set.tor = -1.0f * W1_DIRECTION;
         } break;
 
-        // --- ½×¶Î 3£º°Ú½Ç»Ö¸´£¬ÂÖ×ÓÀ­Æğ³µÉí ---
+        // --- é˜¶æ®µ 3ï¼šæ‘†è§’æ¢å¤ï¼Œè½®å­æ‹‰èµ·è½¦èº« ---
 				case 3:
         {
             bool is_phi_reached = true; 
 
             for (uint8_t i = 0; i < 2; i++) {
-                // ¡¾ºËĞÄĞŞ¸´¡¿£º²»ÒªÊ¹ÓÃ×²»÷Ê±µÄ initial_Phi0£¬Ö±½ÓÈÃÍÈ»Ö¸´µ½´¹Ö±ÏòÏÂ M_PI_2£¡
-                // ÕâÑùµ±¿ØÖÆÈ¨»¹¸ø LQR Ê±£¬»úÆ÷ÈË´¦ÓÚ×îÍêÃÀµÄÆ½ºâÊÜÁ¦×ËÌ¬£¡
+                // ã€æ ¸å¿ƒä¿®å¤ã€‘ï¼šä¸è¦ä½¿ç”¨æ’å‡»æ—¶çš„ initial_Phi0ï¼Œç›´æ¥è®©è…¿æ¢å¤åˆ°å‚ç›´å‘ä¸‹ M_PI_2ï¼
+                // è¿™æ ·å½“æ§åˆ¶æƒè¿˜ç»™ LQR æ—¶ï¼Œæœºå™¨äººå¤„äºæœ€å®Œç¾çš„å¹³è¡¡å—åŠ›å§¿æ€ï¼
                 float final_target_Phi0 = M_PI_2; 
 
                 if (current_target_Phi0[i] < final_target_Phi0 - step_phi) {
@@ -699,7 +706,7 @@ static void Auto_ClimbStep(void)
                 }
             }
 
-            // ±£³ÖÕıÏòÇı¶¯Á¦°Ñµ×ÅÌ¡°×§¡±ÉÏÌ¨½×
+            // ä¿æŒæ­£å‘é©±åŠ¨åŠ›æŠŠåº•ç›˜â€œæ‹½â€ä¸Šå°é˜¶
             CHASSIS.wheel_motor[0].set.tor = -1.5f * W0_DIRECTION;
             CHASSIS.wheel_motor[1].set.tor = -1.5f * W1_DIRECTION;
 
@@ -710,27 +717,27 @@ static void Auto_ClimbStep(void)
         } break;
 
         // ----------------------------------------------------
-        // ½×¶Î 4£º¿çÔ½Íê³É£¬×Ô¶¯ÍË»Ø×ÔÓÉÄ£Ê½
+        // é˜¶æ®µ 4ï¼šè·¨è¶Šå®Œæˆï¼Œè‡ªåŠ¨é€€å›è‡ªç”±æ¨¡å¼
         // ----------------------------------------------------
         case 4:
         {
-            // ¡¾ºËĞÄĞŞ¸Ä¡¿£º×Ô¶¯ÍË³ö²¢ÇåÀí VMC »ı·Ö£¡
-            extern bool is_auto_climbing; // ÒıÓÃÄã¸Õ¸Õ¼ÓµÄÈ«¾Ö±êÖ¾Î»
+            // ã€æ ¸å¿ƒä¿®æ”¹ã€‘ï¼šè‡ªåŠ¨é€€å‡ºå¹¶æ¸…ç† VMC ç§¯åˆ†ï¼
+            extern bool is_auto_climbing; // å¼•ç”¨ä½ åˆšåˆšåŠ çš„å…¨å±€æ ‡å¿—ä½
            
             is_auto_climbing = false; 
 						is_auto_climbing = 0;
             climb_state = 0;
 
-            // ÇåÀí VMC µÄ¿ØÖÆ»ıÔÜ£¬·ÀÖ¹½»½Ó¸ø LQR Ë²¼ä²úÉú³é´¤
+            // æ¸…ç† VMC çš„æ§åˆ¶ç§¯æ”’ï¼Œé˜²æ­¢äº¤æ¥ç»™ LQR ç¬é—´äº§ç”ŸæŠ½æ
             PID_clear(&CHASSIS.pid.leg_length_length[0]);
             PID_clear(&CHASSIS.pid.leg_length_length[1]);
-            length = 0.135;//Õı³£ÍÈ³¤
-            // Á¢¼´·µ»Ø£¬±¾Ö¡²»ÔÙ·¢Á¦£¬ÏÂÒ»Ö¡ÎŞ·ìÏÎ½Ó ConsoleNormal() µÄ LQR
+            length = 0.135;//æ­£å¸¸è…¿é•¿
+            // ç«‹å³è¿”å›ï¼Œæœ¬å¸§ä¸å†å‘åŠ›ï¼Œä¸‹ä¸€å¸§æ— ç¼è¡”æ¥ ConsoleNormal() çš„ LQR
             return; 
         } break;
     }
 
-    // --- µ×²ã VMC ¶ÀÁ¢±Õ»·¿ØÖÆ ---
+    // --- åº•å±‚ VMC ç‹¬ç«‹é—­ç¯æ§åˆ¶ ---
     for (uint8_t i = 0; i < 2; i++) {
         float F_compensate = PID_calc(&CHASSIS.pid.leg_length_length[i], CHASSIS.fdb.leg[i].rod.L0, current_target_L0[i]);
         float F_spring = LegController_CalcSpringForce(CHASSIS.fdb.leg[i].rod.L0);
@@ -763,28 +770,27 @@ static float gyro_angle = 0.0f;
  	  int16_t rc_x = 0, rc_wz = 0;
     int16_t rc_length = 0, rc_angle = 0,rc_follow_gimbal=0;
     float rc_pitch = 0;
-    rc_deadband_limit(CHASSIS.rc->ch1, rc_x, CHASSIS_RC_DEADLINE);    //ÓÒÊúÖ±²¦¸Ë¿ØÖÆÇ°½øºóÍË
- // rc_deadband_limit(CHASSIS.rc->ch0, rc_wz, CHASSIS_RC_DEADLINE);   //ÓÒË®Æ½²¦¸Ë¿ØÖÆĞı×ª
+    rc_deadband_limit(CHASSIS.rc->ch1, rc_x, CHASSIS_RC_DEADLINE);    //å³ç«–ç›´æ‹¨æ†æ§åˆ¶å‰è¿›åé€€
     rc_deadband_limit(CHASSIS.rc->ch4, rc_length, CHASSIS_RC_DEADLINE);
-	rc_deadband_limit(CHASSIS.rc->ch0, rc_follow_gimbal,CHASSIS_RC_DEADLINE);
-	float rc_follow_gimbal_input=-rc_follow_gimbal*RC_TO_ONE;//Ç°À¡ÔÆÌ¨¸úËæ
+		rc_deadband_limit(CHASSIS.rc->ch0, rc_follow_gimbal,CHASSIS_RC_DEADLINE);
+		float rc_follow_gimbal_input=-rc_follow_gimbal*RC_TO_ONE;//å‰é¦ˆäº‘å°è·Ÿéš
 	 
- //--------------------------------------Ğ¡ÍÓÂİ´¦Àí---------------------------------------------------------------------------------
+ //--------------------------------------å°é™€èºå¤„ç†---------------------------------------------------------------------------------
 
- //// ÅĞ¶ÏÊÇ·ñ½øÈëĞ¡ÍÓÂİÄ£Ê½  °´ÏÂctrl¼ü£¬×ó±ßy²¦¸Ë²¦µ½ÊúÖ±
+ //// åˆ¤æ–­æ˜¯å¦è¿›å…¥å°é™€èºæ¨¡å¼  æŒ‰ä¸‹ctrlé”®ï¼Œå·¦è¾¹yæ‹¨æ†æ‹¨åˆ°ç«–ç›´
  if ( keyboard_data.Remote_Key_Ctrl == 1
 			||(CHASSIS.rc->ch3==-660)) 
  {
-		 //Ğ¡ÍÓÂİ±êÖ¾Î»ÖÃÎª1
+		 //å°é™€èºæ ‡å¿—ä½ç½®ä¸º1
      CHASSIS.fdb.tell_gimbal_thing = 1; 
  } 
  
- // ¼ì²âµ½¿ªÆôĞ¡ÍÓÂİ  
+ // æ£€æµ‹åˆ°å¼€å¯å°é™€èº  
  if (CHASSIS.fdb.tell_gimbal_thing==1) 
 {
-     target_wz =keyboard_data.Remote_Key_Ctrl * 15+(CHASSIS.rc->ch3==-660)*9;
+     target_wz =keyboard_data.Remote_Key_Ctrl * 15+(CHASSIS.rc->ch3==-660)*12;
     
-     // Ê¹ÓÃĞ±ÆÂº¯ÊıÖğ½¥Ôö¼Óµ½Ä¿±ê½ÇËÙ¶È
+     // ä½¿ç”¨æ–œå¡å‡½æ•°é€æ¸å¢åŠ åˆ°ç›®æ ‡è§’é€Ÿåº¦
      if (target_wz > current_wz) {
          current_wz += wz_ramp_rate * CHASSIS.duration * MS_TO_S;
          if (current_wz > target_wz) {
@@ -801,45 +807,62 @@ static float gyro_angle = 0.0f;
         float s_x = rc_x*RC_TO_ONE * 1;
 		    float s_y =rc_wz*RC_TO_ONE*1;
         
-        // ¼ÆËãÆ½ÒÆ·½Ïòd¦ÓºÍÕı½»·½ÏòdnµÄËÙ¶È·ÖÁ¿
+        // è®¡ç®—å¹³ç§»æ–¹å‘dÏ„å’Œæ­£äº¤æ–¹å‘dnçš„é€Ÿåº¦åˆ†é‡
 		    
-        float v_tau = s_x * sinf(CHASSIS.fdb.gimbal.gimbal_yaw_6020-GIMBAL_DIRECT_YAW_MID);  // Æ½ÒÆ·½ÏòËÙ¶È
-        float v_n   =   s_y * cosf(CHASSIS.fdb.gimbal.gimbal_yaw_6020-GIMBAL_DIRECT_YAW_MID);    // Õı½»·½ÏòËÙ¶È
+        float v_tau = s_x * sinf(CHASSIS.fdb.gimbal.gimbal_yaw_6020-GIMBAL_DIRECT_YAW_MID);  // å¹³ç§»æ–¹å‘é€Ÿåº¦
+        float v_n   =   s_y * cosf(CHASSIS.fdb.gimbal.gimbal_yaw_6020-GIMBAL_DIRECT_YAW_MID);    // æ­£äº¤æ–¹å‘é€Ÿåº¦
 
 		 
-        // ×ª»»µ½µ×ÅÌ×ø±êÏµ
+        // è½¬æ¢åˆ°åº•ç›˜åæ ‡ç³»
         target_v_set.vx = v_tau;
-		 //Ö±½Ó¸³ÖµĞı×ªËÙ¶È
+		 //ç›´æ¥èµ‹å€¼æ—‹è½¬é€Ÿåº¦
         target_v_set.wz = current_wz;
-     // µ±Ğ¡ÍÓÂİËÙ¶È½µµ½3m/sÊ±Í£Ö¹Ğ¡ÍÓÂİÄ£Ê½
+     // å½“å°é™€èºé€Ÿåº¦é™åˆ°3m/sæ—¶åœæ­¢å°é™€èºæ¨¡å¼
      if (fabs(current_wz) < 0.3f) {
 			   gyro_angle = 0.0f;
          CHASSIS.fdb.tell_gimbal_thing = 0;
      }
  }
-//Î´¿ªÆôĞ¡ÍÓÂİÎª ÔÆÌ¨¸úËæÄ£Ê½
+//æœªå¼€å¯å°é™€èºä¸º äº‘å°è·Ÿéšæ¨¡å¼
  else 
-	 {
-     float yaw_angle_diff = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
-     float corrected_yaw_target = CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
-     target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*5.5-keyboard_data.Remote_Mouse_RL*0.028;
-		 //Ö±½Ó¸³ÖµĞı×ªËÙ¶È
-		 target_v_set.wz = target_wz;
-   }
- //---------------------------------×İÏò¿ØÖÆ----------------------------------------------------------------------------------
+      {
+    // è®¡ç®—ä¸¤ä¸ªä¸­å€¼çš„è¯¯å·®ï¼Œé€‰æ‹©æ›´è¿‘çš„ä¸­å€¼è¿›è¡Œè·Ÿéš
+    float diff1 = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
+    float diff2 = angle_difference(GIMBAL_DIRECT_YAW_MID - PI, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
+
+    float yaw_angle_diff = (fabs(diff1) < fabs(diff2)) ? diff1 : diff2;
+    float corrected_yaw_target = CHASSIS.fdb.gimbal.gimbal_yaw_6020 + yaw_angle_diff;
+    target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*5.5-keyboard_data.Remote_Mouse_RL*0.028;
+    //ç›´æ¥èµ‹å€¼æ—‹è½¬é€Ÿåº¦
+      target_v_set.wz = target_wz;
+      }
+ //---------------------------------çºµå‘æ§åˆ¶----------------------------------------------------------------------------------
  if (CHASSIS.fdb.tell_gimbal_thing==0) 
 {
- 				target_v_set.vx = rc_x * RC_TO_ONE * MAX_SPEED_VECTOR_VX;
- 				if(keyboard_data.Remote_Key_Shift==0)
- 				{
- 					target_v_set.vx +=keyboard_data.Remote_Key_W*1.2;
- 					target_v_set.vx -=keyboard_data.Remote_Key_S*1.2;
- 				}
- 				if(keyboard_data.Remote_Key_Shift==1)
- 				{
- 					target_v_set.vx +=keyboard_data.Remote_Key_W*1.7;
- 					target_v_set.vx -=keyboard_data.Remote_Key_S*1.7;
- 				}		
+ 				// è®¡ç®—ä¸¤ä¸ªä¸­å€¼çš„è¯¯å·®ï¼Œé€‰æ‹©æ›´è¿‘çš„ä¸­å€¼è¿›è¡Œè·Ÿéš
+        float diff1 = angle_difference(GIMBAL_DIRECT_YAW_MID, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
+        float diff2 = angle_difference(GIMBAL_DIRECT_YAW_MID - PI, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
+        int8_t speed_direction = 1; // é€Ÿåº¦æ–¹å‘ï¼Œ1ä¸ºæ­£å¸¸ï¼Œ-1ä¸ºå–å
+          if(fabs(diff1) < fabs(diff2)) {
+            speed_direction = 1; // è·ŸéšGIMBAL_DIRECT_YAW_MIDï¼Œé€Ÿåº¦æ­£å¸¸
+        } else {
+            speed_direction = -1; // è·ŸéšGIMBAL_DIRECT_YAW_MID - PIï¼Œé€Ÿåº¦å–å
+        }
+
+        target_v_set.vx = rc_x * RC_TO_ONE * MAX_SPEED_VECTOR_VX * speed_direction;
+
+        if((CHASSIS.fdb.leg[0].rod.L0+CHASSIS.fdb.leg[1].rod.L0)/2>move_mid_length) //ç£•å°é˜¶é€Ÿåº¦
+        {
+            target_v_set.vx += keyboard_data.Remote_Key_W*0.7*speed_direction;
+            target_v_set.vx -= keyboard_data.Remote_Key_S*0.7*speed_direction;	
+        }
+        else
+        { 
+            target_v_set.vx += keyboard_data.Remote_Key_W*1.4*speed_direction;
+            target_v_set.vx -= keyboard_data.Remote_Key_S*1.4*speed_direction;	
+        }
+
+       //é€Ÿåº¦æ–œæ³¢
  			if (target_v_set.vx > current_vx) {
  			current_vx += vx_ramp_rate * CHASSIS.duration * MS_TO_S;
  			if (current_vx > target_v_set.vx) {
@@ -856,58 +879,58 @@ static float gyro_angle = 0.0f;
 
 
 
-// 1. ¶¯Ì¬»ñÈ¡µ±Ç°ÔÊĞíµÄËÙ¶È/Ğı×ª²½³¤ (ÊÜ¹¦ÂÊÑÏ¸ñÖÆÔ¼)
+// 1. åŠ¨æ€è·å–å½“å‰å…è®¸çš„é€Ÿåº¦/æ—‹è½¬æ­¥é•¿ (å—åŠŸç‡ä¸¥æ ¼åˆ¶çº¦)
     float current_vx_step = vx_ramp_rate;
     float current_wz_step = wz_ramp_rate; 
     
-    // ¹¦ÂÊÔ½µÍ£¬Ğ±ÆÂÅÀÉıÔ½Âı£¨²»½öÏŞÖÆÅ¤¾Ø£¬¸üÒªÏŞÖÆÄ¿±êÆÚÍûµÄÔö³¤£©
+    // åŠŸç‡è¶Šä½ï¼Œæ–œå¡çˆ¬å‡è¶Šæ…¢ï¼ˆä¸ä»…é™åˆ¶æ‰­çŸ©ï¼Œæ›´è¦é™åˆ¶ç›®æ ‡æœŸæœ›çš„å¢é•¿ï¼‰
     if (move_scale < 0.3f) {
-        current_vx_step *= 0.1f; // ¼«¶ÈÈ±µç£º»ù±¾ËøËÀÄ¿±êÖµ
+        current_vx_step *= 0.1f; // æåº¦ç¼ºç”µï¼šåŸºæœ¬é”æ­»ç›®æ ‡å€¼
         current_wz_step *= 0.1f;
     } else if (move_scale < 0.8f) {
-        current_vx_step *= 0.5f; // ¹¦ÂÊ³Ô½ô£º·Å»º¼ÓËÙºÍÉ²³µÁ¦¶È
+        current_vx_step *= 0.5f; // åŠŸç‡åƒç´§ï¼šæ”¾ç¼“åŠ é€Ÿå’Œåˆ¹è½¦åŠ›åº¦
         current_wz_step *= 0.5f;
     }
 
-    // 2. ÅĞ¶ÏÇ°½ø/ºóÍË (Vx) µÄ¼ÓËÙÓë¼õËÙ×´Ì¬
+    // 2. åˆ¤æ–­å‰è¿›/åé€€ (Vx) çš„åŠ é€Ÿä¸å‡é€ŸçŠ¶æ€
     bool is_decelerating = (fabsf(target_v_set.vx ) < fabsf(current_vx)) || 
                            (target_v_set.vx  * current_vx < 0);
 
     if (is_decelerating) 
     {
-        // ¼õËÙ×´Ì¬ (É²³µ)£ºÍ¬ÑùÊÜµçÁ÷ÈÈËğºÄ I^2R ÏŞÖÆ£¬ÓÃÊÜ¿ØµÄ current_vx_step ½µËÙ
+        // å‡é€ŸçŠ¶æ€ (åˆ¹è½¦)ï¼šåŒæ ·å—ç”µæµçƒ­æŸè€— I^2R é™åˆ¶ï¼Œç”¨å—æ§çš„ current_vx_step é™é€Ÿ
         if (target_v_set.vx  > current_vx + current_vx_step) current_vx += current_vx_step;
         else if (target_v_set.vx  < current_vx - current_vx_step) current_vx -= current_vx_step;
         else current_vx = target_v_set.vx ;
     } 
     else 
     {
-        // ¼ÓËÙ×´Ì¬
+        // åŠ é€ŸçŠ¶æ€
         if (move_scale < 0.3f) {
-            // ²»ÄÜ¼ÓËÙ£¬Ö÷¶¯»ºÂı½µËÙ
+            // ä¸èƒ½åŠ é€Ÿï¼Œä¸»åŠ¨ç¼“æ…¢é™é€Ÿ
             if (current_vx > current_vx_step) current_vx -= current_vx_step;
             else if (current_vx < -current_vx_step) current_vx += current_vx_step;
             else current_vx = 0.0f;
         } else {
-            // Õı³£/ÊÜÏŞ ¼ÓËÙ
+            // æ­£å¸¸/å—é™ åŠ é€Ÿ
             if (target_v_set.vx  > current_vx + current_vx_step) current_vx += current_vx_step;
             else if (target_v_set.vx  < current_vx - current_vx_step) current_vx -= current_vx_step;
             else current_vx = target_v_set.vx ;
         }
     }
-    // 3. Ğı×ª (Wz) Ğ±ÆÂ´¦Àí£º
+    // 3. æ—‹è½¬ (Wz) æ–œå¡å¤„ç†ï¼š
     if (target_v_set.wz > current_wz + current_wz_step) current_wz += current_wz_step;
     else if (target_v_set.wz < current_wz - current_wz_step) current_wz -= current_wz_step;
     else current_wz = target_v_set.wz;
     
-    // ×îÖÕ¸³Öµ¸øÉè¶¨Öµ
+    // æœ€ç»ˆèµ‹å€¼ç»™è®¾å®šå€¼
     current_vx = current_vx;   
     target_v_set.wz = current_wz;
 
  //----------------------------------------------------------------------------------------------------------------------------
 
  		switch (CHASSIS.mode) {
-         case CHASSIS_FREE: {  // µ×ÅÌ×ÔÓÉÄ£Ê½ÏÂ£¬¿ØÖÆÁ¿Îªµ×ÅÌ×ø±êÏµÏÂµÄËÙ¶È
+         case CHASSIS_FREE: {  // åº•ç›˜è‡ªç”±æ¨¡å¼ä¸‹ï¼Œæ§åˆ¶é‡ä¸ºåº•ç›˜åæ ‡ç³»ä¸‹çš„é€Ÿåº¦
              CHASSIS.ref.speed_vector.vx = current_vx;	
              CHASSIS.ref.speed_vector.vy = 0;
              CHASSIS.ref.speed_vector.wz = target_v_set.wz;
@@ -920,7 +943,7 @@ static float gyro_angle = 0.0f;
              break;
      }
 		
- 		// ¼ÆËãÆÚÍû×´Ì¬
+ 		// è®¡ç®—æœŸæœ›çŠ¶æ€
      for (uint8_t i
 			 = 0; i < 2; i++) {
          CHASSIS.ref.leg_state[i].theta     =  0;
@@ -930,10 +953,45 @@ static float gyro_angle = 0.0f;
          CHASSIS.ref.leg_state[i].phi       =  0;
          CHASSIS.ref.leg_state[i].phi_dot   =  0;
      }
- 		 // ÍÈ²¿¿ØÖÆ
+ 		 // è…¿éƒ¨æ§åˆ¶
      switch (CHASSIS.mode) {
          case CHASSIS_FREE: {
  				     length=length-rc_length*RC_TO_ONE*0.003f;
+				   if(keyboard_data.Remote_Key_E)
+					 {
+						 	// æ–œå¡å˜åŒ–åˆ°ç›®æ ‡è…¿é•¿
+						 	float target_length = move_mid_length;
+						 	float delta = target_length - length;
+						 	if(fabs(delta) > 0.001f) {
+								 length += delta * 0.03f; // 10%æ­¥é•¿æ–œå¡å˜åŒ–
+						 	} else {
+								 length = target_length;
+						 	}
+					 }
+           	 if(keyboard_data.Remote_Key_Q)
+					 {
+						 	// æ–œå¡å˜åŒ–åˆ°ç›®æ ‡è…¿é•¿
+						 	float target_length = MIN_LEG_LENGTH;
+						 	float delta = target_length - length;
+						 	if(fabs(delta) > 0.001f) {
+								 length += delta * 0.01f; // 10%æ­¥é•¿æ–œå¡å˜åŒ–
+						 	} else {
+								 length = target_length;
+						 	}
+					 }
+           	if(keyboard_data.Remote_Key_F)
+					 {
+						 	// æ–œå¡å˜åŒ–åˆ°æœ€å¤§
+						 	float target_length = move_max_length;
+						 	float delta = target_length - length;
+						 	if(fabs(delta) > 0.001f) {
+								 length += delta * 0.008f; // 10%æ­¥é•¿æ–œå¡å˜åŒ–
+						 	} else {
+								 length = target_length;
+						 	}
+					 }
+
+           
  					  if (CHASSIS.step == JUMP_STEP_SQUST) 
              {
                length = MIN_LEG_LENGTH;
@@ -944,7 +1002,7 @@ static float gyro_angle = 0.0f;
              } 
              else if (CHASSIS.step == JUMP_STEP_RECOVERY) 
              {
-               length = MIN_LEG_LENGTH ;
+               length = MIN_LEG_LENGTH+0.01;
              }
          } break;
          default: {
@@ -957,14 +1015,14 @@ static float gyro_angle = 0.0f;
  						 CHASSIS.ref.rod_L0[1] = length;
   }
 
-static void ConsoleZeroForce(void);//ÁãÁ¦¿ØÖÆ
-static void ConsoleNormal(void);//Õı³£¿ØÖÆ
-static void Consoleselfstart(void);//·­µ¹×ÔÆô
-static void ConsoleCalibrate(void);//Ğ£×¼¿ØÖÆ
+static void ConsoleZeroForce(void);//é›¶åŠ›æ§åˆ¶
+static void ConsoleNormal(void);//æ­£å¸¸æ§åˆ¶
+static void Consoleselfstart(void);//ç¿»å€’è‡ªå¯
+static void ConsoleCalibrate(void);//æ ¡å‡†æ§åˆ¶
 static void LocomotionController(void);
 static void LegTorqueController(void);
 
- //¼ÆËã¿ØÖÆÁ¿
+ //è®¡ç®—æ§åˆ¶é‡
  void ChassisConsole(void)
  {
  switch (CHASSIS.mode) {
@@ -979,7 +1037,7 @@ static void LegTorqueController(void);
         }break;
 	      case CHASSIS_STAND_UP:
 				{
-          ConsoleNormal();//Õı³£¿ØÖÆ
+          ConsoleNormal();//æ­£å¸¸æ§åˆ¶
 				}break;
         case CHASSIS_SAFE:
         default: {
@@ -990,7 +1048,7 @@ static void LegTorqueController(void);
  
  
  static void Consoleselfstart(void)
- //·­µ¹×ÔÆô
+ //ç¿»å€’è‡ªå¯
 {
 		
 	  CHASSIS.wheel_motor[0].set.tor = 0;
@@ -999,11 +1057,11 @@ static void LegTorqueController(void);
 static void ConsoleNormal(void)
 {
     LocomotionController();
-	//LQR 12¸öÁ¦¾ØÊä³ö  yawÖá×ªÏò»·2¸öÁ¦¾ØÊä³ö
+	//LQR 12ä¸ªåŠ›çŸ©è¾“å‡º  yawè½´è½¬å‘ç¯2ä¸ªåŠ›çŸ©è¾“å‡º
     LegTorqueController();
-	//Á½¸öfnÍÈ³¤PIDÁ¦¾ØÊä³ö ·ÀÅü²æÁ½¸ötpÁ¦¾ØÊä³ö
+	//ä¸¤ä¸ªfnè…¿é•¿PIDåŠ›çŸ©è¾“å‡º é˜²åŠˆå‰ä¸¤ä¸ªtpåŠ›çŸ©è¾“å‡º
 
-    // ¸ø¹Ø½Úµç»ú¸³Öµ
+    // ç»™å…³èŠ‚ç”µæœºèµ‹å€¼
     CHASSIS.joint_motor[0].set.tor = CHASSIS.cmd.leg[0].joint.T[0] * (J0_DIRECTION);
     CHASSIS.joint_motor[1].set.tor = CHASSIS.cmd.leg[0].joint.T[1] * (J1_DIRECTION);
     CHASSIS.joint_motor[2].set.tor = CHASSIS.cmd.leg[1].joint.T[0] * (J2_DIRECTION);
@@ -1071,28 +1129,28 @@ static void CalcLQR(float k[2][6], float x[6], float T_Tp[2])
 }
 
 
-fp32 x0_OFFSET=0.0f;   // Ä¿±êthetaÆ«ÒÆÁ¿
-fp32 x1_OFFSET=0.0f;   // Ä¿±êtheta_dotÆ«ÒÆÁ¿
-fp32 x2_OFFSET=0.0f; // Ä¿±êxÆ«ÒÆÁ¿
-fp32 x3_OFFSET=0.0f;   // Ä¿±êx_dotÆ«ÒÆÁ¿
-fp32 x4_OFFSET=0.00f;   // Ä¿±êphiÆ«ÒÆÁ¿
-fp32 x5_OFFSET=0.0f;   // Ä¿±êphi_dotÆ«ÒÆÁ¿
+fp32 x0_OFFSET=0.0f;   // ç›®æ ‡thetaåç§»é‡
+fp32 x1_OFFSET=0.0f;   // ç›®æ ‡theta_dotåç§»é‡
+fp32 x2_OFFSET=0.0f; // ç›®æ ‡xåç§»é‡
+fp32 x3_OFFSET=0.0f;   // ç›®æ ‡x_dotåç§»é‡
+fp32 x4_OFFSET=0.00f;   // ç›®æ ‡phiåç§»é‡
+fp32 x5_OFFSET=0.0f;   // ç›®æ ‡phi_dotåç§»é‡
 float Ld0=0.0;
 float L_diff=0.0;
  fp32 current_to_torque=0.000480637608;
 
 static void LocomotionController(void)
 {
-	    // ¼ÆËãLQRÔöÒæ
+	    // è®¡ç®—LQRå¢ç›Š
     float k[2][6];
     float x[6];
     float T_Tp[2];
 
-	    // ¶¨Òå±äÁ¿´æ´¢·ÖÀëºóµÄÁ¦¾Ø (µ¥Î»: Nm)
-    float T_total[2] = {0}; // ×ÜÁ¦¾Ø
-    float T_vel[2]   = {0}; // ½öÓÉËÙ¶ÈÎó²î²úÉúµÄÁ¦¾Ø (ÒÆ¶¯·ÖÁ¿)
-    float T_bal[2]   = {0}; // Ê£ÏÂµÄÆ½ºâ·ÖÁ¿ (×Ü - ÒÆ¶¯)
-	  float T_Tp_dummy[2]; // ÓÃÓÚÕ¼Î»
+	    // å®šä¹‰å˜é‡å­˜å‚¨åˆ†ç¦»åçš„åŠ›çŸ© (å•ä½: Nm)
+    float T_total[2] = {0}; // æ€»åŠ›çŸ©
+    float T_vel[2]   = {0}; // ä»…ç”±é€Ÿåº¦è¯¯å·®äº§ç”Ÿçš„åŠ›çŸ© (ç§»åŠ¨åˆ†é‡)
+    float T_bal[2]   = {0}; // å‰©ä¸‹çš„å¹³è¡¡åˆ†é‡ (æ€» - ç§»åŠ¨)
+	  float T_Tp_dummy[2]; // ç”¨äºå ä½
 			
     for (uint8_t i = 0; i < 2; i++) {
         GetK(CHASSIS.fdb.leg[i].rod.L0,k,CHASSIS.fdb.leg[i].is_take_off);
@@ -1109,23 +1167,23 @@ static void LocomotionController(void)
 			  
         CHASSIS.cmd.leg[i].rod.Tp = T_Tp_dummy[1];
 			
-			   // 2. ·ÖÀëÒÆ¶¯Á¦¾Ø
+			   // 2. åˆ†ç¦»ç§»åŠ¨åŠ›çŸ©
         T_vel[i] = k[0][3] * x[3]; 
 
-        // 3. ¼ÆËãÆ½ºâÁ¦¾Ø
+        // 3. è®¡ç®—å¹³è¡¡åŠ›çŸ©
         T_bal[i] = T_total[i] - T_vel[i];
 			}
-			// 4. ¼ÆËãĞı×ªÁ¦¾Ø (Yaw)
+			// 4. è®¡ç®—æ—‹è½¬åŠ›çŸ© (Yaw)
 			PID_calc(&CHASSIS.pid.yaw_velocity, CHASSIS.fdb.body.yaw_dot, CHASSIS.ref.speed_vector.wz);
 		  CHASSIS.cmd.leg[0].wheel.T-=CHASSIS.pid.yaw_velocity.out;
       CHASSIS.cmd.leg[1].wheel.T+=CHASSIS.pid.yaw_velocity.out;
       
-			//½â¾öÕ¾¸ßÊ±ºò³é´¤µÄÎÊÌâ ÓÉÓÚÍÈ³¤¹ı¸ßÔì³ÉÂÖì±YAWÖá·ÖÅäÁ¦¾Ø²»×ãÔ­Òò
-			//ÅĞ¶ÏÍÈ³¤½Ï³¤Ê±ºò yawÖáÊä³öÁ¦¾Ø0.3
+			//è§£å†³ç«™é«˜æ—¶å€™æŠ½æçš„é—®é¢˜ ç”±äºè…¿é•¿è¿‡é«˜é€ æˆè½®æ¯‚YAWè½´åˆ†é…åŠ›çŸ©ä¸è¶³åŸå› 
+			//åˆ¤æ–­è…¿é•¿è¾ƒé•¿æ—¶å€™ yawè½´è¾“å‡ºåŠ›çŸ©0.3
       float T_yaw = 0.0f;
-			if((CHASSIS.fdb.leg[0].rod.L0+CHASSIS.fdb.leg[1].rod.L0)/2>0.3)
+			if((CHASSIS.fdb.leg[0].rod.L0+CHASSIS.fdb.leg[1].rod.L0)/2>0.25)
 			{
-				T_yaw = 0.3*CHASSIS.pid.yaw_velocity.out; 
+				T_yaw = 0.4*CHASSIS.pid.yaw_velocity.out; 
 			}
 			else
 			{
@@ -1133,31 +1191,31 @@ static void LocomotionController(void)
 			}
 			
 				 
-				// 5.¹¦ÂÊ¿ØÖÆÊı¾İ
+				// 5.åŠŸç‡æ§åˆ¶æ•°æ®
 			float I_bal_L = T_bal[0] / current_to_torque;
 			float I_bal_R = T_bal[1] / current_to_torque;
 		
-		// ÒÆ¶¯·ÖÁ¿ = LQRËÙ¶È·ÖÁ¿ + Yaw·ÖÁ¿
-    // ×óÂÖ£ºLQRËÙ¶È - Yaw
-    // ÓÒÂÖ£ºLQRËÙ¶È + Yaw
+		// ç§»åŠ¨åˆ†é‡ = LQRé€Ÿåº¦åˆ†é‡ + Yawåˆ†é‡
+    // å·¦è½®ï¼šLQRé€Ÿåº¦ - Yaw
+    // å³è½®ï¼šLQRé€Ÿåº¦ + Yaw
     float T_mov_L_Nm = T_vel[0] - T_yaw;
     float T_mov_R_Nm = T_vel[1] + T_yaw;
     
     float I_mov_L = T_mov_L_Nm / current_to_torque;
     float I_mov_R = T_mov_R_Nm / current_to_torque;
 
-    // »ñÈ¡µ±Ç°×ªËÙ (RPM)
+    // è·å–å½“å‰è½¬é€Ÿ (RPM)
     float speed_L = CHASSIS.wheel_motor[0].fdb.vel / 0.1047197551f;
     float speed_R = CHASSIS.wheel_motor[1].fdb.vel / 0.1047197551f;
 		
-    // 6. ¼ÆËã¹¦ÂÊÏŞÖÆËõ·ÅÏµÊı
+    // 6. è®¡ç®—åŠŸç‡é™åˆ¶ç¼©æ”¾ç³»æ•°
      move_scale = 1.0f;
- // Ö»ÓĞÔÚ×ÔÓÉÄ£Ê½»òÕ¾Á¢Ä£Ê½²ÅÏŞÖÆ
+ // åªæœ‰åœ¨è‡ªç”±æ¨¡å¼æˆ–ç«™ç«‹æ¨¡å¼æ‰é™åˆ¶
     if (CHASSIS.mode == CHASSIS_FREE )
     {
         Chassis_Power_Limit_Calc(I_bal_L, I_mov_L, I_bal_R, I_mov_R, speed_L, speed_R, &move_scale);
     }
-   // 7. Ó¦ÓÃËõ·Å²¢ºÏ³É×îÖÕÁ¦¾Ø
+   // 7. åº”ç”¨ç¼©æ”¾å¹¶åˆæˆæœ€ç»ˆåŠ›çŸ©
     // Final = Balance + Scale * (Velocity + Yaw)
     CHASSIS.cmd.leg[0].wheel.T = T_bal[0] + move_scale * T_mov_L_Nm;
     CHASSIS.cmd.leg[1].wheel.T = T_bal[1] + move_scale * T_mov_R_Nm;
@@ -1165,17 +1223,17 @@ static void LocomotionController(void)
 
       for (uint8_t i = 0; i < 2; i++) 
 				{
-					if(CHASSIS.fdb.leg[i].is_take_off// ÀëµØ
-            ||leg_loss_control[i].state==LOSS_CONTROL_OVERTURN //·­³µ
-            ||leg_loss_control[i].state==LOSS_CONTROL_CONFIRMED //Ê§¿Ø
-            ||CHASSIS.mode==CHASSIS_STAND_UP)//ÆğÁ¢×´Ì¬
+					if(CHASSIS.fdb.leg[i].is_take_off// ç¦»åœ°
+            ||leg_loss_control[i].state==LOSS_CONTROL_OVERTURN //ç¿»è½¦
+            ||leg_loss_control[i].state==LOSS_CONTROL_CONFIRMED //å¤±æ§
+            ||CHASSIS.mode==CHASSIS_STAND_UP)//èµ·ç«‹çŠ¶æ€
 					{
 						CHASSIS.cmd.leg[i].wheel.T = 0;
 					}
 				}
 }
 /**
- * @brief ÍÈ²¿Á¦¾Ø¿ØÖÆ
+ * @brief è…¿éƒ¨åŠ›çŸ©æ§åˆ¶
  */
 float F0, F_leg;
 static void LegTorqueController(void)
@@ -1190,14 +1248,14 @@ static void LegTorqueController(void)
 						{
 							if (CHASSIS.step == JUMP_STEP_JUMP) 
 							{
-							// Ö±½Ó¸øÒ»¸ö³¬´óÁ¦FÆğ·É
+							// ç›´æ¥ç»™ä¸€ä¸ªè¶…å¤§åŠ›Fèµ·é£
 							CHASSIS.cmd.leg[i].rod.F = 160;
 							}
 				  		else if(CHASSIS.step==JUMP_STEP_RECOVERY)
 							{
-								F0 =-60;
-								F_leg = PID_calc(&CHASSIS.pid.stand_up, CHASSIS.fdb.leg[i].rod.L0,CHASSIS.ref.rod_L0[i]);
-								CHASSIS.cmd.leg[i].rod.F =F0+F_leg ; 
+								F0 =-20;
+								F_leg = PID_calc(&CHASSIS.pid.leg_length_length[i], CHASSIS.fdb.leg[i].rod.L0,CHASSIS.ref.rod_L0[i]);
+								CHASSIS.cmd.leg[i].rod.F =F0+F_leg- CHASSIS.fdb.leg[i].rod.F_spring ; 
 							}
 							else if(CHASSIS.mode==CHASSIS_FREE&&CHASSIS.step==NORMAL_STEP)
 							{				
@@ -1206,15 +1264,15 @@ static void LegTorqueController(void)
 								CHASSIS.cmd.leg[i].rod.F = F0 + F_leg- CHASSIS.fdb.leg[i].rod.F_spring; 
 							}
 						}		
-					//ºá¹ö½ÇÎÈ¶¨
-					PID_calc(&CHASSIS.pid.pitch_angle,CHASSIS.fdb.body.pitch,CHASSIS.ref.body.pitch);//ÓÒ±ßÌ§ÆğÊÇpitchÔö´ó
+					//æ¨ªæ»šè§’ç¨³å®š
+					PID_calc(&CHASSIS.pid.pitch_angle,CHASSIS.fdb.body.pitch,CHASSIS.ref.body.pitch);//å³è¾¹æŠ¬èµ·æ˜¯pitchå¢å¤§
 					if(CHASSIS.fdb.leg[0].is_take_off&&CHASSIS.fdb.leg[1].is_take_off)
 		      {
 						CHASSIS.pid.pitch_angle.out=0;
 		      }
 					CHASSIS.cmd.leg[0].rod.F-=CHASSIS.pid.pitch_angle.out;
 					CHASSIS.cmd.leg[1].rod.F+=CHASSIS.pid.pitch_angle.out;
-					//·ÀÅü²æ  TP
+					//é˜²åŠˆå‰  TP
 					CHASSIS.fdb.two_leg_err=CHASSIS.fdb.leg[0].rod.Theta-CHASSIS.fdb.leg[1].rod.Theta;
 					PID_calc(&CHASSIS.pid.leg_chase_L_to_R,CHASSIS.fdb.leg[0].rod.Theta,CHASSIS.fdb.leg[1].rod.Theta);
           CHASSIS.cmd.leg[0].rod.Tp-=CHASSIS.pid.leg_chase_L_to_R.out;
@@ -1223,21 +1281,22 @@ static void LegTorqueController(void)
 
 		}
 
-		/*====================ÆğÁ¢Ì¬====================*/
+		/*====================èµ·ç«‹æ€====================*/
 		if(CHASSIS.mode==CHASSIS_STAND_UP)
 		{
 						for (uint8_t i = 0; i < 2; i++) 
 					 {
-            // ¼ÆËãÇ°À¡Á¦				
+            // è®¡ç®—å‰é¦ˆåŠ›				
 						F0=-30;
 					  F_leg = PID_calc(&CHASSIS.pid.stand_up, CHASSIS.fdb.leg[i].rod.L0,CHASSIS.ref.rod_L0[i]);
 						CHASSIS.cmd.leg[i].rod.F = F0 + F_leg;
+
 					 }						 
 		}
 
 		
 		
-    // ×ª»»Îª¹Ø½ÚÁ¦¾Ø  ¸ËÖ§³ÖÁ¦     ¸ËµÄĞı×ªÁ¦     ÑÅ¿É±È¾ØÕó   ---->>>Á½¸ö¹Ø½ÚµÄĞèÒªÁ¦¾Ø
+    // è½¬æ¢ä¸ºå…³èŠ‚åŠ›çŸ©  æ†æ”¯æŒåŠ›     æ†çš„æ—‹è½¬åŠ›     é›…å¯æ¯”çŸ©é˜µ   ---->>>ä¸¤ä¸ªå…³èŠ‚çš„éœ€è¦åŠ›çŸ©
     CalcVmc(CHASSIS.cmd.leg[0].rod.F, CHASSIS.cmd.leg[0].rod.Tp, CHASSIS.fdb.leg[0].J,CHASSIS.cmd.leg[0].joint.T);
     CalcVmc(CHASSIS.cmd.leg[1].rod.F, CHASSIS.cmd.leg[1].rod.Tp, CHASSIS.fdb.leg[1].J,CHASSIS.cmd.leg[1].joint.T);
 }
@@ -1248,15 +1307,15 @@ static void LegTorqueController(void)
  
 void SendJointMotorCmd(void);
 void SendWheelMotorCmd(void);
- //·¢ËÍ¿ØÖÆÁ¿
- void ChassisSendCmd(void)
+ //å‘é€æ§åˆ¶é‡
+ void ChassisSendCmd(void) 
  {
 	      SendJointMotorCmd();
         SendWheelMotorCmd();
  }
 
  /**
- * @brief ·¢ËÍ¹Ø½Úµç»ú¿ØÖÆÖ¸Áî
+ * @brief å‘é€å…³èŠ‚ç”µæœºæ§åˆ¶æŒ‡ä»¤
  * @param[in] chassis
  */
  
@@ -1265,7 +1324,7 @@ void SendWheelMotorCmd(void);
 			switch (CHASSIS.mode)
 			{ 	
         case CHASSIS_STAND_UP: 
-				case CHASSIS_FREE:  //µ×ÅÌ×ÔÓÉÄ£Ê½
+				case CHASSIS_FREE:  //åº•ç›˜è‡ªç”±æ¨¡å¼
 				{
 
 						DmMitCtrlTorque(&CHASSIS.joint_motor[0]);
@@ -1305,7 +1364,7 @@ void SendWheelMotorCmd(void);
 						CHASSIS.joint_motor[3].set.vel= 3;
 						CHASSIS.wheel_motor[0].set.tor= 0;
 						CHASSIS.wheel_motor[1].set.tor= 0;
-					  //È·ÈÏÊ§¿Ø					
+					  //ç¡®è®¤å¤±æ§					
 						DmMitCtrlVelocity(&CHASSIS.joint_motor[0],1.5);
 						osDelay(1);
 						DmMitCtrlVelocity(&CHASSIS.joint_motor[1],1.5);
@@ -1316,7 +1375,7 @@ void SendWheelMotorCmd(void);
 					}
 
 				}break;
-				default:    //µ×ÅÌÆäËûÄ£Ê½
+				default:    //åº•ç›˜å…¶ä»–æ¨¡å¼
 				{
 					CHASSIS.joint_motor[0].set.tor=0;
 					CHASSIS.joint_motor[1].set.tor=0;			
@@ -1333,7 +1392,7 @@ void SendWheelMotorCmd(void);
 			}
  }
  /**
- * @brief ·¢ËÍÇı¶¯ÂÖµç»ú¿ØÖÆÖ¸Áî
+ * @brief å‘é€é©±åŠ¨è½®ç”µæœºæ§åˆ¶æŒ‡ä»¤
  * @param chassis
  */
  
@@ -1344,7 +1403,7 @@ void SendWheelMotorCmd(void);
 					 {
               CHASSIS.wheel_motor[0].set.curr=CHASSIS.wheel_motor[0].set.tor/current_to_torque;
               CHASSIS.wheel_motor[1].set.curr=CHASSIS.wheel_motor[1].set.tor/current_to_torque;
-              //Å¤¾Ø×ª»¯ÎªµçÁ÷
+              //æ‰­çŸ©è½¬åŒ–ä¸ºç”µæµ
               CanCmdDjiMotor(&hfdcan2,0x200,CHASSIS.wheel_motor[0].set.curr,CHASSIS.wheel_motor[1].set.curr,0,0);
 					
             } break;
@@ -1369,7 +1428,7 @@ void ChassisHandleException()
     DmEnable(&CHASSIS.joint_motor[3]);
 		osDelay(1);
 	} 
-	//µ±ÇĞ»»µ½µ×ÅÌ¿ØÖÆÄ£Ê½/°´¼ü°´ÏÂR/µ×ÅÌÆğÁ¢Ä£Ê½
+	//å½“åˆ‡æ¢åˆ°åº•ç›˜æ§åˆ¶æ¨¡å¼/æŒ‰é”®æŒ‰ä¸‹R/åº•ç›˜èµ·ç«‹æ¨¡å¼
   if ((CHASSIS.mode==CHASSIS_FREE&&CHASSIS.last_mode!=CHASSIS_FREE)||keyboard_data.Remote_Key_R||(CHASSIS.mode==CHASSIS_STAND_UP&&CHASSIS.last_mode!=CHASSIS_STAND_UP))
   {
     memset(&CHASSIS.fdb,0,sizeof(CHASSIS.fdb));
