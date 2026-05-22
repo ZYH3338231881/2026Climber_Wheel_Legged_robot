@@ -1,0 +1,227 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.39.0.0
+Copyright (C) 2023 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 zyh, 1, LIC=9WSKC-7NUC4-LQ70Q-N056N-RX7RD-BMUKD
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.39.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.39.0.0
+Dialog DLL:      DCM.DLL V1.17.5.0
+Target DLL:      CMSIS_AGDI.dll V1.33.16.0
+Dialog DLL:      TCM.DLL V1.56.4.0
+ 
+<h2>Project:</h2>
+D:\Desktop\2026RM\A_climber_code\climber_wheel_legged_robot_chassis(zyh_v2) (7v7目前正在完善)\MDK-ARM\climber_wheel_legged_robot_chassis.uvprojx
+Project File Date:  05/09/2026
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin'
+Build target 'climber_wheel_legged_robot_chassis'
+compiling State_chexk_task.c...
+..\Chassis\State_chexk_task.c(9): warning:  #1295-D: Deprecated declaration check_loss_control - give arg types
+  extern void check_loss_control();//疯车检测
+..\Chassis\State_chexk_task.c: 1 warning, 0 errors
+compiling CAN_cmd_damiao.c...
+compiling judge_send_app.c...
+../Chassis/computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Judge\judge_send_app.c: 1 warning, 0 errors
+compiling chassis_power_control.c...
+..\Chassis\chassis_power_control.h(21): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\chassis_power_control.c(282): warning:  #1-D: last line of file ends without a newline
+  }
+..\Chassis\chassis_power_control.c: 3 warnings, 0 errors
+compiling bsp_rc.c...
+compiling computer_rec.c...
+..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\computer_rec.c: 1 warning, 0 errors
+compiling chassis_balance_extra.c...
+..\Chassis\chassis_balance_extra.c(152): warning:  #550-D: variable "sin_theta3"  was set but never used
+  	float cos_theta3,sin_theta3,theta3,s3,alpha_s;
+..\Chassis\chassis_balance_extra.c(237): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      return WHEEL_BASE * tanf(theta1) -cosf(theta0) / cosf(theta1) * (WHEEL_BASE * tanf(theta0) - Ld0);
+..\Chassis\chassis_balance_extra.c(237): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      return WHEEL_BASE * tanf(theta1) -cosf(theta0) / cosf(theta1) * (WHEEL_BASE * tanf(theta0) - Ld0);
+..\Chassis\chassis_balance_extra.c: 3 warnings, 0 errors
+compiling talk_task.c...
+..\Chassis\talk_task.h(5): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\talk_task.c: 2 warnings, 0 errors
+compiling bsp_can.c...
+..\BSP\bsp_can.c(168): warning:  #223-D: function "DmFdbData" declared implicitly
+  		   DmFdbData(&CAN1_DM_MEASURE[0],rx_data1);  //左前电机
+..\BSP\bsp_can.c(172): warning:  #223-D: function "DmFdbData" declared implicitly
+  		   DmFdbData(&CAN1_DM_MEASURE[1],rx_data1);  //左后电机
+..\BSP\bsp_can.c(176): warning:  #223-D: function "DmFdbData" declared implicitly
+  		   DmFdbData(&CAN1_DM_MEASURE[2],rx_data1);  //右前电机
+..\BSP\bsp_can.c(180): warning:  #223-D: function "DmFdbData" declared implicitly
+  		   DmFdbData(&CAN1_DM_MEASURE[3],rx_data1);  //右后电机
+..\BSP\bsp_can.c(159): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint8_t len;
+..\BSP\bsp_can.c(225): warning:  #223-D: function "DjiFdbData" declared implicitly
+  			 DjiFdbData(&CAN2_DJI_MEASURE[0], rx_data2);
+..\BSP\bsp_can.c(229): warning:  #223-D: function "DjiFdbData" declared implicitly
+    		 DjiFdbData(&CAN2_DJI_MEASURE[1], rx_data2);
+..\BSP\bsp_can.c(215): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint8_t len;
+..\BSP\bsp_can.c(247): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint8_t len;
+..\BSP\bsp_can.c: 9 warnings, 0 errors
+compiling judge_paint_task.c...
+../Chassis/computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Judge\judge_paint_task.h(27): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Judge\judge_paint_task.c(464): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		float yaw_error = (GIMBAL_DIRECT_YAW_MID*57.3 - ctom_message.gimbal_yaw_6020*57.3) * YAW_DIR;
+..\Judge\judge_paint_task.c(576): warning:  #1-D: last line of file ends without a newline
+  }
+..\Judge\judge_paint_task.c: 4 warnings, 0 errors
+compiling main.c...
+../Chassis/computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/main.c(137): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(Power_5v_GPIO_Port,Power_5v_Pin,1);
+../Core/Src/main.c: 2 warnings, 0 errors
+compiling IMU_task.c...
+..\IMU\IMU_task.c(72): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  					  gyro[0]-=0.00280696363;   //减去陀螺仪0飘
+..\IMU\IMU_task.c: 1 warning, 0 errors
+compiling freertos.c...
+compiling chassis_task.c...
+..\Chassis\computer_rec.h(510): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\chassis_power_control.h(21): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\Chassis\chassis_task.c(591): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  				if ((avg_theta > 0.22f && avg_theta_dot > 0.12f)&&((CHASSIS.rc->ch2>=100)||(keyboard_data.Remote_Key_F==1)||(CHASSIS.fdb.leg[0].rod.L0+CHASSIS.fdb.leg[1].rod.L0)>=0.7)) {
+..\Chassis\chassis_task.c(610): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+               if (CHASSIS.fdb.leg[0].rod.L0 > MAX_LEG_LENGTH-0.03  && 
+..\Chassis\chassis_task.c(611): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                   CHASSIS.fdb.leg[1].rod.L0 > MAX_LEG_LENGTH-0.03 ) { 
+..\Chassis\chassis_task.c(768): warning:  #111-D: statement is unreachable
+          } break;
+..\Chassis\chassis_task.c(647): warning:  #177-D: variable "last_is_auto_climbing"  was declared but never referenced
+      static bool last_is_auto_climbing = false;
+..\Chassis\chassis_task.c(849): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  				float diff2 = angle_difference(GIMBAL_DIRECT_YAW_MID - PI, CHASSIS.fdb.gimbal.gimbal_yaw_6020);
+..\Chassis\chassis_task.c(862): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      target_wz = -PID_calc(&CHASSIS.pid.chassis_follow_gimbal, CHASSIS.fdb.gimbal.gimbal_yaw_6020, corrected_yaw_target)+rc_follow_gimbal_input*5.5-keyboard_data.Remote_Mouse_RL*0.028;
+..\Chassis\chassis_task.c(871): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          float diff2 = angle_difference(GIMBAL_DIRECT_YAW_MID - PI,CHASSIS.fdb.gimbal.gimbal_yaw_6020);
+..\Chassis\chassis_task.c(894): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          if(0.5*(CHASSIS.fdb.leg[0].rod.L0+CHASSIS.fdb.leg[1].rod.L0)>0.32) //纾曞彴闃堕�熷害
+..\Chassis\chassis_task.c(1071): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                 length = MIN_LEG_LENGTH+0.01;
+..\Chassis\chassis_task.c(801): warning:  #177-D: variable "rc_wz"  was declared but never referenced
+   	  int16_t rc_x = 0, rc_wz = 0;
+..\Chassis\chassis_task.c(802): warning:  #177-D: variable "rc_angle"  was declared but never referenced
+      int16_t rc_length = 0, rc_angle = 0,rc_follow_gimbal=0;
+..\Chassis\chassis_task.c(803): warning:  #177-D: variable "rc_pitch"  was declared but never referenced
+      float rc_pitch = 0;
+..\Chassis\chassis_task.c(1246): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  			if(0.5*(CHASSIS.fdb.leg[0].rod.L0+CHASSIS.fdb.leg[1].rod.L0)>move_mid_length+0.05)
+..\Chassis\chassis_task.c(1248): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  				T_yaw = 0.4*CHASSIS.pid.yaw_velocity.out; 
+..\Chassis\chassis_task.c(1208): warning:  #177-D: variable "T_Tp"  was declared but never referenced
+      float T_Tp[2];
+..\Chassis\chassis_task.c(283): warning:  #177-D: function "UpdateCalibrateStatus"  was declared but never referenced
+  static void UpdateCalibrateStatus(void);//鏍″噯鐘舵�?
+..\Chassis\chassis_task.c(796): warning:  #550-D: variable "gyro_angle"  was set but never used
+  static float gyro_angle = 0.0f;
+..\Chassis\chassis_task.c(1116): warning:  #177-D: function "Consoleselfstart"  was declared but never referenced
+   static void Consoleselfstart(void)
+..\Chassis\chassis_task.c(1167): warning:  #177-D: function "ConsoleCalibrate"  was declared but never referenced
+  static void ConsoleCalibrate(void)
+..\Chassis\chassis_task.c: 22 warnings, 0 errors
+linking...
+Program Size: Code=78640 RO-data=9520 RW-data=3072 ZI-data=23992  
+FromELF: creating hex file...
+"climber_wheel_legged_robot_chassis\climber_wheel_legged_robot_chassis.axf" - 0 Error(s), 49 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.9.0.pack
+                ARM::CMSIS@5.9.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.6.0
+
+Package Vendor: ARM
+                https://www.keil.com/pack/ARM.CMSIS-DSP.1.15.0.pack
+                ARM::CMSIS-DSP@1.15.0
+                CMSIS Embedded Compute Library
+   * Component: DSP Variant: Source Version: 1.15.0
+
+Package Vendor: Keil
+                https://www.keil.com/pack/Keil.STM32H7xx_DFP.3.1.0.pack
+                Keil::STM32H7xx_DFP@3.1.0
+                STMicroelectronics STM32H7 Series Device Support and Examples
+
+<h2>Collection of Component include folders:</h2>
+  ./RTE/_climber_wheel_legged_robot_chassis
+  C:/Users/zyh/AppData/Local/Arm/Packs/ARM/CMSIS-DSP/1.15.0/Include
+  C:/Users/zyh/AppData/Local/Arm/Packs/ARM/CMSIS-DSP/1.15.0/PrivateInclude
+  C:/Users/zyh/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include
+  C:/Users/zyh/AppData/Local/Arm/Packs/Keil/STM32H7xx_DFP/3.1.0/Drivers/CMSIS/Device/ST/STM32H7xx/Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE@5.6.0
+      Include file:  CMSIS/Core/Include/tz_context.h
+
+   * Component: ARM::CMSIS:DSP&Source@1.15.0
+      Source file:   Source/DistanceFunctions/DistanceFunctionsF16.c
+      Source file:   Source/BayesFunctions/BayesFunctionsF16.c
+      Source file:   Source/InterpolationFunctions/InterpolationFunctionsF16.c
+      Source file:   Source/SVMFunctions/SVMFunctionsF16.c
+      Source file:   Source/MatrixFunctions/MatrixFunctionsF16.c
+      Source file:   Source/SupportFunctions/SupportFunctionsF16.c
+      Source file:   Source/StatisticsFunctions/StatisticsFunctionsF16.c
+      Source file:   Source/FastMathFunctions/FastMathFunctionsF16.c
+      Include file:  Include/arm_const_structs.h
+      Include file:  Include/arm_const_structs_f16.h
+      Source file:   Source/QuaternionMathFunctions/QuaternionMathFunctions.c
+      Source file:   Source/BasicMathFunctions/BasicMathFunctions.c
+      Source file:   Source/BayesFunctions/BayesFunctions.c
+      Source file:   Source/CommonTables/CommonTables.c
+      Include file:  Include/arm_common_tables_f16.h
+      Include file:  Include/arm_math.h
+      Include file:  Include/arm_math_f16.h
+      Include file:  Include/arm_common_tables.h
+      Source file:   Source/BasicMathFunctions/BasicMathFunctionsF16.c
+      Source file:   Source/FilteringFunctions/FilteringFunctionsF16.c
+      Source file:   Source/CommonTables/CommonTablesF16.c
+      Source file:   Source/TransformFunctions/TransformFunctionsF16.c
+      Source file:   Source/ComplexMathFunctions/ComplexMathFunctions.c
+      Source file:   Source/StatisticsFunctions/StatisticsFunctions.c
+      Source file:   Source/FastMathFunctions/FastMathFunctions.c
+      Source file:   Source/InterpolationFunctions/InterpolationFunctions.c
+      Source file:   Source/ComplexMathFunctions/ComplexMathFunctionsF16.c
+      Source file:   Source/DistanceFunctions/DistanceFunctions.c
+      Source file:   Source/MatrixFunctions/MatrixFunctions.c
+      Source file:   Source/ControllerFunctions/ControllerFunctions.c
+      Source file:   Source/SupportFunctions/SupportFunctions.c
+      Source file:   Source/FilteringFunctions/FilteringFunctions.c
+      Source file:   Source/SVMFunctions/SVMFunctions.c
+      Source file:   Source/TransformFunctions/TransformFunctions.c
+Build Time Elapsed:  00:00:09
+</pre>
+</body>
+</html>
