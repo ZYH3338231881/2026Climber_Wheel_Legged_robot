@@ -1,0 +1,12 @@
+04_f407_bmi088+m6020\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/list.c
+04_f407_bmi088+m6020\list.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+04_f407_bmi088+m6020\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+04_f407_bmi088+m6020\list.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+04_f407_bmi088+m6020\list.o: C:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+04_f407_bmi088+m6020\list.o: ../Inc/FreeRTOSConfig.h
+04_f407_bmi088+m6020\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+04_f407_bmi088+m6020\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+04_f407_bmi088+m6020\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+04_f407_bmi088+m6020\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+04_f407_bmi088+m6020\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+04_f407_bmi088+m6020\list.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
